@@ -1,4 +1,4 @@
-package interface
+package object
 
 type Pod struct {
 	VersionKind *VersionKind
@@ -15,7 +15,7 @@ type PodTemplateSpec struct {
 type PodSpec struct {
 	Containers         []*Container
 	SecurityContext    *PodSecurityContext
-	ServiceAccountName string
+	ServiceAccountName *string
 	Volumes            []*Volume
 	NodeSelector       map[string]string
 	// some other...
@@ -23,11 +23,11 @@ type PodSpec struct {
 type PodStatus struct {
 	Conditions      []*PodCondition
 	ContainerStatus []*ContainerStatus
-	HostIP          string
-	PodIP           string
-	PodIPs          []string
-	Phase           string
-	Message         string
+	HostIP          *string
+	PodIP           *string
+	PodIPs          []*string
+	Phase           *string
+	Message         *string
 }
 
 type PodSecurityContext struct {
@@ -35,8 +35,8 @@ type PodSecurityContext struct {
 }
 
 type PodCondition struct {
-	Message string
-	Reason  string
-	Staus   string
-	Type    string
+	Message *string
+	Reason  *string
+	Staus   *string
+	Type    *string
 }

@@ -1,4 +1,4 @@
-package interface
+package object
 
 type NetworkPolicy struct {
 	VersionKind *VersionKind
@@ -10,7 +10,7 @@ type NetworkPolicySpec struct {
 	Egress      []*NetworkPolicyEgressRule
 	Ingress     []*NetworkPolicyIngressRule
 	PodSelector *LabelSelector
-	PolicyTypes []string
+	PolicyTypes []*string
 }
 
 type NetworkPolicyEgressRule struct {
@@ -24,8 +24,8 @@ type NetworkPolicyIngressRule struct {
 }
 
 type NetworkPolicyPort struct {
-	Port     interface{} // either string or int
-	Protocol string
+	Port     interface{} // either *string or *int
+	Protocol *string
 }
 
 type NetworkPolicyPeer struct {
@@ -35,6 +35,6 @@ type NetworkPolicyPeer struct {
 }
 
 type IPBlock struct {
-	Cidr   string
-	Except []string
+	Cidr   *string
+	Except []*string
 }

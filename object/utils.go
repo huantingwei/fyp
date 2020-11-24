@@ -1,13 +1,13 @@
-package interface
+package object
 
 type VersionKind struct {
-	ApiVersion string
-	Kind       string
+	ApiVersion *string
+	Kind       *string
 }
 type ObjectMeta struct {
-	Name        string
-	ClusterName string
-	Namespace   string
+	Name        *string
+	ClusterName *string
+	Namespace   *string
 	Labels      map[string]string
 }
 
@@ -17,7 +17,7 @@ type LabelSelector struct {
 }
 
 type LabelSelectorRequirement struct {
-	Key      string
-	Operator string
-	Values   string
+	Key      *string
+	Operator *string
+	Values   *string
 }

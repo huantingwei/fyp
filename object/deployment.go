@@ -1,4 +1,4 @@
-package interface
+package object
 
 type Deployment struct {
 	VersionKind *VersionKind
@@ -8,7 +8,7 @@ type Deployment struct {
 }
 
 type DeploymentSpec struct {
-	Replicas int
+	Replicas *int
 	Selector *LabelSelector
 	Strategy *DeploymentStrategy
 	Template *PodTemplateSpec
@@ -16,26 +16,26 @@ type DeploymentSpec struct {
 
 type DeploymentStatus struct {
 	Conditions          []*DeploymentCondition
-	Replicas            int
-	AvailableReplicas   int
-	ReadyReplicas       int
-	UnavailableReplicas int
-	UpdatedReplicas     int
+	Replicas            *int
+	AvailableReplicas   *int
+	ReadyReplicas       *int
+	UnavailableReplicas *int
+	UpdatedReplicas     *int
 }
 
 type DeploymentStrategy struct {
-	Type          string // RollingUpdate(default) or Recreate
+	Type          *string // RollingUpdate(default) or Recreate
 	RollingUpdate *RollingUpdateDeployment
 }
 
 type DeploymentCondition struct {
-	Type    string
-	Status  string
-	Message string
-	Reason  string
+	Type    *string
+	Status  *string
+	Message *string
+	Reason  *string
 }
 
 type RollingUpdateDeployment struct {
-	MaxSurge       int
-	MaxUnavailable int
+	MaxSurge       *int
+	MaxUnavailable *int
 }

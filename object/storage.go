@@ -1,4 +1,4 @@
-package interface
+package object
 
 type Volume struct {
 }

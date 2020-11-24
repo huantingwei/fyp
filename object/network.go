@@ -1,8 +1,8 @@
-package interface
+package object
 
 type LoadBalancerIngress struct {
-	HostName string
-	IP       string
+	HostName *string
+	IP       *string
 }
 
 type LoadBalancerStatus struct {
@@ -17,11 +17,11 @@ type Service struct {
 }
 
 type ServiceSpec struct {
-	Type           string
+	Type           *string
 	Selector       map[string]string
-	ClusterIP      string
-	ExternalIPs    []string
-	LoadBalancerIP string
+	ClusterIP      *string
+	ExternalIPs    []*string
+	LoadBalancerIP *string
 	Ports          []*ServicePort
 }
 
@@ -30,10 +30,10 @@ type ServiceStatus struct {
 }
 
 type ServicePort struct {
-	Name       string
-	Port       int
-	Protocol   string
-	NodePort   int
+	Name       *string
+	Port       *int
+	Protocol   *string
+	NodePort   *int
 	TargetPort interface{}
 }
 
@@ -46,7 +46,7 @@ type Ingress struct {
 
 type IngressSpec struct {
 	// DefaultBackend *IngressBackend
-	IngressClassName string
+	IngressClassName *string
 	Rules            []*IngressRule
 	TLS              []*IngressTLS
 }
@@ -56,11 +56,11 @@ type IngressStatus struct {
 }
 
 type IngressRule struct {
-	Host string
+	Host *string
 	Http interface{} // HTTPIngressRuleValue -> []HTTPIngressPath
 }
 
 type IngressTLS struct {
-	Hosts      []string
-	SecretName string
+	Hosts      []*string
+	SecretName *string
 }
