@@ -1,44 +1,19 @@
-package object
-
-type ResourceRequirements struct {
-	Limits   map[string]string
-	Requests map[string]string
-}
-type ContainerPort struct {
-	Name          *string
-	Protocol      *string
-	ContainerPort *int
-	HostIP        *string
-	HostPort      *int
+//API doc: https://v1-16.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#container-v1-core
+type container struct{
+	image     string
+	name      string
+	resources resourceRequirements
+	ports     containerPorts //which port to expose on the pod's IP address
 }
 
-type SecurityContext struct {
+//https://v1-16.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#resourcerequirements-v1-core
+type resourceRequirements struct{
+	limits   map[string]string //e.g. cpu, memory
+	requests map[string]string //e.g. cpu, memory
 }
 
-type Container struct {
-	Name            *string
-	Args            []*string
-	Command         []*string
-	Env             interface{}
-	EnvFrom         interface{}
-	Image           *string
-	ImagePullPolicy *string
-	Ports           []*ContainerPort
-	Resources       *ResourceRequirements
-	SecurityContext *SecurityContext
+//API doc: https://v1-16.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#containerport-v1-core
+type containerPorts{
+	containerPort int
+	protocol      string //UDP, TCP, or SCTP
 }
-
-type ContainerStatus struct {
-	Name        *string
-	ContainerID *string
-	Image       *string
-	ImageID     *string
-	Ready       *bool
-	State       *string // either RUNNING, TERMINATED, or WAITING
-}
-
-const (
-	RUNNING    = "running"
-	TERMINATED = "terminated"
-	WAITING    = "waiting"
-)
