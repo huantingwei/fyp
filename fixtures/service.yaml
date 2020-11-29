@@ -1,0 +1,22 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: fyp-svc
+  namespace: fyp
+spec:
+  # Make the service externally visible via the node
+  type: NodePort 
+
+  ports:
+  - protocol: TCP
+    # Which port on the node is the service available through?
+    nodePort: 30001
+
+    # Inside the cluster, what port does the service expose?
+    port: 3000
+
+    # Which port do pods selected by this service expose?
+    targetPort: 3000
+
+  selector:
+    app: fyp-frontend

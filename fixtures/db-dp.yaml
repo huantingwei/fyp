@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fyp-db
+  namespace: fyp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fyp-db
+  template:
+    metadata:
+      labels:
+        app: fyp-db
+    spec:
+      containers:
+      - name: fyp-db
+        image: justbadcodes/mongo
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 27018
