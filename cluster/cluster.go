@@ -9,7 +9,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func getClusterInfo() {
+func main() {
 
 	ctx := context.TODO();
 	client, err1 := container.NewClusterManagerClient(ctx, option.WithCredentialsFile("./sa.json"));
@@ -29,7 +29,15 @@ func getClusterInfo() {
 		fmt.Printf("Fail to get cluster\n")
 		fmt.Printf(err2.Error());
 	}else{
-		fmt.Printf("Cluster name: %s\nCluster location: %s\n", (*res).GetName(), (*res).GetLocation());
+		//fmt.Printf("Cluster name: %s\nCluster location: %s\n", (*res).GetName(), (*res).GetLocation());
+		fmt.Printf("Creation time: %s\n", res.GetCreateTime());
+		fmt.Printf("Version: %s\n", res.GetCurrentMasterVersion());
+		fmt.Printf("Node count: %d\n", res.GetCurrentNodeCount());
+		fmt.Printf("End point: %s\n", res.GetEndpoint());
+		fmt.Printf("Location: %s\n", res.GetLocation());
+
+		
+
 	}
 
 }
