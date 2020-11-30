@@ -1,589 +1,32 @@
 [
     {
-        "object_name": "Deployment/apps/v1/fyp/fyp-db",
+        "object_name": "Pod/v1/fyp/fyp-backend-fcbf679b5-5l75q",
         "type_meta": {
-            "kind": "Deployment",
-            "apiVersion": "apps/v1"
-        },
-        "object_meta": {
-            "name": "fyp-db",
-            "namespace": "fyp",
-            "creationTimestamp": null
-        },
-        "checks": [
-            {
-                "check": {
-                    "name": "Stable version",
-                    "id": "stable-version",
-                    "target_type": "all",
-                    "comment": "Checks if the object is using a deprecated apiVersion",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": null
-            },
-            {
-                "check": {
-                    "name": "Label values",
-                    "id": "label-values",
-                    "target_type": "all",
-                    "comment": "Validates label values",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": null
-            },
-            {
-                "check": {
-                    "name": "Container Resources",
-                    "id": "container-resources",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all pods have resource limits and requests set. The --ignore-container-cpu-limit flag can be used to disable the requirement of having a CPU limit",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "fyp-db",
-                        "summary": "CPU limit is not set",
-                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.cpu"
-                    },
-                    {
-                        "path": "fyp-db",
-                        "summary": "Memory limit is not set",
-                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.memory"
-                    },
-                    {
-                        "path": "fyp-db",
-                        "summary": "CPU request is not set",
-                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.cpu"
-                    },
-                    {
-                        "path": "fyp-db",
-                        "summary": "Memory request is not set",
-                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.memory"
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Container Image Tag",
-                    "id": "container-image-tag",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that a explicit non-latest tag is used",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "fyp-db",
-                        "summary": "Image with latest tag",
-                        "description": "Using a fixed tag is recommended to avoid accidental upgrades"
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Container Image Pull Policy",
-                    "id": "container-image-pull-policy",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that the pullPolicy is set to Always. This makes sure that imagePullSecrets are always validated.",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": null
-            },
-            {
-                "check": {
-                    "name": "Pod NetworkPolicy",
-                    "id": "pod-networkpolicy",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all Pods are targeted by a NetworkPolicy",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "The pod does not have a matching network policy",
-                        "description": "Create a NetworkPolicy that targets this pod"
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Pod Probes",
-                    "id": "pod-probes",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all Pods have safe probe configurations",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "The pod is not targeted by a service, skipping probe checks.",
-                        "description": ""
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Container Security Context",
-                    "id": "container-security-context",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all pods have good securityContexts configured",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "fyp-db",
-                        "summary": "Container has no configured security context",
-                        "description": "Set securityContext to run the container in a more secure context."
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Deployment has host PodAntiAffinity",
-                    "id": "deployment-has-host-podantiaffinity",
-                    "target_type": "Deployment",
-                    "comment": "Makes sure that a podAntiAffinity has been set that prevents multiple pods from being scheduled on the same node. https://kubernetes.io/docs/concepts/configuration/assign-pod-node/",
-                    "optional": false
-                },
-                "grade": 5,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "Deployment does not have a host podAntiAffinity set",
-                        "description": "It's recommended to set a podAntiAffinity that stops multiple pods from a deployment from being scheduled on the same node. This increases availability in case the node becomes unavailable."
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Deployment has PodDisruptionBudget",
-                    "id": "deployment-has-poddisruptionbudget",
-                    "target_type": "Deployment",
-                    "comment": "Makes sure that all Deployments are targeted by a PDB",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "No matching PodDisruptionBudget was found",
-                        "description": "It's recommended to define a PodDisruptionBudget to avoid unexpected downtime during Kubernetes maintenance operations, such as when draining a node."
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "object_name": "Deployment/apps/v1//nginx-deployment",
-        "type_meta": {
-            "kind": "Deployment",
-            "apiVersion": "apps/v1"
-        },
-        "object_meta": {
-            "name": "nginx-deployment",
-            "creationTimestamp": null,
-            "labels": {
-                "app": "nginx"
-            }
-        },
-        "checks": [
-            {
-                "check": {
-                    "name": "Stable version",
-                    "id": "stable-version",
-                    "target_type": "all",
-                    "comment": "Checks if the object is using a deprecated apiVersion",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": null
-            },
-            {
-                "check": {
-                    "name": "Label values",
-                    "id": "label-values",
-                    "target_type": "all",
-                    "comment": "Validates label values",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": null
-            },
-            {
-                "check": {
-                    "name": "Container Security Context",
-                    "id": "container-security-context",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all pods have good securityContexts configured",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "nginx",
-                        "summary": "Container has no configured security context",
-                        "description": "Set securityContext to run the container in a more secure context."
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Container Resources",
-                    "id": "container-resources",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all pods have resource limits and requests set. The --ignore-container-cpu-limit flag can be used to disable the requirement of having a CPU limit",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "nginx",
-                        "summary": "CPU limit is not set",
-                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.cpu"
-                    },
-                    {
-                        "path": "nginx",
-                        "summary": "Memory limit is not set",
-                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.memory"
-                    },
-                    {
-                        "path": "nginx",
-                        "summary": "CPU request is not set",
-                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.cpu"
-                    },
-                    {
-                        "path": "nginx",
-                        "summary": "Memory request is not set",
-                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.memory"
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Container Image Tag",
-                    "id": "container-image-tag",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that a explicit non-latest tag is used",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": null
-            },
-            {
-                "check": {
-                    "name": "Container Image Pull Policy",
-                    "id": "container-image-pull-policy",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that the pullPolicy is set to Always. This makes sure that imagePullSecrets are always validated.",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "nginx",
-                        "summary": "ImagePullPolicy is not set to Always",
-                        "description": "It's recommended to always set the ImagePullPolicy to Always, to make sure that the imagePullSecrets are always correct, and to always get the image you want."
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Pod NetworkPolicy",
-                    "id": "pod-networkpolicy",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all Pods are targeted by a NetworkPolicy",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "The pod does not have a matching network policy",
-                        "description": "Create a NetworkPolicy that targets this pod"
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Pod Probes",
-                    "id": "pod-probes",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all Pods have safe probe configurations",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "The pod is not targeted by a service, skipping probe checks.",
-                        "description": ""
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Deployment has PodDisruptionBudget",
-                    "id": "deployment-has-poddisruptionbudget",
-                    "target_type": "Deployment",
-                    "comment": "Makes sure that all Deployments are targeted by a PDB",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "No matching PodDisruptionBudget was found",
-                        "description": "It's recommended to define a PodDisruptionBudget to avoid unexpected downtime during Kubernetes maintenance operations, such as when draining a node."
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Deployment has host PodAntiAffinity",
-                    "id": "deployment-has-host-podantiaffinity",
-                    "target_type": "Deployment",
-                    "comment": "Makes sure that a podAntiAffinity has been set that prevents multiple pods from being scheduled on the same node. https://kubernetes.io/docs/concepts/configuration/assign-pod-node/",
-                    "optional": false
-                },
-                "grade": 5,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "Deployment does not have a host podAntiAffinity set",
-                        "description": "It's recommended to set a podAntiAffinity that stops multiple pods from a deployment from being scheduled on the same node. This increases availability in case the node becomes unavailable."
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "object_name": "Deployment/apps/v1/fyp/fyp-frontend",
-        "type_meta": {
-            "kind": "Deployment",
-            "apiVersion": "apps/v1"
-        },
-        "object_meta": {
-            "name": "fyp-frontend",
-            "namespace": "fyp",
-            "creationTimestamp": null
-        },
-        "checks": [
-            {
-                "check": {
-                    "name": "Stable version",
-                    "id": "stable-version",
-                    "target_type": "all",
-                    "comment": "Checks if the object is using a deprecated apiVersion",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": null
-            },
-            {
-                "check": {
-                    "name": "Label values",
-                    "id": "label-values",
-                    "target_type": "all",
-                    "comment": "Validates label values",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": null
-            },
-            {
-                "check": {
-                    "name": "Container Resources",
-                    "id": "container-resources",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all pods have resource limits and requests set. The --ignore-container-cpu-limit flag can be used to disable the requirement of having a CPU limit",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "fyp-frontend",
-                        "summary": "CPU limit is not set",
-                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.cpu"
-                    },
-                    {
-                        "path": "fyp-frontend",
-                        "summary": "Memory limit is not set",
-                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.memory"
-                    },
-                    {
-                        "path": "fyp-frontend",
-                        "summary": "CPU request is not set",
-                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.cpu"
-                    },
-                    {
-                        "path": "fyp-frontend",
-                        "summary": "Memory request is not set",
-                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.memory"
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Container Image Tag",
-                    "id": "container-image-tag",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that a explicit non-latest tag is used",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "fyp-frontend",
-                        "summary": "Image with latest tag",
-                        "description": "Using a fixed tag is recommended to avoid accidental upgrades"
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Container Image Pull Policy",
-                    "id": "container-image-pull-policy",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that the pullPolicy is set to Always. This makes sure that imagePullSecrets are always validated.",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": null
-            },
-            {
-                "check": {
-                    "name": "Pod NetworkPolicy",
-                    "id": "pod-networkpolicy",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all Pods are targeted by a NetworkPolicy",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "The pod does not have a matching network policy",
-                        "description": "Create a NetworkPolicy that targets this pod"
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Pod Probes",
-                    "id": "pod-probes",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all Pods have safe probe configurations",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "Container is missing a readinessProbe",
-                        "description": "A readinessProbe should be used to indicate when the service is ready to receive traffic. Without it, the Pod is risking to receive traffic before it has booted. It's also used during rollouts, and can prevent downtime if a new version of the application is failing."
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Container Security Context",
-                    "id": "container-security-context",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all pods have good securityContexts configured",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "fyp-frontend",
-                        "summary": "Container has no configured security context",
-                        "description": "Set securityContext to run the container in a more secure context."
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Deployment has PodDisruptionBudget",
-                    "id": "deployment-has-poddisruptionbudget",
-                    "target_type": "Deployment",
-                    "comment": "Makes sure that all Deployments are targeted by a PDB",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "No matching PodDisruptionBudget was found",
-                        "description": "It's recommended to define a PodDisruptionBudget to avoid unexpected downtime during Kubernetes maintenance operations, such as when draining a node."
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Deployment has host PodAntiAffinity",
-                    "id": "deployment-has-host-podantiaffinity",
-                    "target_type": "Deployment",
-                    "comment": "Makes sure that a podAntiAffinity has been set that prevents multiple pods from being scheduled on the same node. https://kubernetes.io/docs/concepts/configuration/assign-pod-node/",
-                    "optional": false
-                },
-                "grade": 5,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "Deployment does not have a host podAntiAffinity set",
-                        "description": "It's recommended to set a podAntiAffinity that stops multiple pods from a deployment from being scheduled on the same node. This increases availability in case the node becomes unavailable."
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "object_name": "Service/v1/fyp/fyp-svc",
-        "type_meta": {
-            "kind": "Service",
+            "kind": "Pod",
             "apiVersion": "v1"
         },
         "object_meta": {
-            "name": "fyp-svc",
+            "name": "fyp-backend-fcbf679b5-5l75q",
+            "generateName": "fyp-backend-fcbf679b5-",
             "namespace": "fyp",
-            "creationTimestamp": null
+            "selfLink": "/api/v1/namespaces/fyp/pods/fyp-backend-fcbf679b5-5l75q",
+            "uid": "3d41a20b-30ba-49ed-9dce-4947fd368e86",
+            "resourceVersion": "12721",
+            "creationTimestamp": "2020-11-30T12:15:23Z",
+            "labels": {
+                "app": "fyp-backend",
+                "pod-template-hash": "fcbf679b5"
+            },
+            "ownerReferences": [
+                {
+                    "apiVersion": "apps/v1",
+                    "kind": "ReplicaSet",
+                    "name": "fyp-backend-fcbf679b5",
+                    "uid": "acbae0d8-cace-44fc-bf17-253363ddb11e",
+                    "controller": true,
+                    "blockOwnerDeletion": true
+                }
+            ]
         },
         "checks": [
             {
@@ -612,10 +55,28 @@
             },
             {
                 "check": {
-                    "name": "Service Targets Pod",
-                    "id": "service-targets-pod",
-                    "target_type": "Service",
-                    "comment": "Makes sure that all Services targets a Pod",
+                    "name": "Container Image Tag",
+                    "id": "container-image-tag",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that a explicit non-latest tag is used",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "fyp-backend",
+                        "summary": "Image with latest tag",
+                        "description": "Using a fixed tag is recommended to avoid accidental upgrades"
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Container Image Pull Policy",
+                    "id": "container-image-pull-policy",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that the pullPolicy is set to Always. This makes sure that imagePullSecrets are always validated.",
                     "optional": false
                 },
                 "grade": 10,
@@ -624,21 +85,481 @@
             },
             {
                 "check": {
-                    "name": "Service Type",
-                    "id": "service-type",
-                    "target_type": "Service",
-                    "comment": "Makes sure that the Service type is not NodePort",
+                    "name": "Pod NetworkPolicy",
+                    "id": "pod-networkpolicy",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all Pods are targeted by a NetworkPolicy",
                     "optional": false
                 },
-                "grade": 5,
+                "grade": 1,
                 "skipped": false,
                 "comments": [
                     {
                         "path": "",
-                        "summary": "The service is of type NodePort",
-                        "description": "NodePort services should be avoided as they are insecure, and can not be used together with NetworkPolicies. LoadBalancers or use of an Ingress is recommended over NodePorts."
+                        "summary": "The pod does not have a matching network policy",
+                        "description": "Create a NetworkPolicy that targets this pod"
                     }
                 ]
+            },
+            {
+                "check": {
+                    "name": "Pod Probes",
+                    "id": "pod-probes",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all Pods have safe probe configurations",
+                    "optional": false
+                },
+                "grade": 10,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "",
+                        "summary": "The pod is not targeted by a service, skipping probe checks.",
+                        "description": ""
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Container Security Context",
+                    "id": "container-security-context",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all pods have good securityContexts configured",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container is privileged",
+                        "description": "Set securityContext.privileged to false"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The pod has a container with a writable root filesystem",
+                        "description": "Set securityContext.readOnlyRootFilesystem to true"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container is running with a low user ID",
+                        "description": "A userid above 10 000 is recommended to avoid conflicts with the host. Set securityContext.runAsUser to a value \u003e 10000"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container running with a low group ID",
+                        "description": "A groupid above 10 000 is recommended to avoid conflicts with the host. Set securityContext.runAsGroup to a value \u003e 10000"
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Container Resources",
+                    "id": "container-resources",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all pods have resource limits and requests set. The --ignore-container-cpu-limit flag can be used to disable the requirement of having a CPU limit",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "fyp-backend",
+                        "summary": "CPU limit is not set",
+                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.cpu"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "Memory limit is not set",
+                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.memory"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "CPU request is not set",
+                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.cpu"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "Memory request is not set",
+                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.memory"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "object_name": "Pod/v1/fyp/fyp-backend-fcbf679b5-smg7x",
+        "type_meta": {
+            "kind": "Pod",
+            "apiVersion": "v1"
+        },
+        "object_meta": {
+            "name": "fyp-backend-fcbf679b5-smg7x",
+            "generateName": "fyp-backend-fcbf679b5-",
+            "namespace": "fyp",
+            "selfLink": "/api/v1/namespaces/fyp/pods/fyp-backend-fcbf679b5-smg7x",
+            "uid": "37de875e-347d-4a5d-a96f-b670a66a40d8",
+            "resourceVersion": "12741",
+            "creationTimestamp": "2020-11-30T12:15:23Z",
+            "labels": {
+                "app": "fyp-backend",
+                "pod-template-hash": "fcbf679b5"
+            },
+            "ownerReferences": [
+                {
+                    "apiVersion": "apps/v1",
+                    "kind": "ReplicaSet",
+                    "name": "fyp-backend-fcbf679b5",
+                    "uid": "acbae0d8-cace-44fc-bf17-253363ddb11e",
+                    "controller": true,
+                    "blockOwnerDeletion": true
+                }
+            ]
+        },
+        "checks": [
+            {
+                "check": {
+                    "name": "Stable version",
+                    "id": "stable-version",
+                    "target_type": "all",
+                    "comment": "Checks if the object is using a deprecated apiVersion",
+                    "optional": false
+                },
+                "grade": 10,
+                "skipped": false,
+                "comments": null
+            },
+            {
+                "check": {
+                    "name": "Label values",
+                    "id": "label-values",
+                    "target_type": "all",
+                    "comment": "Validates label values",
+                    "optional": false
+                },
+                "grade": 10,
+                "skipped": false,
+                "comments": null
+            },
+            {
+                "check": {
+                    "name": "Container Resources",
+                    "id": "container-resources",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all pods have resource limits and requests set. The --ignore-container-cpu-limit flag can be used to disable the requirement of having a CPU limit",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "fyp-backend",
+                        "summary": "CPU limit is not set",
+                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.cpu"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "Memory limit is not set",
+                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.memory"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "CPU request is not set",
+                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.cpu"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "Memory request is not set",
+                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.memory"
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Container Image Tag",
+                    "id": "container-image-tag",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that a explicit non-latest tag is used",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "fyp-backend",
+                        "summary": "Image with latest tag",
+                        "description": "Using a fixed tag is recommended to avoid accidental upgrades"
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Container Image Pull Policy",
+                    "id": "container-image-pull-policy",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that the pullPolicy is set to Always. This makes sure that imagePullSecrets are always validated.",
+                    "optional": false
+                },
+                "grade": 10,
+                "skipped": false,
+                "comments": null
+            },
+            {
+                "check": {
+                    "name": "Pod NetworkPolicy",
+                    "id": "pod-networkpolicy",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all Pods are targeted by a NetworkPolicy",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "",
+                        "summary": "The pod does not have a matching network policy",
+                        "description": "Create a NetworkPolicy that targets this pod"
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Pod Probes",
+                    "id": "pod-probes",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all Pods have safe probe configurations",
+                    "optional": false
+                },
+                "grade": 10,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "",
+                        "summary": "The pod is not targeted by a service, skipping probe checks.",
+                        "description": ""
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Container Security Context",
+                    "id": "container-security-context",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all pods have good securityContexts configured",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container is privileged",
+                        "description": "Set securityContext.privileged to false"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The pod has a container with a writable root filesystem",
+                        "description": "Set securityContext.readOnlyRootFilesystem to true"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container is running with a low user ID",
+                        "description": "A userid above 10 000 is recommended to avoid conflicts with the host. Set securityContext.runAsUser to a value \u003e 10000"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container running with a low group ID",
+                        "description": "A groupid above 10 000 is recommended to avoid conflicts with the host. Set securityContext.runAsGroup to a value \u003e 10000"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "object_name": "Pod/v1/fyp/fyp-backend-fcbf679b5-zsnxf",
+        "type_meta": {
+            "kind": "Pod",
+            "apiVersion": "v1"
+        },
+        "object_meta": {
+            "name": "fyp-backend-fcbf679b5-zsnxf",
+            "generateName": "fyp-backend-fcbf679b5-",
+            "namespace": "fyp",
+            "selfLink": "/api/v1/namespaces/fyp/pods/fyp-backend-fcbf679b5-zsnxf",
+            "uid": "2fa86b3f-58a7-4a41-a1c3-0255eb7fa050",
+            "resourceVersion": "12673",
+            "creationTimestamp": "2020-11-30T12:15:23Z",
+            "labels": {
+                "app": "fyp-backend",
+                "pod-template-hash": "fcbf679b5"
+            },
+            "ownerReferences": [
+                {
+                    "apiVersion": "apps/v1",
+                    "kind": "ReplicaSet",
+                    "name": "fyp-backend-fcbf679b5",
+                    "uid": "acbae0d8-cace-44fc-bf17-253363ddb11e",
+                    "controller": true,
+                    "blockOwnerDeletion": true
+                }
+            ]
+        },
+        "checks": [
+            {
+                "check": {
+                    "name": "Stable version",
+                    "id": "stable-version",
+                    "target_type": "all",
+                    "comment": "Checks if the object is using a deprecated apiVersion",
+                    "optional": false
+                },
+                "grade": 10,
+                "skipped": false,
+                "comments": null
+            },
+            {
+                "check": {
+                    "name": "Label values",
+                    "id": "label-values",
+                    "target_type": "all",
+                    "comment": "Validates label values",
+                    "optional": false
+                },
+                "grade": 10,
+                "skipped": false,
+                "comments": null
+            },
+            {
+                "check": {
+                    "name": "Pod NetworkPolicy",
+                    "id": "pod-networkpolicy",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all Pods are targeted by a NetworkPolicy",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "",
+                        "summary": "The pod does not have a matching network policy",
+                        "description": "Create a NetworkPolicy that targets this pod"
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Pod Probes",
+                    "id": "pod-probes",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all Pods have safe probe configurations",
+                    "optional": false
+                },
+                "grade": 10,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "",
+                        "summary": "The pod is not targeted by a service, skipping probe checks.",
+                        "description": ""
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Container Security Context",
+                    "id": "container-security-context",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all pods have good securityContexts configured",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container is privileged",
+                        "description": "Set securityContext.privileged to false"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The pod has a container with a writable root filesystem",
+                        "description": "Set securityContext.readOnlyRootFilesystem to true"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container is running with a low user ID",
+                        "description": "A userid above 10 000 is recommended to avoid conflicts with the host. Set securityContext.runAsUser to a value \u003e 10000"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container running with a low group ID",
+                        "description": "A groupid above 10 000 is recommended to avoid conflicts with the host. Set securityContext.runAsGroup to a value \u003e 10000"
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Container Resources",
+                    "id": "container-resources",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all pods have resource limits and requests set. The --ignore-container-cpu-limit flag can be used to disable the requirement of having a CPU limit",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "fyp-backend",
+                        "summary": "CPU limit is not set",
+                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.cpu"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "Memory limit is not set",
+                        "description": "Resource limits are recommended to avoid resource DDOS. Set resources.limits.memory"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "CPU request is not set",
+                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.cpu"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "Memory request is not set",
+                        "description": "Resource requests are recommended to make sure that the application can start and run without crashing. Set resources.requests.memory"
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Container Image Tag",
+                    "id": "container-image-tag",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that a explicit non-latest tag is used",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "fyp-backend",
+                        "summary": "Image with latest tag",
+                        "description": "Using a fixed tag is recommended to avoid accidental upgrades"
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Container Image Pull Policy",
+                    "id": "container-image-pull-policy",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that the pullPolicy is set to Always. This makes sure that imagePullSecrets are always validated.",
+                    "optional": false
+                },
+                "grade": 10,
+                "skipped": false,
+                "comments": null
             }
         ]
     },
@@ -651,7 +572,15 @@
         "object_meta": {
             "name": "fyp-backend",
             "namespace": "fyp",
-            "creationTimestamp": null
+            "selfLink": "/apis/apps/v1/namespaces/fyp/deployments/fyp-backend",
+            "uid": "f1f1de93-3456-4566-8ab4-25344412b1c1",
+            "resourceVersion": "9921",
+            "generation": 1,
+            "creationTimestamp": "2020-11-30T12:15:23Z",
+            "annotations": {
+                "deployment.kubernetes.io/revision": "1",
+                "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"fyp-backend\",\"namespace\":\"fyp\"},\"spec\":{\"replicas\":3,\"selector\":{\"matchLabels\":{\"app\":\"fyp-backend\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"fyp-backend\"}},\"spec\":{\"containers\":[{\"image\":\"justbadcodes/fyp-master_backend\",\"imagePullPolicy\":\"Always\",\"name\":\"fyp-backend\",\"ports\":[{\"containerPort\":3001}]}]}}}}\n"
+            }
         },
         "checks": [
             {
@@ -677,6 +606,57 @@
                 "grade": 10,
                 "skipped": false,
                 "comments": null
+            },
+            {
+                "check": {
+                    "name": "Pod Probes",
+                    "id": "pod-probes",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all Pods have safe probe configurations",
+                    "optional": false
+                },
+                "grade": 10,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "",
+                        "summary": "The pod is not targeted by a service, skipping probe checks.",
+                        "description": ""
+                    }
+                ]
+            },
+            {
+                "check": {
+                    "name": "Container Security Context",
+                    "id": "container-security-context",
+                    "target_type": "Pod",
+                    "comment": "Makes sure that all pods have good securityContexts configured",
+                    "optional": false
+                },
+                "grade": 1,
+                "skipped": false,
+                "comments": [
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container is privileged",
+                        "description": "Set securityContext.privileged to false"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The pod has a container with a writable root filesystem",
+                        "description": "Set securityContext.readOnlyRootFilesystem to true"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container is running with a low user ID",
+                        "description": "A userid above 10 000 is recommended to avoid conflicts with the host. Set securityContext.runAsUser to a value \u003e 10000"
+                    },
+                    {
+                        "path": "fyp-backend",
+                        "summary": "The container running with a low group ID",
+                        "description": "A groupid above 10 000 is recommended to avoid conflicts with the host. Set securityContext.runAsGroup to a value \u003e 10000"
+                    }
+                ]
             },
             {
                 "check": {
@@ -756,42 +736,6 @@
                         "path": "",
                         "summary": "The pod does not have a matching network policy",
                         "description": "Create a NetworkPolicy that targets this pod"
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Pod Probes",
-                    "id": "pod-probes",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all Pods have safe probe configurations",
-                    "optional": false
-                },
-                "grade": 10,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "",
-                        "summary": "The pod is not targeted by a service, skipping probe checks.",
-                        "description": ""
-                    }
-                ]
-            },
-            {
-                "check": {
-                    "name": "Container Security Context",
-                    "id": "container-security-context",
-                    "target_type": "Pod",
-                    "comment": "Makes sure that all pods have good securityContexts configured",
-                    "optional": false
-                },
-                "grade": 1,
-                "skipped": false,
-                "comments": [
-                    {
-                        "path": "fyp-backend",
-                        "summary": "Container has no configured security context",
-                        "description": "Set securityContext to run the container in a more secure context."
                     }
                 ]
             },
