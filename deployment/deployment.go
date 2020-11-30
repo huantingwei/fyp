@@ -41,12 +41,15 @@ func main(){
 	if err != nil {
 		panic(err.Error())
 	}
-	
-	for index, deployment := range deploymentList.Items{
-		fmt.Printf("Deployment %d: %s\n", index, deployment.Name);
+
+	for i, deployment := range deploymentList.Items{
+		fmt.Printf("--------Deployment %d: %s--------\n", i, deployment.Name);
+		for _, container := range deployment.Spec.Template.Spec.Containers{
+			fmt.Printf("Name: %s ; Image: %s\n", container.Name, container.Image);
+		}
+		fmt.Printf("\n");
 	}
 
-	//fmt.Printf("Testing\n");
 }
 
 func homeDir() string {
