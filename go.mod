@@ -7,6 +7,7 @@ require (
 	github.com/gophercloud/gophercloud v0.1.0 // indirect
 	google.golang.org/api v0.15.0
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013
+	k8s.io/api v0.19.4
 	k8s.io/apimachinery v0.19.4
 	k8s.io/client-go v0.19.4
 	k8s.io/klog v1.0.0 // indirect
