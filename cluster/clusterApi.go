@@ -1,8 +1,23 @@
 type cluster struct{
-	//TBD: IP allocation policy
-	
-	createTime string
+	//Cluster general info
+	name string
+	createTime string 
 	masterVersion string
-	nodeCount int
-	masterLocation string //aka zone
+	IPendpoint string
+	location string
+	releaseChannel int
+	status string
+
+	//Cluster networking config
+	network string
+	networkConfig string
+	subnet string
+	intranodeVisibility bool
+	networkPolicyEnabled bool
+	masterAuthNetworkEnabled bool
+
+	//Cluster security config
+	shieldedNodeEnabled bool
+	binaryAuthorisationEnabled bool
+	clientCertificateEnabled bool
 }

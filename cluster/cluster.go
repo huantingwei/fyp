@@ -1,5 +1,4 @@
 package cluster
-
 import (
 	"context"
 	"fmt"
@@ -29,15 +28,28 @@ func main() {
 		fmt.Printf("Fail to get cluster\n")
 		fmt.Printf(err2.Error());
 	}else{
-		//fmt.Printf("Cluster name: %s\nCluster location: %s\n", (*res).GetName(), (*res).GetLocation());
+		fmt.Printf("------------Cluster general info------------\n");
+		fmt.Printf("Name: %s\n", res.GetName());
 		fmt.Printf("Creation time: %s\n", res.GetCreateTime());
 		fmt.Printf("Version: %s\n", res.GetCurrentMasterVersion());
-		fmt.Printf("Node count: %d\n", res.GetCurrentNodeCount());
 		fmt.Printf("End point: %s\n", res.GetEndpoint());
 		fmt.Printf("Location: %s\n", res.GetLocation());
+		fmt.Printf("Release channel: %d\n", res.GetReleaseChannel().GetChannel());
+		fmt.Printf("Status: %s\n", res.GetStatus().String());
 
-		
+		fmt.Printf("------------Cluster networking config------------\n");
+		fmt.Printf("Network: %s\n", res.GetNetwork());
+		fmt.Printf("Network config: %s\n", res.GetNetworkConfig().GetNetwork());
+		fmt.Printf("Subnet: %s\n", res.GetNetworkConfig().GetSubnetwork());
+		fmt.Printf("Intranode visibility: %t\n", res.GetNetworkConfig().GetEnableIntraNodeVisibility());
+		fmt.Printf("Network policy enabled: %t\n", res.GetNetworkPolicy().GetEnabled());
+		fmt.Printf("Master authorised network enabled: %t\n", res.GetMasterAuthorizedNetworksConfig().GetEnabled());
+
+		fmt.Printf("------------Cluster security config------------\n");
+		fmt.Printf("Shielded node enabled: %t\n", res.GetShieldedNodes().GetEnabled());
+		fmt.Printf("Binary authorisation enabled: %t\n", res.GetBinaryAuthorization().GetEnabled());
+		fmt.Printf("Client certificate enabled: %t\n", res.GetMasterAuth().GetClientCertificateConfig().GetIssueClientCertificate());
+
 
 	}
-
 }
