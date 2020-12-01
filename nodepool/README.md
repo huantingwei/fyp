@@ -1,5 +1,5 @@
 ## Node pool
-A sample output containing the details of each individual node pool.
+A sample output containing the details of one node pool (since my cluster has only 1 node pool right now).
 
 It is basically the node pool details page on GCP console
 
