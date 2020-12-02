@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  mongo:
+    image: 'mongo:4.2-bionic'
+    ports:
+      - '27017:27017'
+    network_mode: host
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'root'
+      MONGO_INITDB_ROOT_PASSWORD: 'toor'
+    volumes:
+      - '~/dockerdata/mongodb:/data/db'
+  mongoexpress:
+    image: mongo-express
+    ports:
+      - '8081:8081'
+    network_mode: host
+    environment:
+      ME_CONFIG_MONGODB_SERVER: 'localhost'
+      ME_CONFIG_MONGODB_ADMINUSERNAME: 'root'
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 'toor'
+      ME_CONFIG_BASICAUTH_USERNAME: 'root'
+      ME_CONFIG_BASICAUTH_PASSWORD: 'toor'
+    depends_on: 
+      - mongo
