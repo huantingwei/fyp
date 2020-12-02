@@ -1,5 +1,5 @@
 type node struct{
-	//Object meta
+	//Object metadata
 	nodename string
 	namespace string
 	uid string

@@ -72,6 +72,8 @@ func main(){
 		}
 		fmt.Printf("DNS policy: %s\n", deployment.Spec.Template.Spec.DNSPolicy);
 		fmt.Printf("Restart policy: %s\n", deployment.Spec.Template.Spec.RestartPolicy);
+		fmt.Printf("Node name: %s\n", deployment.Spec.Template.Spec.NodeName);
+
 
 		fmt.Printf("\n### Deployment status ###\n");
 		fmt.Printf("Updated replicas: %d\n", deployment.Status.UpdatedReplicas);

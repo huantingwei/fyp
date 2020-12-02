@@ -1,0 +1,79 @@
+package service
+
+import (
+	"fmt"
+	"flag"
+	"context"
+	"os"
+	"path/filepath"
+
+	"k8s.io/client-go/kubernetes"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"k8s.io/client-go/tools/clientcmd"
+	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
+
+)
+
+func main(){
+	var kubeconfig *string
+	if home := homeDir(); home != "" {
+		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+	} else {
+		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+	}
+	flag.Parse()
+
+	// use the current context in kubeconfig
+	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// create the clientset
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	serviceList, err := clientset.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{});
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for index, service := range serviceList.Items{
+		fmt.Printf("\n---------------------Service %d---------------------\n", index+1);
+		fmt.Printf("\n### Object metadata ###\n");
+		fmt.Printf("Service name: %s\n", service.Name);
+		fmt.Printf("Namespace: %s\n", service.Namespace);
+		fmt.Printf("UID: %s\n", service.UID);
+		fmt.Printf("Creation time: %s\n", service.CreationTimestamp.String());
+
+		fmt.Printf("\n### Service spec ###\n");
+		fmt.Printf("Type: %s\n", service.Spec.Type);
+		fmt.Printf("Cluster IP: %s\n", service.Spec.ClusterIP);
+		fmt.Printf("Label selector: ");
+		for key, val := range service.Spec.Selector{
+			fmt.Printf("[%s: %s] ", key, val);
+		}
+		fmt.Printf("\n");
+		fmt.Printf("List of service ports: \n");
+		for _, port := range service.Spec.Ports{
+			fmt.Printf("[Port: %d ; Node port: %d ; Target port: %d ; Protocol: %s]\n",
+			port.Port, port.NodePort, port.TargetPort.IntVal, port.Protocol)
+		}	
+		
+		fmt.Printf("\n### Load balancer status (if applicable) ###\n");
+		fmt.Printf("Load balancer Ingress IP: \n");
+		for _, ingress := range service.Status.LoadBalancer.Ingress{
+			fmt.Printf("Load balancer IP: %s\n", ingress.IP);
+		}
+	}
+}
+
+func homeDir() string {
+	if h := os.Getenv("HOME"); h != "" {
+		return h
+	}
+	return os.Getenv("USERPROFILE") // windows
+}

@@ -13,6 +13,7 @@ type deployment struct{
 	containers []container
 	dnsPolicy string
 	restartPolicy string
+	nodeName string
 
 	//deployment status
 	updatedReplicas int
