@@ -8,7 +8,7 @@ Link to GitHub repo: https://github.com/kubernetes/client-go
 
 Version v0.19.4 is used
 
-This library is sufficient for retrieving info of most kubernetes objects
+This library is sufficient for retrieving info of most kubernetes objects (e.g. node, pod, service...)
 
 ### Usage
 
@@ -19,7 +19,7 @@ gcloud container clusters get-credentials ${cluster name} --zone ${zone name} --
 
 running kubebench.sh in the kubebench folder will do this configuration for you
 
-## 2. Go client library for talking to GCP to retrieve cluster info
+## 2. Go client library for talking to GCP to retrieve cluster info (e.g. cluster, node pool)
 
 Link to the client library: https://pkg.go.dev/cloud.google.com/go@v0.72.0/container/apiv1
 
