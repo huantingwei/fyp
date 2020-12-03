@@ -25,13 +25,37 @@ Link to the client library: https://pkg.go.dev/cloud.google.com/go@v0.72.0/conta
 
 Link to Github repo: https://github.com/googleapis/google-cloud-go
 
-## usage
+### usage
 
 Follow the [Authorisation](https://github.com/googleapis/google-cloud-go) section of the Github repo.
 
 I used the JSON key file method.
 
 To generate the JSON key file, I followed this [guide](https://cloud.google.com/docs/authentication/production#manually)
+
+## Sample output
+
+The JSON response of visiting [this](http://localhost:8080/api/v1/overview/cluster) is:
+```
+{
+    "Name": "cluster-1",
+    "CreationTime": "2020-11-25T01:08:11+00:00",
+    "MasterVersion": "1.16.13-gke.401",
+    "IPendpoint": "104.155.167.236",
+    "Location": "us-central1-c",
+    "ReleaseChannel": 0,
+    "Status": "RUNNING",
+    "Network": "default",
+    "NetworkConfig": "projects/fyp-gcp-296605/global/networks/default",
+    "Subnet": "projects/fyp-gcp-296605/regions/us-central1/subnetworks/default",
+    "IntranodeVisibility": false,
+    "NetworkPolicyEnabled": false,
+    "MasterAuthNetworkEnabled": false,
+    "ShieldedNodeEnabled": false,
+    "BinaryAuthorisationEnabled": false,
+    "ClientCertificateEnabled": false
+}
+```
 
 ## Reminder
 1. The gcloud ssh command is still in beta
