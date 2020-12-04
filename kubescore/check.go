@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 
 	// "github.com/zegl/kube-score/scorecard"
+	"github.com/gin-gonic/gin"
 	db "github.com/huantingwei/fyp/database"
 	"go.mongodb.org/mongo-driver/bson"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -164,4 +166,14 @@ func Print() {
 			}
 		}
 	}
+}
+
+
+func (s *Service) GetKubescoreResult(c *gin.Context) {
+	kbscores, err := GetAllKubeScore()
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"type":  "kubescore",
+		"data":  kbscores,
+		"count": len(kbscores),
+	})
 }
