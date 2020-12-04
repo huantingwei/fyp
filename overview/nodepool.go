@@ -6,7 +6,7 @@ import (
 	"context"
 	"net/http"
 	//GCP client lib
-	containerpb "google.golang.org/genproto/googleapis/container/v1"
+	//containerpb "google.golang.org/genproto/googleapis/container/v1"
 	//internal package
 	"github.com/huantingwei/fyp/object"
 	"github.com/huantingwei/fyp/util"
@@ -15,47 +15,57 @@ import (
 )
 
 func (s *Service) GetNodepoolInfo(c *gin.Context) {
-	gcpClient := util.GetGCPClusterManagementClient();
-	newNodepool := initNodepoolStruct(gcpClient);
-	//printCluster(newCluster);
+	nodepoolInfo := initNodepoolsArray();
 
-	insertion, err := s.nodepoolCollection.InsertOne(context.TODO(),newNodepool);
+	insertManyResult, err := s.nodepoolCollection.InsertMany(context.TODO(),nodepoolInfo);
 	if err != nil {
 		fmt.Printf(err.Error());
+	}else{
+		fmt.Println("Inserted multiple documents: ", insertManyResult.InsertedIDs);
 	}
-	
-	fmt.Println("Inserted a single document: ", insertion.InsertedID);
 
-	c.IndentedJSON(http.StatusOK, newNodepool);
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"type": "nodepool",
+		"data": nodepoolInfo,
+		"count": len(nodepoolInfo),
+	});
 }
 
-func initNodepoolStruct(client *containerpb.Cluster) object.Nodepool{
-	newNodepool := object.Nodepool{
-		Name: client.GetName(),
-		Version: client.GetVersion(),
-		Location: client.GetLocations()[0],
-		Status: client.GetStatus(),
-		AutoscalingEnabled: client.GetAutoscaling().GetEnabled(),
-		InitialNodeCount: client.GetInitialNodeCount(),
+func initNodepoolsArray() []interface{}{
+	client := util.GetGCPClusterManagementClient();
+	nodepools := client.GetNodePools();
+	var nodepoolSlice []interface{};
 
-		//Node pool configuration
-		ImageType: client.GetConfig().GetImageType(),
-		MachineType: client.GetConfig().GetMachineType(),
-		DiskType: client.GetConfig().GetDiskType(),
-		DiskSize: client.GetConfig().GetDiskSizeGb(),
+	for _, pool := range nodepools{
 
-		//Node pool management
-		AutoUpgrade: client.GetManagement().GetAutoUpgrade(),
-		AutoRepair: client.GetManagement().GetAutoRepair(),
-
-		//Node pool security
-		ServiceAccount: client.GetConfig().GetServiceAccount(),
-		SecureBoot: client.GetConfig().GetShieldedInstanceConfig().GetEnableSecureBoot(),
-		IntegrityMonitoring: client.GetConfig().GetShieldedInstanceConfig().GetEnableIntegrityMonitoring(),
-
+		newNodepool := object.Nodepool{
+			Name: pool.GetName(),
+			Version: pool.GetVersion(),
+			Location: pool.GetLocations()[0],
+			Status: int(pool.GetStatus()),
+			AutoscalingEnabled: pool.GetAutoscaling().GetEnabled(),
+			InitialNodeCount: int(pool.GetInitialNodeCount()),
+	
+			//Node pool configuration
+			ImageType: pool.GetConfig().GetImageType(),
+			MachineType: pool.GetConfig().GetMachineType(),
+			DiskType: pool.GetConfig().GetDiskType(),
+			DiskSize: int(pool.GetConfig().GetDiskSizeGb()),
+	
+			//Node pool management
+			AutoUpgrade: pool.GetManagement().GetAutoUpgrade(),
+			AutoRepair: pool.GetManagement().GetAutoRepair(),
+	
+			//Node pool security
+			ServiceAccount: pool.GetConfig().GetServiceAccount(),
+			SecureBoot: pool.GetConfig().GetShieldedInstanceConfig().GetEnableSecureBoot(),
+			IntegrityMonitoring: pool.GetConfig().GetShieldedInstanceConfig().GetEnableIntegrityMonitoring(),
+	
+		}
+		nodepoolSlice = append(nodepoolSlice, newNodepool);
 	}
-
-	return newNodepool
+	
+	return nodepoolSlice;
 }
 
 

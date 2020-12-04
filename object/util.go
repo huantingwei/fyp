@@ -4,7 +4,7 @@ package object
 type Container struct{
 	Name string
 	Image string
-	PullPolicy string
+	ImagePullPolicy string
 	ContainerPorts map[int]string
 }
 

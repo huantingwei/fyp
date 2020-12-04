@@ -6,7 +6,7 @@ import (
 	"context"
 	"net/http"
 	//GCP client lib
-	containerpb "google.golang.org/genproto/googleapis/container/v1"
+	//containerpb "google.golang.org/genproto/googleapis/container/v1"
 	//internal package
 	"github.com/huantingwei/fyp/object"
 	"github.com/huantingwei/fyp/util"
@@ -15,21 +15,24 @@ import (
 )
 
 func (s *Service) GetClusterInfo(c *gin.Context) {
-	gcpClient := util.GetGCPClusterManagementClient();
-	newCluster := initClusterStruct(gcpClient);
-	printCluster(newCluster);
+	clusterInfo := initClusterStruct();
 
-	insertion, err := s.clusterCollection.InsertOne(context.TODO(),newCluster);
+	insertion, err := s.clusterCollection.InsertOne(context.TODO(),clusterInfo);
 	if err != nil {
 		fmt.Printf(err.Error());
 	}
 	
 	fmt.Println("Inserted a single document: ", insertion.InsertedID);
 
-	c.IndentedJSON(http.StatusOK, newCluster);
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"type": "cluster",
+		"data": clusterInfo,
+	});
 }
 
-func initClusterStruct(client *containerpb.Cluster) object.Cluster{
+func initClusterStruct() object.Cluster{
+	client := util.GetGCPClusterManagementClient();
+
 	newCluster := object.Cluster{
 	// Get cluster general info
 	Name: client.GetName(),

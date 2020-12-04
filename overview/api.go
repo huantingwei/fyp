@@ -28,7 +28,9 @@ func NewService(r *gin.RouterGroup, db util.Database){
 
 	r = r.Group("/overview");
 
-	r.GET("/cluster", s.GetClusterInfo)
-	r.GET("/nodepool", s.GetNodepoolInfo)
+	r.GET("/cluster", s.GetClusterInfo);
+	r.GET("/nodepool", s.GetNodepoolInfo);
+	r.GET("/deployment", s.GetDeploymentInfo);
+	r.GET("/node", s.GetNodeInfo);
 
 }
