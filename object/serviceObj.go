@@ -11,7 +11,7 @@ type Service struct{
 	ServicePorts []ServicePort
 
 	//load balancer status
-	IngressIP string
+	IngressIP []string
 
 }
 

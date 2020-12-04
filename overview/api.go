@@ -32,5 +32,6 @@ func NewService(r *gin.RouterGroup, db util.Database){
 	r.GET("/nodepool", s.GetNodepoolInfo);
 	r.GET("/deployment", s.GetDeploymentInfo);
 	r.GET("/node", s.GetNodeInfo);
-
+	r.GET("/pod", s.GetPodInfo);
+	r.GET("/service", s.GetServiceInfo);
 }

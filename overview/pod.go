@@ -1,109 +1,115 @@
 package overview
 
 import (
+	//standard lib
 	"fmt"
-	"flag"
 	"context"
-	"os"
-	"path/filepath"
-
-	"k8s.io/client-go/kubernetes"
+	"net/http"
+	//client lib
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"k8s.io/client-go/tools/clientcmd"
-	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
-
+	//internal package
+	"github.com/huantingwei/fyp/util"
+	"github.com/huantingwei/fyp/object"
+	//gin
+	"github.com/gin-gonic/gin"
 )
 
-func main(){
-	var kubeconfig *string
-	if home := homeDir(); home != "" {
-		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
-	} else {
-		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
-	}
-	flag.Parse()
+func (s *Service) GetPodInfo(c *gin.Context){
+	podInfo := initPodArray();
 
-	// use the current context in kubeconfig
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	insertManyResult, err := s.podCollection.InsertMany(context.TODO(),podInfo);
 	if err != nil {
-		panic(err.Error())
+		fmt.Printf(err.Error());
+	}else{
+		fmt.Println("Inserted multiple documents: ", insertManyResult.InsertedIDs);
 	}
 
-	// create the clientset
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		panic(err.Error())
-	}
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"type": "pod",
+		"data": podInfo,
+		"count": len(podInfo),
+	});
+}
+
+func initPodArray() []interface{}{
+	clientset := util.GetKubeClientSet();
 
 	podList, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{});
 	if err != nil {
 		panic(err.Error())
 	}
 
-	for index, pod := range podList.Items{
-		fmt.Printf("\n---------------------Pod %d---------------------\n", index+1);
-		fmt.Printf("\n### Object metadata ###\n");
+	var podSlice []interface{};
 
-		fmt.Printf("Node name: %s\n", pod.Name);
-		fmt.Printf("Namespace: %s\n", pod.Namespace);
-		fmt.Printf("UID: %s\n", pod.UID);
-		fmt.Printf("Creation time: %s\n", pod.CreationTimestamp.String());
+	for _, p := range podList.Items{
+		pod := object.Pod{
+			ObjectMeta: object.ObjectMeta{
+				Name: p.Name,
+				Namespace: string(p.Namespace),
+				Uid: string(p.UID),
+				CreationTime: p.CreationTimestamp.String(),
+			},
 
-		fmt.Printf("\n### Object metadata - extra ###\n");
-		fmt.Printf("Labels: ");
-		for key, val := range pod.Labels{
-			fmt.Printf("[%s: %s] ", key, val);
+			DnsPolicy: string(p.Spec.DNSPolicy),
+			RestartPolicy: string(p.Spec.RestartPolicy),
+			NodeName: p.Spec.NodeName,
+			HostIP: p.Status.HostIP,
+			PodIP: p.Status.PodIP,
+			Phase: string(p.Status.Phase), 
 		}
-		fmt.Printf("\n");
 
-		fmt.Printf("Owner reference: \n");
-		for _, owner := range pod.OwnerReferences{
-			fmt.Printf("[Name: %s]\n", owner.Name);
-			fmt.Printf("[UID: %s]\n", owner.UID);
-			fmt.Printf("[Kind: %s]\n", owner.Kind);
+		labelsMap := make(map[string]string);
+		var ownerRefSlice []object.OwnerReference;
+		var containersSlice []object.Container;
+		var containerStatusSlice []object.ContainerStatus;
+
+		for key, val := range p.Labels{
+			labelsMap[key] = val;
 		}
-		fmt.Printf("\n");
 
-		fmt.Printf("\n### Pod spec ###\n");
-		fmt.Printf("---Containers in the pod---\n");
-		containers := pod.Spec.Containers;
-		for _, container := range containers{
-			fmt.Printf("Container name: %s\n", container.Name);
-			fmt.Printf("Container image: %s\n", container.Image);
-			fmt.Printf("Container pull policy: %s\n", container.ImagePullPolicy);
-			fmt.Printf("Container ports: ");
-			for _, port := range container.Ports{
-				fmt.Printf("[containerPort: %d ; Protocol: %s] ", port.ContainerPort, port.Protocol);
+		for _, o := range p.OwnerReferences{
+			owner := object.OwnerReference{
+				Name: o.Name,
+				Uid: string(o.UID),
+				Kind: o.Kind,
 			}
-			fmt.Printf("\n---------------\n");
-		}
-		fmt.Printf("DNS policy: %s\n", pod.Spec.DNSPolicy);
-		fmt.Printf("Restart policy: %s\n", pod.Spec.RestartPolicy);
-		fmt.Printf("Node name: %s\n", pod.Spec.NodeName);
-
-		fmt.Printf("\n### Pod status ###\n");
-		fmt.Printf("Host IP: %s\n", pod.Status.HostIP);
-		fmt.Printf("Pod IP: %s\n", pod.Status.PodIP);
-		fmt.Printf("Phase: %s\n", pod.Status.Phase);
-		fmt.Printf("Container status: \n");
-		for i, container := range pod.Status.ContainerStatuses{
-			fmt.Printf("--- Containers %d ---\n", i+1);
-			fmt.Printf("Container name: %s\n", container.Name);
-			fmt.Printf("Container Image: %s\n", container.Image);
-			fmt.Printf("Ready: %t\n", container.Ready);
-			fmt.Printf("Container restart count: %d\n", container.RestartCount);
-
+			ownerRefSlice = append(ownerRefSlice, owner);
 		}
 
-		
-	}
+		for _, c := range p.Spec.Containers{
+			container := object.Container{
+				Name: c.Name,
+				Image: c.Image,
+				ImagePullPolicy: string(c.ImagePullPolicy),
+			}
 
-}
+			containerPort := make(map[int]string);
 
-func homeDir() string {
-	if h := os.Getenv("HOME"); h != "" {
-		return h
+			for _, port := range c.Ports{
+				containerPort[int(port.ContainerPort)] = string(port.Protocol);
+			}
+			container.ContainerPorts = containerPort;
+			containersSlice = append(containersSlice, container);
+		}
+
+		for _, s := range p.Status.ContainerStatuses{
+			status := object.ContainerStatus{
+				Name: s.Name,
+				Image: s.Image,
+				Ready: s.Ready,
+				RestartCount: int(s.RestartCount),
+			}
+
+			containerStatusSlice = append(containerStatusSlice, status);
+		}
+
+		pod.Labels = labelsMap;
+		pod.OwnerReferences = ownerRefSlice;
+		pod.Containers = containersSlice;
+		pod.ContainerStatuses = containerStatusSlice;
+
+		podSlice = append(podSlice, pod);
 	}
-	return os.Getenv("USERPROFILE") // windows
+	
+	return podSlice;
 }
