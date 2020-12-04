@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	dbName = "kubescore"
+	dbName = "fyp"
 	coll   = "score"
 	// windows
 	resultFile = "kubescore\\result.json"
@@ -168,9 +168,15 @@ func Print() {
 	}
 }
 
-
 func (s *Service) GetKubescoreResult(c *gin.Context) {
 	kbscores, err := GetAllKubeScore()
+	if err != nil {
+		fmt.Printf("Error in GetKubescoreResult: %v\n", err)
+	}
+	if len(kbscores) == 0 {
+		ReadWriteFile()
+		kbscores, _ = GetAllKubeScore()
+	}
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"type":  "kubescore",
 		"data":  kbscores,

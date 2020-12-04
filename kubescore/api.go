@@ -18,5 +18,5 @@ func NewService(r *gin.RouterGroup, db util.Database) {
 
 	r = r.Group("/kubescore")
 
-	r.GET("/result", s.GetAllKubeScore)
+	r.GET("/result", s.GetKubescoreResult)
 }

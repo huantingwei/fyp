@@ -6,6 +6,7 @@ import (
 	//internal package
 	// "github.com/huantingwei/fyp/overview"
 	"github.com/gin-gonic/gin"
+	"github.com/huantingwei/fyp/kubescore"
 	"github.com/huantingwei/fyp/overview"
 	"github.com/huantingwei/fyp/util"
 )
@@ -25,6 +26,7 @@ func main() {
 	v1 := router.Group("/api/v1")
 	{
 		overview.NewService(v1, db)
+		kubescore.NewService(v1, db)
 	}
 
 	router.Run()
