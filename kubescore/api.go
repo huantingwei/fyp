@@ -15,8 +15,8 @@ func NewService(r *gin.RouterGroup, db util.Database) {
 	s := &Service{
 		kubescoreCollection: db.Handle.Collection("kubescore"),
 	}
-
 	r = r.Group("/kubescore")
 
-	r.GET("/result", s.GetKubescoreResult)
+	r.GET("/result/get", s.GetKubescoreResult)
+	r.POST("/run", s.RunKubescore)
 }

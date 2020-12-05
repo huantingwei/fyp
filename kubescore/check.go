@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -18,7 +17,7 @@ import (
 
 const (
 	dbName = "fyp"
-	coll   = "score"
+	coll   = "kubescore"
 	// windows
 	resultFile = "kubescore\\result.json"
 	scriptFile = "kubescore\\kubescore.sh"
@@ -73,10 +72,10 @@ func runScript() {
 	}
 }
 
-func readResultFile() *KubeScore {
+func readResultFile() (*KubeScore, error) {
 	jsonFile, err := os.Open(resultFile)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	fmt.Println("Successfully Opened")
@@ -89,12 +88,13 @@ func readResultFile() *KubeScore {
 	err = json.Unmarshal(byteValue, &kbscores)
 	if err != nil {
 		fmt.Printf("Error in reading kubescore result json file: %v\n", err)
+		return nil, err
 	}
 
-	return &KubeScore{kbscores}
+	return &KubeScore{kbscores}, nil
 }
 
-func createResult(kubescore *KubeScore) {
+func createResult(kubescore *KubeScore) error {
 	client, ctx, cancel := db.GetConnection()
 	defer cancel()
 	defer client.Disconnect(ctx)
@@ -103,21 +103,31 @@ func createResult(kubescore *KubeScore) {
 
 	res, err := collection.InsertOne(ctx, *kubescore)
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
+		fmt.Printf("Error in creating kubescore result: %v\n", err)
+		return err
 	}
 
 	fmt.Printf("Inserted ID: %v\n", res.InsertedID)
+	return nil
 
 }
 
-func ReadWriteFile() {
+func readWriteResult() error {
 	fmt.Printf("Start reading kubescore result...\n")
-	kbscores := readResultFile()
+	kbscores, err := readResultFile()
+	if err != nil {
+		fmt.Printf("Error in readResultFile: %v\n", err)
+		return err
+	}
 
 	fmt.Printf("Start writing into database...\n")
-	createResult(kbscores)
-
+	err = createResult(kbscores)
+	if err != nil {
+		fmt.Printf("Error in createResult: %v\n", err)
+		return err
+	}
 	fmt.Printf("Finished writing...\n")
+	return nil
 }
 
 func GetAllKubeScore() (kubescores []KubeScore, err error) {
@@ -129,23 +139,14 @@ func GetAllKubeScore() (kubescores []KubeScore, err error) {
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		fmt.Printf("Error in reading kubescore: %v\n", err)
-		return
+		return nil, err
 	}
 
 	if err = cursor.All(ctx, &kubescores); err != nil {
 		return nil, err
 	}
 
-	return
-	// for _, obj := range (*kbscore).ScoredObjects {
-	// 	fmt.Printf("Name: %v\n\n", obj.ObjectName)
-	// 	for i, check := range obj.Checks {
-	// 		fmt.Printf("Check %v: %v\n", i, check.Check.Name)
-	// 		for j, com := range check.Comments {
-	// 			fmt.Printf("\tComment %v: %v\n", j, com)
-	// 		}
-	// 	}
-	// }
+	return kubescores, nil
 }
 
 func Print() {
@@ -168,14 +169,23 @@ func Print() {
 	}
 }
 
+func (s *Service) RunKubescore(c *gin.Context) {
+	err := readWriteResult()
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"error": err,
+		})
+	}
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"type":    "kubescore",
+		"message": "success",
+	})
+
+}
 func (s *Service) GetKubescoreResult(c *gin.Context) {
 	kbscores, err := GetAllKubeScore()
 	if err != nil {
 		fmt.Printf("Error in GetKubescoreResult: %v\n", err)
-	}
-	if len(kbscores) == 0 {
-		ReadWriteFile()
-		kbscores, _ = GetAllKubeScore()
 	}
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"type":  "kubescore",

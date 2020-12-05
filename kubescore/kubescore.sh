@@ -31,4 +31,4 @@ namespace=$1
 
 # run kubescore
 
-sudo docker run -it -v $(pwd)/${objectDir}:~/${objectDir} zegl/kube-score:v1.7.0 score ~/${objectDir}/*.yaml -o $format > $(pwd)/$resultDir/$resultFile
+run_kubescore = "sudo docker run -it -v $(pwd)/${objectDir}:~/${objectDir} zegl/kube-score:v1.7.0 score ~/${objectDir}/*.yaml -o $format > $(pwd)/$resultDir/$resultFile
