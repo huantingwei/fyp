@@ -1,16 +1,18 @@
 package kubebench
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 
-	db "github.com/huantingwei/fyp/database"
-
+	"github.com/huantingwei/fyp/util"
+	// "github.com/zegl/kube-score/scorecard"
 	"github.com/gin-gonic/gin"
+	db "github.com/huantingwei/fyp/database"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
@@ -21,8 +23,8 @@ const (
 	scriptFile = "kubebench\\kubebench.sh"
 
 // linux
-// resultFile = "/home/justbadcodes/fyp/kubescore/result.json"
-// scriptFile = "/home/justbadcodes/fyp/kubescore/kubescore.sh"
+// resultFile = "/home/justbadcodes/fyp/kubebench/result.json"
+// scriptFile = "/home/justbadcodes/fyp/kubebench/kubebench.sh"
 )
 
 type Kubebench struct {
@@ -67,7 +69,7 @@ type Result struct {
 	Reason         string   `json:"reason"`
 }
 
-func readResultFile() (*Kubebench, error) {
+func readFile() (*Kubebench, error) {
 	jsonFile, err := os.Open(resultFile)
 	if err != nil {
 		return nil, err
@@ -78,54 +80,43 @@ func readResultFile() (*Kubebench, error) {
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	var res []Chapter
+	var kbchapters []Chapter
 
-	err = json.Unmarshal(byteValue, &res)
+	err = json.Unmarshal(byteValue, &kbchapters)
 	if err != nil {
 		fmt.Printf("Error in reading kubebench result json file: %v\n", err)
 		return nil, err
 	}
 
-	return &Kubebench{res}, nil
+	return &Kubebench{kbchapters}, nil
 }
 
-func createResult(kubebench *Kubebench) error {
-	client, ctx, cancel := db.GetConnection()
-	defer cancel()
-	defer client.Disconnect(ctx)
+func create(kubebench *Kubebench, s *Service) (insertedID interface{}, err error) {
 
-	collection := client.Database(dbName).Collection(coll)
-
-	res, err := collection.InsertOne(ctx, *kubebench)
+	res, err := s.kubebenchCollection.InsertOne(context.Background(), *kubebench)
 	if err != nil {
 		fmt.Printf("Error in creating kubebench result: %v\n", err)
-		return err
+		return "-1", err
 	}
 
-	fmt.Printf("Inserted ID: %v\n", res.InsertedID)
-	return nil
+	fmt.Printf("Successful create; Inserted ID: %s\n", res.InsertedID)
+	return res.InsertedID, nil
 
 }
 
-func readWriteResult() error {
-	fmt.Printf("Start reading kubescore result...\n")
-	kubebench, err := readResultFile()
-	if err != nil {
-		fmt.Printf("Error in readResultFile: %v\n", err)
-		return err
-	}
+func read(id string, s *Service) (kubebench *Kubebench, err error) {
+	// convert string to primitive.ObjectID
+	oid, err := primitive.ObjectIDFromHex(id)
 
-	fmt.Printf("Start writing into database...\n")
-	err = createResult(kubebench)
+	err = s.kubebenchCollection.FindOne(context.Background(), bson.D{{Key: "_id", Value: oid}}).Decode(&kubebench)
 	if err != nil {
-		fmt.Printf("Error in createResult: %v\n", err)
-		return err
+		return nil, err
 	}
-	fmt.Printf("Finished writing...\n")
-	return nil
+	fmt.Printf("Successful read id: %s\n", id)
+	return
 }
 
-func GetAllKubebench() (kubebench []Kubebench, err error) {
+func GetAllKubeScore() (kubescores []Kubebench, err error) {
 	client, ctx, cancel := db.GetConnection()
 	defer cancel()
 	defer client.Disconnect(ctx)
@@ -137,21 +128,59 @@ func GetAllKubebench() (kubebench []Kubebench, err error) {
 		return nil, err
 	}
 
-	if err = cursor.All(ctx, &kubebench); err != nil {
+	if err = cursor.All(ctx, &kubescores); err != nil {
 		return nil, err
 	}
 
-	return kubebench, nil
+	return kubescores, nil
 }
 
-func (s *Service) GetKubebenchResult(c *gin.Context) {
-	kubebench, err := GetAllKubebench()
+// GetKubebench retrieve a single Kubebench object with "_id" = "id"
+// Response: result of the given id
+func (s *Service) GetKubebench(c *gin.Context) {
+	// query parameters
+	id := c.Query("id")
+
+	var kbbench *Kubebench
+	kbbench, err := read(id, s)
 	if err != nil {
-		fmt.Printf("Error in GetKubebenchResult: %v\n", err)
+		fmt.Printf("Error in GetKubebench, id=%s: %v\n", id, err)
+		util.ResponseError(c, err)
+		return
+	} else {
+		util.ResponseSuccess(c, kbbench, "kubebench")
+		return
 	}
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"type":  "kubebench",
-		"data":  kubebench,
-		"count": len(kubebench),
-	})
+}
+
+// NewKubebench run the kubebench script, read from result file, and create result object in DB
+// Response: id of the result object
+func (s *Service) NewKubebench(c *gin.Context) {
+
+	var kbbench *Kubebench
+	var id interface{}
+	var err error
+
+	// run script
+	// TODO
+
+	// read from result file
+	kbbench, err = readFile()
+	if err != nil {
+		fmt.Printf("Error in read kubebench result file: %v\n", err)
+		goto responseError
+	}
+	// create result in DB
+	id, err = create(kbbench, s)
+	if err != nil {
+		fmt.Printf("Error in create kubebench result in DB: %v\n", err)
+		goto responseError
+	}
+	util.ResponseSuccess(c, id, "kubebench")
+	return
+
+responseError:
+	util.ResponseError(c, err)
+	return
+
 }

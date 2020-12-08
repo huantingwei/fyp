@@ -16,13 +16,14 @@ type Database struct {
 }
 
 func NewDatabase() (Database, context.Context) {
-	fmt.Printf("NEwDatabase...\n")
 	// dbClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://jeff:CYyTXZahfIMkoBhk@cluster0.ngxmf.mongodb.net/Cluster0?retryWrites=true&w=majority"))
 	dbClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb"))
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	err = dbClient.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
