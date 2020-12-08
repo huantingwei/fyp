@@ -6,6 +6,8 @@ import (
 	//internal package
 	"github.com/huantingwei/fyp/util"
 	"github.com/huantingwei/fyp/overview"
+	"github.com/huantingwei/fyp/login"
+
 )
 
 func main() {
@@ -23,6 +25,11 @@ func main() {
 	v1 := router.Group("/api/v1")
 	{
 		overview.NewService(v1, db);
+	}
+
+	auth := router.Group("/")
+	{
+		login.NewService(auth);
 	}
 
 	router.Run();
