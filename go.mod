@@ -3,6 +3,9 @@ module github.com/huantingwei/fyp
 go 1.15
 
 require (
+	github.com/tidwall/gjson v1.6.3
+	github.com/tidwall/match v1.0.2 // indirect
+	github.com/zegl/kube-score v1.10.0
 	cloud.google.com/go v0.51.0
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
