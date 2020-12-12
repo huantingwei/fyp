@@ -10,7 +10,6 @@ import (
 	"github.com/huantingwei/fyp/util"
 	// "github.com/zegl/kube-score/scorecard"
 	"github.com/gin-gonic/gin"
-	db "github.com/huantingwei/fyp/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -114,25 +113,6 @@ func read(id string, s *Service) (kubebench *Kubebench, err error) {
 	}
 	fmt.Printf("Successful read id: %s\n", id)
 	return
-}
-
-func GetAllKubeScore() (kubescores []Kubebench, err error) {
-	client, ctx, cancel := db.GetConnection()
-	defer cancel()
-	defer client.Disconnect(ctx)
-
-	collection := client.Database(dbName).Collection(coll)
-	cursor, err := collection.Find(ctx, bson.M{})
-	if err != nil {
-		fmt.Printf("Error in reading kubebench: %v\n", err)
-		return nil, err
-	}
-
-	if err = cursor.All(ctx, &kubescores); err != nil {
-		return nil, err
-	}
-
-	return kubescores, nil
 }
 
 // GetKubebench retrieve a single Kubebench object with "_id" = "id"
