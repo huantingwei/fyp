@@ -4,7 +4,7 @@ import (
 	// "github.com/gin-gonic/gin"
 
 	//internal package
-	// "github.com/huantingwei/fyp/overview"
+	"github.com/huantingwei/fyp/overview"
 	"github.com/gin-gonic/gin"
 	"github.com/huantingwei/fyp/kubebench"
 	"github.com/huantingwei/fyp/kubescore"
@@ -30,5 +30,10 @@ func main() {
 		kubebench.NewService(v1, db)
 	}
 
-	router.Run()
+	auth := router.Group("/")
+	{
+		login.NewService(auth);
+	}
+
+	router.Run();
 }

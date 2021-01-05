@@ -1,3 +1,4 @@
+#!/bin/bash
 #-------Part 1: automated authentication, connect gcloud to user's cloud project--------
 #-------as well as connect kubectl to the GKE cluster in that project--------
 
@@ -20,7 +21,6 @@ projindex="./projindex.txt"
 read -p 'GKE cluster name: ' clustername
 read -p 'GCP project name: ' projectname
 read -p 'GKE zone name: ' zonename
-
 
 function loop {
 	#reinitialise gcloud [default] configuration
@@ -46,7 +46,7 @@ function loop {
 	while true
 	do
 		#true if token.txt exists
-		if [ -e $token ]; then
+		if [ -s $token ]; then
 			while read line; do
 			echo $line
 			done < $token	
@@ -86,14 +86,9 @@ function loop {
 # 2>&1 | tee will write a copy of stdout to output.txt
 loop | gcloud init --console-only 2>&1 | tee ./output.txt
 
-#cleanup
-rm $stdout $url $token
-
 #connect kubectl to the target GKE cluster
 gcloud container clusters get-credentials $clustername --zone $zonename --project $projectname
 
-#cleanup
-rm $projindex
 sleep 10
 
 #-------Part 2: run kubebench remotely in user's cloud shell-------
@@ -110,3 +105,5 @@ gcloud beta cloud-shell ssh --command="$runkubebench"
 #copy kubebench text output back to local machine
 gcloud beta cloud-shell scp cloudshell:~/output.txt  localhost:kubebench.txt
 
+#cleanup
+rm $stdout $url $token $projindex

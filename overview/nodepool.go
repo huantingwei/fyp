@@ -68,33 +68,3 @@ func initNodepoolsArray() []interface{}{
 	return nodepoolSlice;
 }
 
-
-// nodepools := res.GetNodePools();
-
-// for index, pool := range nodepools{
-// 	fmt.Printf("------------Node pool %d------------\n\n", index+1);
-// 	fmt.Printf("------------Node pool general info------------\n");
-
-// 	fmt.Printf("Name: %s\n", pool.GetName());
-// 	fmt.Printf("Node version: %s\n", pool.GetVersion());
-// 	fmt.Printf("Location: %s\n", pool.GetLocations()[0]);
-// 	fmt.Printf("Status: %d\n", pool.GetStatus());
-// 	fmt.Printf("Autoscaling: %t\n", pool.GetAutoscaling().GetEnabled());
-// 	fmt.Printf("Initial node count: %d\n", pool.GetInitialNodeCount());
-
-// 	fmt.Printf("------------Node pool configuration------------\n");
-
-// 	fmt.Printf("Image type: %s\n", pool.GetConfig().GetImageType());
-// 	fmt.Printf("Machine type: %s\n", pool.GetConfig().GetMachineType());
-// 	fmt.Printf("Disk type: %s\n", pool.GetConfig().GetDiskType());
-// 	fmt.Printf("Disk size: %d GB\n", pool.GetConfig().GetDiskSizeGb());
-
-// 	fmt.Printf("------------Node pool management------------\n");
-// 	fmt.Printf("AutoUpgrade: %t\n", pool.GetManagement().GetAutoUpgrade());
-// 	fmt.Printf("AutoRepair: %t\n", pool.GetManagement().GetAutoRepair());
-
-// 	fmt.Printf("------------Node pool security------------\n");
-
-// 	fmt.Printf("Service account: %s\n", pool.GetConfig().GetServiceAccount());
-// 	fmt.Printf("Secure boot enabled: %t\n", pool.GetConfig().GetShieldedInstanceConfig().GetEnableSecureBoot());
-// 	fmt.Printf("Integrity monitoring enabled: %t\n", pool.GetConfig().GetShieldedInstanceConfig().GetEnableIntegrityMonitoring());
