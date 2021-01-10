@@ -18,12 +18,12 @@ const (
 	dbName = "fyp"
 	coll   = "kubebench"
 	// windows
-	resultFile = "kubebench\\result.json"
-	scriptFile = "kubebench\\kubebench.sh"
+	// resultFile = "kubebench\\result.json"
+	// scriptFile = "kubebench\\kubebench.sh"
 
-// linux
-// resultFile = "/home/justbadcodes/fyp/kubebench/result.json"
-// scriptFile = "/home/justbadcodes/fyp/kubebench/kubebench.sh"
+	// linux
+	resultFile = "./kubebench/result.json"
+	scriptFile = "./kubebench/kubebench.sh"
 )
 
 type Kubebench struct {

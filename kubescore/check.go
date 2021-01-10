@@ -20,12 +20,12 @@ const (
 	dbName = "fyp"
 	coll   = "kubescore"
 	// windows
-	resultFile = "kubescore\\result.json"
-	scriptFile = "kubescore\\kubescore.sh"
+	// resultFile = "kubescore\\result.json"
+	// scriptFile = "kubescore\\kubescore.sh"
 
-// linux
-// resultFile = "/home/justbadcodes/fyp/kubescore/result.json"
-// scriptFile = "/home/justbadcodes/fyp/kubescore/kubescore.sh"
+	// linux
+	resultFile = "kubescore/result_test.json"
+	scriptFile = "./kubescore/kubescore.sh"
 )
 
 type Check struct {
@@ -62,15 +62,25 @@ type KubeScore struct {
 	ScoredObjects []ScoredObject `json:"kubescore"`
 }
 
-func runScript() {
+func runScript() error {
 	// temp name for dev
-	namespace := "fyp"
+	// namespace := "fyp"
 
 	fmt.Printf("Run kubescore validation...\n")
-	cmd := exec.Command("./"+scriptFile, namespace)
-	if err := cmd.Run(); err != nil {
+	/*	err := exec.Command("ls").Run()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}*/
+	cmd := exec.Command("./kubescore/kubescore.sh")
+	err := cmd.Run()
+
+	if err != nil {
 		fmt.Printf("Error in running kubescore: %v\n", err)
+		return err
 	}
+
+	return nil
 }
 
 func readFile() (*KubeScore, error) {
@@ -148,6 +158,11 @@ func (s *Service) NewKubescore(c *gin.Context) {
 
 	// run script
 	// TODO
+
+	err = runScript()
+	if err != nil {
+		goto responseError
+	}
 
 	// read from result file
 	kbscore, err = readFile()
