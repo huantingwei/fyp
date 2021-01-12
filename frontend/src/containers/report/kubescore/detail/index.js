@@ -7,13 +7,13 @@ import { RightDrawer } from 'components/drawer'
 import { headCells } from './configs'
 import { DataPresentationTable } from 'components/dataPresentation'
 import { req } from 'api'
-import kubebenchAPI from 'api/kubebench'
-import PWFCard from 'components/card/pwf'
+import kubescoreAPI from 'api/kubescore'
+// import PWFCard from 'components/card/pwf'
 
-export default function KubeBenchDetail(props) {
+export default function KubeScoreDetail(props) {
     const [selected, setSelected] = useState(null)
     const [detailOpen, setDetailOpen] = useState(false)
-    const [data, setData] = useState({})
+    const [data, setData] = useState([])
 
     const handleRowSelect = (row) => {
         setSelected(row)
@@ -26,13 +26,19 @@ export default function KubeBenchDetail(props) {
         }
         let res = []
         // use [0] for dev
-        let first = data['results'][0]
+        let first = data['checks'][0]
         for (let key of Object.keys(first)) {
-            let obj = {}
-            obj.type = 'text'
-            obj.label = key
-            obj.content = first[key]
-            res.push(obj)
+            if (key === 'check') {
+                let obj = {}
+                for (let k of Object.keys(first[key])) {
+                    obj = { type: 'text', label: k, content: first[key][k] }
+                    res.push(obj)
+                }
+                // `comments` : array or null
+            } else {
+                let obj = { type: 'text', label: key, content: first[key] }
+                res.push(obj)
+            }
         }
         return res
     }
@@ -41,9 +47,8 @@ export default function KubeBenchDetail(props) {
         async function get() {
             // setStatus('loading')
             try {
-                const res = await req(kubebenchAPI.get())
-                // use [1] for dev
-                setData(res['Chapters'][1])
+                const res = await req(kubescoreAPI.get())
+                setData(res['kubescore'])
             } catch (err) {
                 console.error(err)
                 // setStatus('fail')
@@ -59,16 +64,15 @@ export default function KubeBenchDetail(props) {
             justifyContent="space-between"
         >
             <Grid container direction="column" spacing={3}>
-                <Grid item>
+                {/* <Grid item>
                     <Typography component="span" variant="h6">
                         Section : {data['text']} (should be `select`)
                     </Typography>
-                </Grid>
-                <Grid item>
+                </Grid> */}
+                {/* <Grid item>
                     <Typography variant="h6">Overview</Typography>
                 </Grid>
                 <Grid item>
-                    {' '}
                     <PWFCard
                         data={{
                             pass: data['total_pass'],
@@ -76,23 +80,21 @@ export default function KubeBenchDetail(props) {
                             fail: data['total_fail'],
                         }}
                     />
-                </Grid>
+                </Grid> */}
                 <Grid item>
-                    {' '}
                     <Typography variant="h6">Detail</Typography>
                 </Grid>
                 <Grid item>
-                    {' '}
                     <TableComponent
                         column={headCells}
-                        dataSource={data['tests']}
+                        dataSource={data}
                         onRowSelect={handleRowSelect}
                     />
                 </Grid>
                 <RightDrawer
                     // use [0] for dev
                     title={
-                        selected ? selected['results'][0]['test_number'] : ''
+                        selected ? selected['object_name'] + ' - check #1' : ''
                     }
                     open={detailOpen}
                     onClose={() => setDetailOpen(false)}
@@ -104,6 +106,6 @@ export default function KubeBenchDetail(props) {
     )
 }
 
-KubeBenchDetail.propTypes = {
+KubeScoreDetail.propTypes = {
     data: PropTypes.any,
 }

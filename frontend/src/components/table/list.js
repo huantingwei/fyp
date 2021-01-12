@@ -66,8 +66,12 @@ const useStyles = makeStyles((theme) => ({
 
 const defaultOrderBy = 'id'
 
+function notNullOrUndefined(value) {
+    return !(value === undefined) && !(value === null)
+}
+
 const TableComponent = (props) => {
-    const { dataSource, title, column, onRowSelect } = props
+    const { dataSource, title, column, onRowSelect, pageControl } = props
     const classes = useStyles()
     const [order, setOrder] = React.useState('asc')
     const [orderBy, setOrderBy] = React.useState(defaultOrderBy)
@@ -76,6 +80,7 @@ const TableComponent = (props) => {
     const [rowsPerPage, setRowsPerPage] = React.useState(5)
 
     const handleRowClick = (e, row) => {
+        console.log(row)
         onRowSelect(row)
     }
 
@@ -139,10 +144,14 @@ const TableComponent = (props) => {
                                         key={'row' + index}
                                         onClick={(e) => handleRowClick(e, row)}
                                     >
-                                        {headCells.map((col, index) => {
+                                        {column.map((col, index) => {
                                             return (
                                                 <TableCell key={'col' + index}>
-                                                    {row[col.id]}
+                                                    {notNullOrUndefined(
+                                                        row[col.id]
+                                                    )
+                                                        ? row[col.id]
+                                                        : null}
                                                 </TableCell>
                                             )
                                         })}
@@ -157,15 +166,17 @@ const TableComponent = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={dataSource.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onChangePage={handleChangePage}
-                onChangeRowsPerPage={handleChangeRowsPerPage}
-            />
+            {pageControl ? (
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={dataSource.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                />
+            ) : null}
         </div>
     )
 }
@@ -174,6 +185,7 @@ TableComponent.propTypes = {
     title: PropTypes.oneOfType([PropTypes.node, PropTypes.bool]),
     dataSource: PropTypes.arrayOf(PropTypes.object),
     column: PropTypes.arrayOf(PropTypes.object),
+    pageControl: PropTypes.bool,
     onRowSelect: PropTypes.func,
 }
 
@@ -182,6 +194,7 @@ TableComponent.defaultProps = {
     dataSource: rows,
     title: false,
     onRowSelect: (e) => console.log(e),
+    pageControl: true,
 }
 
 export default TableComponent

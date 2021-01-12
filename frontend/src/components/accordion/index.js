@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-const Accordion = (props) => {
+export default function AccordionLayout() {
     const classes = useStyles()
     const [expanded, setExpanded] = React.useState(false)
 
@@ -126,5 +126,3 @@ const Accordion = (props) => {
         </div>
     )
 }
-
-export default Accordion

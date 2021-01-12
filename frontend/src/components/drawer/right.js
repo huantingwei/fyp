@@ -5,18 +5,16 @@ import { Drawer, Typography } from '@material-ui/core'
 
 const useStyles = makeStyles({
     list: {
-        width: 850,
+        width: 800,
+        margin: '3rem',
     },
-    fullList: {
-        width: 'auto',
-    },
-    header: {
+    title: {
         margin: '1rem',
     },
 })
 
-const RightDrawer = (props) => {
-    const { children, open, onClose, header } = props
+export default function RightDrawer(props) {
+    const { children, open, onClose, title } = props
     const classes = useStyles()
 
     const handleClose = () => {
@@ -26,8 +24,8 @@ const RightDrawer = (props) => {
     return (
         <div>
             <Drawer anchor={'right'} open={open} onClose={handleClose}>
-                <Typography variant="h5" className={classes.header}>
-                    {header}
+                <Typography variant="h5" className={classes.title}>
+                    {title}
                 </Typography>
                 <div className={clsx(classes.list)} role="presentation">
                     {children}
@@ -36,4 +34,3 @@ const RightDrawer = (props) => {
         </div>
     )
 }
-export default RightDrawer

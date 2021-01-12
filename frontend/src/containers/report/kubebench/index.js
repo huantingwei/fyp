@@ -1,1 +1,1 @@
-export { default as KBReportList } from './list'
+export { default as KubeBenchReportList } from './list'

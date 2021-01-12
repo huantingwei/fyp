@@ -3,6 +3,7 @@ config.txt
 sa.json
 fyp
 .vscode
+fyp.exe
 
 # frontend
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.

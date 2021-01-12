@@ -1,14 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Container, Typography } from '@material-ui/core'
+import { Box, Typography } from '@material-ui/core'
 
 const ContainerLayout = (props) => {
-    const { title, children } = props
+    const { title, children, other } = props
     return (
-        <Container>
-            <Typography variant="h5">{title}</Typography>
+        <Box px={5} {...other}>
+            {title ? (
+                <Typography variant="h4" style={{ marginBottom: '3rem' }}>
+                    {title}
+                </Typography>
+            ) : null}
             {children}
-        </Container>
+        </Box>
     )
 }
 
@@ -17,7 +21,7 @@ ContainerLayout.propTypes = {
     children: PropTypes.node,
 }
 ContainerLayout.defaultProps = {
-    title: 'Default Title',
+    title: false,
     children: <div>default children</div>,
 }
 export default ContainerLayout

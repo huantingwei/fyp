@@ -1,11 +1,16 @@
-import React, { Fragment, useEffect, useState, useReducer } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
-import TableComponent from 'components/table/list'
+import ContainerLayout from 'components/layout'
+import { DataPresentationTable } from 'components/dataPresentation'
 
-const ClusterOverview = () => {
+export default function Cluster(props) {
     return (
-        <TableComponent dataSource={data} column={column} title={'Book List'} />
+        <ContainerLayout title={'Cluster Overview'}>
+            <DataPresentationTable />
+        </ContainerLayout>
     )
 }
 
-export default ClusterOverview
+Cluster.propTypes = {
+    data: PropTypes.any,
+}

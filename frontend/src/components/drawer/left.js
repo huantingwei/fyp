@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-const LeftDrawer = (props) => {
+export default function LeftDrawer(props) {
     const { listItems } = props
 
     const classes = useStyles()
@@ -163,16 +163,19 @@ const LeftDrawer = (props) => {
 
                 {/** ----------------------drawer content---------------------- **/}
                 <List>
-                    {listItems.map((item, index) => (
-                        <ListItem
-                            button
-                            key={item.id}
-                            onClick={() => handleItemClick(index)}
-                        >
-                            <ListItemIcon>{item.icon}</ListItemIcon>
-                            <ListItemText primary={item.text} />
-                        </ListItem>
-                    ))}
+                    {listItems.map((item, index) => {
+                        const { id, icon, text } = item
+                        return (
+                            <ListItem
+                                button
+                                key={id}
+                                onClick={() => handleItemClick(index)}
+                            >
+                                <ListItemIcon>{icon}</ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItem>
+                        )
+                    })}
                 </List>
                 <Divider />
                 {/** ----------------------drawer content---------------------- **/}
@@ -205,4 +208,3 @@ LeftDrawer.defaultProps = {
         },
     ],
 }
-export default LeftDrawer

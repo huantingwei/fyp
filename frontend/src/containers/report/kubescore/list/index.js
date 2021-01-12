@@ -4,9 +4,9 @@ import TableComponent from 'components/table/list'
 import ContainerLayout from 'components/layout'
 import { headCells, rows } from './configs'
 import Switch from 'components/switch'
-import KubeBenchDetail from '../detail'
+import KubeScoreDetail from '../detail'
 
-const KubeBenchReportList = (props) => {
+const KubeScoreReportList = (props) => {
     // const [selected, setSelected] = useState(null)
     const [detailOpen, setDetailOpen] = useState(false)
 
@@ -20,9 +20,9 @@ const KubeBenchReportList = (props) => {
             open={detailOpen}
             onBackClick={handleDetailClose}
             title={'Report - 2020/01/11'}
-            content={<KubeBenchDetail />} // detail content
+            content={<KubeScoreDetail />} // detail content
         >
-            <ContainerLayout title={'kubebench list report API needed'}>
+            <ContainerLayout title={'kubescore list report API needed'}>
                 <TableComponent
                     column={headCells}
                     dataSource={rows}
@@ -33,4 +33,4 @@ const KubeBenchReportList = (props) => {
     )
 }
 
-export default KubeBenchReportList
+export default KubeScoreReportList
