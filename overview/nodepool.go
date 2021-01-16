@@ -1,34 +1,28 @@
 package overview
 
 import (
-	//standard lib
 	"fmt"
 	"context"
-	"net/http"
-	//GCP client lib
-	//containerpb "google.golang.org/genproto/googleapis/container/v1"
-	//internal package
 	"github.com/huantingwei/fyp/object"
 	"github.com/huantingwei/fyp/util"
-	//Gin
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *Service) GetNodepoolInfo(c *gin.Context) {
+func (s *Service) refreshNodepoolInfo(c *gin.Context) {
 	nodepoolInfo := initNodepoolsArray();
 
-	insertManyResult, err := s.nodepoolCollection.InsertMany(context.TODO(),nodepoolInfo);
+	_, err := s.nodepoolCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		fmt.Printf(err.Error());
-	}else{
-		fmt.Println("Inserted multiple documents: ", insertManyResult.InsertedIDs);
+		util.ResponseError(c, err)
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"type": "nodepool",
-		"data": nodepoolInfo,
-		"count": len(nodepoolInfo),
-	});
+	_, err2 := s.nodepoolCollection.InsertMany(context.TODO(),nodepoolInfo);
+	if err2 != nil {
+		util.ResponseError(c, err2)
+	}
+
+	fmt.Println("refreshed nodepool info")
 }
 
 func initNodepoolsArray() []interface{}{
@@ -68,3 +62,18 @@ func initNodepoolsArray() []interface{}{
 	return nodepoolSlice;
 }
 
+func (s *Service) GetNodepoolInfo(c *gin.Context) {
+	cursor, err := s.nodepoolCollection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		util.ResponseError(c, err)
+	}
+
+	// get a list of all returned documents and print them out
+	// see the mongo.Cursor documentation for more examples of using cursors
+	var results []bson.M
+	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
+		util.ResponseError(c, err2)
+	}
+
+	util.ResponseSuccess(c, results, "nodepool")
+}

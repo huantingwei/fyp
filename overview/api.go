@@ -5,6 +5,8 @@ import(
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/huantingwei/fyp/util"
+
+	kube "k8s.io/client-go/kubernetes"
 )
 
 type Service struct {
@@ -14,6 +16,7 @@ type Service struct {
 	nodepoolCollection    *mongo.Collection
 	podCollection         *mongo.Collection
 	serviceCollection     *mongo.Collection
+	clientset			  *kube.Clientset
 }
 
 func NewService(r *gin.RouterGroup, db util.Database){
@@ -24,6 +27,7 @@ func NewService(r *gin.RouterGroup, db util.Database){
 		nodepoolCollection: db.Handle.Collection("nodepool"),
 		podCollection: db.Handle.Collection("pod"),
 		serviceCollection: db.Handle.Collection("service"),
+		clientset: util.GetKubeClientSet(),
 	}
 
 	r = r.Group("/overview");
@@ -34,4 +38,18 @@ func NewService(r *gin.RouterGroup, db util.Database){
 	r.GET("/node", s.GetNodeInfo);
 	r.GET("/pod", s.GetPodInfo);
 	r.GET("/service", s.GetServiceInfo);
+
+	r.POST("/new", s.Refresh);
+}
+
+func (s *Service) Refresh(c *gin.Context){
+	s.refreshClusterInfo(c);
+	s.refreshNodepoolInfo(c);
+	s.refreshDeploymentInfo(c);
+	s.refreshPodInfo(c);
+	s.refreshServiceInfo(c);
+	s.refreshNodeInfo(c);
+
+	var data interface{};
+	util.ResponseSuccess(c, data, "refreshed all kube resources");
 }

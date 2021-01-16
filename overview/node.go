@@ -1,40 +1,35 @@
 package overview
 
 import (
-	//standard lib
 	"fmt"
 	"context"
-	"net/http"
-	//client lib
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	//internal package
-	"github.com/huantingwei/fyp/util"
 	"github.com/huantingwei/fyp/object"
-	//gin
+	"github.com/huantingwei/fyp/util"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *Service) GetNodeInfo(c *gin.Context){
-	nodeInfo := initNodeArray();
+func (s *Service) refreshNodeInfo(c *gin.Context){
+	nodeInfo := s.initNodeArray();
 
-	insertManyResult, err := s.nodeCollection.InsertMany(context.TODO(),nodeInfo);
+	_, err := s.nodeCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		fmt.Printf(err.Error());
-	}else{
-		fmt.Println("Inserted multiple documents: ", insertManyResult.InsertedIDs);
+		util.ResponseError(c, err)
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"type": "node",
-		"data": nodeInfo,
-		"count": len(nodeInfo),
-	});
+	_, err2 := s.nodeCollection.InsertMany(context.TODO(),nodeInfo);
+	if err2 != nil {
+		util.ResponseError(c, err2)
+	}
+
+	fmt.Println("refreshed node info")
 }
 
-func initNodeArray() []interface{}{
-	clientset := util.GetKubeClientSet();
+func (s *Service) initNodeArray() []interface{}{
+	//clientset := util.GetKubeClientSet();
 
-	nodeList, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{});
+	nodeList, err := s.clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{});
 	if err != nil {
 		panic(err.Error())
 	}
@@ -87,4 +82,21 @@ func initNodeArray() []interface{}{
 		nodeSlice = append(nodeSlice, node);
 	}
 	return nodeSlice;
+}
+
+
+func (s *Service) GetNodeInfo(c *gin.Context) {
+	cursor, err := s.nodeCollection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		util.ResponseError(c, err)
+	}
+
+	// get a list of all returned documents and print them out
+	// see the mongo.Cursor documentation for more examples of using cursors
+	var results []bson.M
+	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
+		util.ResponseError(c, err2)
+	}
+
+	util.ResponseSuccess(c, results, "node")
 }

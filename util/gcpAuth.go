@@ -21,7 +21,7 @@ func GetGCPClusterManagementClient() *containerpb.Cluster{
 	}
 
 	req := &containerpb.GetClusterRequest{
-		Name: `projects/fyp-gcp-296605/locations/us-central1-c/clusters/cluster-1`,
+		Name: `projects/fyp2-301906/locations/us-central1-c/clusters/cluster1`,
 	}
 
 	cluster, err2 := (*client).GetCluster(ctx, req)

@@ -1,33 +1,27 @@
 package overview
 
 import (
-	//standard lib
 	"fmt"
 	"context"
-	"net/http"
-	//GCP client lib
-	//containerpb "google.golang.org/genproto/googleapis/container/v1"
-	//internal package
 	"github.com/huantingwei/fyp/object"
 	"github.com/huantingwei/fyp/util"
-	//Gin
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *Service) GetClusterInfo(c *gin.Context) {
+func (s *Service) refreshClusterInfo(c *gin.Context) {
 	clusterInfo := initClusterStruct();
 
-	insertion, err := s.clusterCollection.InsertOne(context.TODO(),clusterInfo);
+	_, err := s.clusterCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		fmt.Printf(err.Error());
+		util.ResponseError(c, err)
 	}
-	
-	fmt.Println("Inserted a single document: ", insertion.InsertedID);
 
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"type": "cluster",
-		"data": clusterInfo,
-	});
+	_, err2 := s.clusterCollection.InsertOne(context.TODO(),clusterInfo);
+	if err2 != nil {
+		util.ResponseError(c, err2)
+	}
+	fmt.Println("refreshed cluster info")
 }
 
 func initClusterStruct() object.Cluster{
@@ -60,3 +54,18 @@ func initClusterStruct() object.Cluster{
 	return newCluster;
 }
 
+func (s *Service) GetClusterInfo(c *gin.Context) {
+	cursor, err := s.clusterCollection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		util.ResponseError(c, err)
+	}
+
+	// get a list of all returned documents and print them out
+	// see the mongo.Cursor documentation for more examples of using cursors
+	var results []bson.M
+	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
+		util.ResponseError(c, err2)
+	}
+
+	util.ResponseSuccess(c, results, "cluster")
+}
