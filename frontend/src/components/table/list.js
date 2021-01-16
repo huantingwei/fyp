@@ -80,7 +80,6 @@ const TableComponent = (props) => {
     const [rowsPerPage, setRowsPerPage] = React.useState(5)
 
     const handleRowClick = (e, row) => {
-        console.log(row)
         onRowSelect(row)
     }
 
@@ -150,7 +149,7 @@ const TableComponent = (props) => {
                                                     {notNullOrUndefined(
                                                         row[col.id]
                                                     )
-                                                        ? row[col.id]
+                                                        ? row[col.id].toString()
                                                         : null}
                                                 </TableCell>
                                             )

@@ -4,25 +4,26 @@ import TableComponent from 'components/table/list'
 import ContainerLayout from 'components/layout'
 import { headCells, rows } from './configs'
 import Switch from 'components/switch'
-import KubeBenchDetail from '../detail'
+import KubeBenchSection from '../section'
 
 const KubeBenchReportList = (props) => {
+    // TODO: call kubebench/list API and pass selected data into KubeBenchSection
     // const [selected, setSelected] = useState(null)
     const [detailOpen, setDetailOpen] = useState(false)
 
     const handleRowSelect = (row) => {
-        // setSelected(row)
         setDetailOpen(true)
     }
+
     const handleDetailClose = () => setDetailOpen(false)
     return (
         <Switch
             open={detailOpen}
             onBackClick={handleDetailClose}
-            title={'Report - 2020/01/11'}
-            content={<KubeBenchDetail />} // detail content
+            title={'Kubebench Report - DEFAULT TITLE'}
+            content={<KubeBenchSection />} // detail content
         >
-            <ContainerLayout title={'kubebench list report API needed'}>
+            <ContainerLayout>
                 <TableComponent
                     column={headCells}
                     dataSource={rows}

@@ -87,6 +87,10 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         padding: theme.spacing(3),
     },
+    contentTitle: {
+        marginLeft: theme.spacing(2),
+        marginBottom: theme.spacing(3),
+    },
 }))
 
 export default function LeftDrawer(props) {
@@ -182,6 +186,9 @@ export default function LeftDrawer(props) {
             </Drawer>
             <main className={classes.content}>
                 <div className={classes.toolbar} />
+                <Typography variant="h4" className={classes.contentTitle}>
+                    {selected.text}
+                </Typography>
                 {selected.content}
             </main>
         </div>

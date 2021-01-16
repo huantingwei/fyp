@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function Switch(props) {
-    const { open, onBackClick, children, title, content } = props
+    const { open, onBackClick, children, title, content, indent } = props
     const classes = useStyles()
 
     const handleBackClick = () => {
@@ -24,7 +24,15 @@ export default function Switch(props) {
         <Fragment>
             {open ? (
                 <Box>
-                    <Box display="flex" alignItems="center">
+                    {/* {indentation()} */}
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        style={{
+                            marginLeft: (indent * 2).toString() + 'rem',
+                            marginTop: '-' + (indent * 0.5).toString() + 'rem',
+                        }}
+                    >
                         <div className={classes.backButton}>
                             <IconButton
                                 aria-label="back"
@@ -51,4 +59,9 @@ Switch.propTypes = {
     children: PropTypes.node,
     title: PropTypes.node,
     content: PropTypes.node,
+    indent: PropTypes.number,
+}
+
+Switch.defaultProps = {
+    indent: 0,
 }
