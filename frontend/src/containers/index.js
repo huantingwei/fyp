@@ -1,63 +1,107 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { LeftDrawer } from 'components/drawer'
 import CloudQueueOutlinedIcon from '@material-ui/icons/CloudQueueOutlined'
-import StorageOutlinedIcon from '@material-ui/icons/StorageOutlined'
-import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined'
+// import StorageOutlinedIcon from '@material-ui/icons/StorageOutlined'
+// import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined'
 import DashboardOutlinedIcon from '@material-ui/icons/DashboardOutlined'
-import DeveloperBoardOutlinedIcon from '@material-ui/icons/DeveloperBoardOutlined'
+// import DeveloperBoardOutlinedIcon from '@material-ui/icons/DeveloperBoardOutlined'
 import VerifiedUserOutlinedIcon from '@material-ui/icons/VerifiedUserOutlined'
-import KubeBenchReportList from 'containers/report/kubebench/list'
-import { KubeScoreReportList } from 'containers/report/kubescore'
+// import { KubeScoreReportList } from 'containers/report/kubescore'
 import Cluster from 'containers/cluster'
+// import Workload from 'containers/workload'
+import Node from 'containers/node/node'
+import NodePool from 'containers/node/nodepool'
+import { Switch, Route, Redirect } from 'react-router-dom'
+import KubeBenchReportList from 'containers/report/kubebench/list'
+import Deployment from 'containers/workload/deployment'
 
 const Root = (props) => {
-    const listItems = [
+    const routeItems = [
         {
-            id: 'kubebench',
-            text: 'CIS',
-            path: 'cis',
+            id: 'home',
+            path: '/',
+            exact: true,
+            text: 'Home',
             icon: <DashboardOutlinedIcon />,
-            content: <KubeBenchReportList />,
+            component: () => <h1>HOME</h1>,
         },
         {
-            id: 'kubescore',
-            text: 'kubescore',
-            path: 'kubescore',
+            id: 'node',
+            path: '/node',
+            exact: true,
+            text: 'Node',
             icon: <VerifiedUserOutlinedIcon />,
-            content: <KubeScoreReportList />,
-            // content: <Test />,
+            component: Node,
+        },
+        {
+            id: 'nodepool',
+            path: '/nodepool',
+            exact: true,
+            text: 'Node Pool',
+            icon: <VerifiedUserOutlinedIcon />,
+            component: NodePool,
         },
         {
             id: 'cluster',
+            path: '/cluster',
+            exact: true,
             text: 'Cluster',
-            path: 'cluster',
             icon: <CloudQueueOutlinedIcon />,
-            content: <Cluster />,
-            // content: <KubeBenchTest />,
+            component: Cluster,
         },
         {
             id: 'workload',
             text: 'Workload',
-            path: 'workload',
-            icon: <DeveloperBoardOutlinedIcon />,
-            content: <h1>WORKLOAD</h1>,
+            icon: <CloudQueueOutlinedIcon />,
+            nested: [
+                {
+                    id: 'deployment',
+                    path: '/workload/deployment',
+                    exact: true,
+                    text: 'Deployment',
+                    icon: <CloudQueueOutlinedIcon />,
+                    component: Deployment,
+                },
+            ],
         },
         {
-            id: 'network',
-            text: 'Network',
-            path: 'network',
-            icon: <SettingsEthernetOutlinedIcon />,
-            content: <h1>NETWORK</h1>,
-        },
-        {
-            id: 'storage',
-            text: 'Storage',
-            path: 'storage',
-            icon: <StorageOutlinedIcon />,
-            content: <h1>STORAGE</h1>,
+            id: 'kubebench',
+            path: '/kubebench',
+            exact: true,
+            text: 'CIS',
+            icon: <DashboardOutlinedIcon />,
+            component: KubeBenchReportList,
         },
     ]
-    return <LeftDrawer listItems={listItems} />
+    return (
+        <Fragment>
+            <LeftDrawer listItems={routeItems}>
+                <Switch>
+                    {routeItems
+                        .reduce((acc, curr) => {
+                            if (curr.nested) {
+                                return [...acc, ...curr.nested]
+                            } else {
+                                return [...acc, curr]
+                            }
+                        }, [])
+                        .map((routeItem) => {
+                            return (
+                                <Route
+                                    key={routeItem.id}
+                                    path={routeItem.path}
+                                    exact={routeItem.exact}
+                                    render={(routeProps) => (
+                                        <routeItem.component {...routeProps} />
+                                    )}
+                                />
+                            )
+                        })}
+                    <Redirect to={'/'} />
+                </Switch>
+            </LeftDrawer>
+        </Fragment>
+    )
 }
 
 export default Root

@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import { Box, Typography } from '@material-ui/core'
 
 const ContainerLayout = (props) => {
-    const { title, children, other } = props
+    const { title, children } = props
     return (
-        <Box px={5} {...other}>
+        <Box px={5}>
             {title ? (
-                <Typography variant="h4" style={{ marginBottom: '3rem' }}>
+                <Typography variant="h4" style={{ marginBottom: '1rem' }}>
                     {title}
                 </Typography>
             ) : null}

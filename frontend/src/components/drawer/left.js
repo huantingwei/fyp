@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { Fragment, useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
@@ -13,12 +13,15 @@ import {
     ListItemIcon,
     ListItemText,
     Typography,
+    Collapse,
 } from '@material-ui/core'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import CloudQueueOutlinedIcon from '@material-ui/icons/CloudQueueOutlined'
+import { ExpandLess, ExpandMore } from '@material-ui/icons'
+import { Link as RouterLink, useLocation } from 'react-router-dom'
 
 const drawerWidth = 240
 
@@ -94,12 +97,20 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function LeftDrawer(props) {
-    const { listItems } = props
-
+    const { listItems, children } = props
     const classes = useStyles()
     const theme = useTheme()
-    const [open, setOpen] = useState(false)
-    const [selected, setSelected] = useState(listItems[0])
+    const [pathName, setPathName] = useState(useLocation().pathname)
+    const [open, setOpen] = useState(true)
+    const [moduleOpen, setModuleOpen] = useState(
+        listItems.reduce((acc, curr) => {
+            if (curr.nested) {
+                return { ...acc, [curr.id]: false }
+            } else {
+                return acc
+            }
+        }, {})
+    )
 
     const handleDrawerOpen = () => {
         setOpen(true)
@@ -109,8 +120,14 @@ export default function LeftDrawer(props) {
         setOpen(false)
     }
 
-    const handleItemClick = (index) => {
-        setSelected(listItems[index])
+    const handleItemClick = (path) => {
+        setPathName(path)
+    }
+
+    const handleExpandClick = (index) => {
+        setModuleOpen((prev) => {
+            return { ...prev, [index]: !moduleOpen[index] }
+        })
     }
 
     return (
@@ -136,7 +153,7 @@ export default function LeftDrawer(props) {
                         <MenuIcon />
                     </IconButton>
                     {/* <Typography variant="h6" noWrap>
-                        Mini variant drawer
+                        TOP BAR TITLE HERE
                     </Typography> */}
                 </Toolbar>
             </AppBar>
@@ -165,15 +182,71 @@ export default function LeftDrawer(props) {
                 </div>
                 <Divider />
 
-                {/** ----------------------drawer content---------------------- **/}
+                {/** ----------------------drawer---------------------- **/}
                 <List>
                     {listItems.map((item, index) => {
-                        const { id, icon, text } = item
-                        return (
+                        const { id, icon, text, nested, path } = item
+                        return nested ? (
+                            /** ----------------------nested---------------------- **/
+                            <Fragment key={id}>
+                                <ListItem
+                                    button
+                                    onClick={() => handleExpandClick(id)}
+                                    selected={false}
+                                >
+                                    <ListItemIcon>{icon}</ListItemIcon>
+                                    <ListItemText primary={text} />
+                                    {moduleOpen[id] ? (
+                                        <ExpandLess />
+                                    ) : (
+                                        <ExpandMore />
+                                    )}
+                                </ListItem>
+                                <Collapse
+                                    in={moduleOpen[id]}
+                                    timeout="auto"
+                                    unmountOnExit
+                                >
+                                    <List component="div" disablePadding>
+                                        {nested.map((nestedItem) => {
+                                            let {
+                                                id,
+                                                icon,
+                                                text,
+                                                path,
+                                            } = nestedItem
+                                            return (
+                                                <ListItem
+                                                    key={id}
+                                                    button
+                                                    component={RouterLink}
+                                                    to={path}
+                                                    onClick={() =>
+                                                        handleItemClick(path)
+                                                    }
+                                                    selected={path === pathName}
+                                                >
+                                                    <ListItemIcon>
+                                                        {icon}
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        primary={text}
+                                                    />
+                                                </ListItem>
+                                            )
+                                        })}
+                                    </List>
+                                </Collapse>
+                            </Fragment>
+                        ) : (
+                            /** ----------------------not nested---------------------- **/
                             <ListItem
-                                button
                                 key={id}
-                                onClick={() => handleItemClick(index)}
+                                button
+                                component={RouterLink}
+                                to={path}
+                                selected={path === pathName}
+                                onClick={() => handleItemClick(path)}
                             >
                                 <ListItemIcon>{icon}</ListItemIcon>
                                 <ListItemText primary={text} />
@@ -182,15 +255,17 @@ export default function LeftDrawer(props) {
                     })}
                 </List>
                 <Divider />
-                {/** ----------------------drawer content---------------------- **/}
+                {/** ----------------------drawer---------------------- **/}
             </Drawer>
+            {/** ----------------------content---------------------- **/}
             <main className={classes.content}>
                 <div className={classes.toolbar} />
-                <Typography variant="h4" className={classes.contentTitle}>
-                    {selected.text}
-                </Typography>
-                {selected.content}
+                {/* <Typography variant="h4" className={classes.contentTitle}>
+                    {pathName}
+                </Typography> */}
+                {children}
             </main>
+            {/** ----------------------content---------------------- **/}
         </div>
     )
 }
@@ -208,10 +283,23 @@ LeftDrawer.defaultProps = {
             content: <Typography>Cluster</Typography>,
         },
         {
-            id: 'pod',
-            text: 'Pod',
+            id: 'workload',
+            text: 'Workload',
             icon: <CloudQueueOutlinedIcon />,
-            content: <Typography>Pod</Typography>,
+            nested: [
+                {
+                    id: 'pod',
+                    text: 'Pod',
+                    icon: <CloudQueueOutlinedIcon />,
+                    content: <Typography>Pod</Typography>,
+                },
+                {
+                    id: 'deployment',
+                    text: 'Deployment',
+                    icon: <CloudQueueOutlinedIcon />,
+                    content: <Typography>Deployment</Typography>,
+                },
+            ],
         },
     ],
 }

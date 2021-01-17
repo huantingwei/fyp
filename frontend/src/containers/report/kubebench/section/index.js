@@ -10,7 +10,7 @@ import kubebenchAPI from 'api/kubebench'
 import PWFCard from 'components/card/pwf'
 import KubeBenchDetail from '../detail'
 
-export default function KubeBenchSection(props) {
+const KubeBenchSection = (props) => {
     const [selected, setSelected] = useState([])
     const [selectedTitle, setSelectedTitle] = useState('')
     const [detailOpen, setDetailOpen] = useState(false)
@@ -111,3 +111,5 @@ export default function KubeBenchSection(props) {
 KubeBenchSection.propTypes = {
     data: PropTypes.any,
 }
+
+export default KubeBenchSection

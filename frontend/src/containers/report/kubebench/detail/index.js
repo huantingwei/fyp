@@ -6,8 +6,9 @@ import TableComponent from 'components/table/list'
 import { RightDrawer } from 'components/drawer'
 import { headCells, rows } from './configs'
 import { DataPresentationTable } from 'components/dataPresentation'
+import { transform } from 'utils/transform'
 
-export default function KubeBenchDetail(props) {
+const KubeBenchDetail = (props) => {
     const { data } = props
     const [selected, setSelected] = useState([])
     const [selectedTitle, setSelectedTitle] = useState('')
@@ -17,23 +18,6 @@ export default function KubeBenchDetail(props) {
         setSelected(transform(row))
         setSelectedTitle(row['section'])
         setDetailOpen(true)
-    }
-
-    const transform = (data) => {
-        console.log(data)
-        let res = []
-        if (Object.keys(data).length > 0) {
-            for (let key of Object.keys(data)) {
-                // TODO: type checking
-                res.push({
-                    label: key,
-                    content: data[key].toString(),
-                    type: 'text',
-                })
-            }
-        }
-        console.log('res', res)
-        return res
     }
 
     return (
@@ -58,3 +42,5 @@ export default function KubeBenchDetail(props) {
 KubeBenchDetail.defaultProps = {
     data: { results: rows },
 }
+
+export default KubeBenchDetail

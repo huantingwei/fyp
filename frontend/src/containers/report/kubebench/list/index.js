@@ -6,7 +6,7 @@ import { headCells, rows } from './configs'
 import Switch from 'components/switch'
 import KubeBenchSection from '../section'
 
-const KubeBenchReportList = (props) => {
+export default function KubeBenchReportList(props) {
     // TODO: call kubebench/list API and pass selected data into KubeBenchSection
     // const [selected, setSelected] = useState(null)
     const [detailOpen, setDetailOpen] = useState(false)
@@ -23,7 +23,7 @@ const KubeBenchReportList = (props) => {
             title={'Kubebench Report - DEFAULT TITLE'}
             content={<KubeBenchSection />} // detail content
         >
-            <ContainerLayout>
+            <ContainerLayout title="CIS">
                 <TableComponent
                     column={headCells}
                     dataSource={rows}
@@ -33,5 +33,3 @@ const KubeBenchReportList = (props) => {
         </Switch>
     )
 }
-
-export default KubeBenchReportList

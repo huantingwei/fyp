@@ -1,12 +1,15 @@
 import React from 'react'
-import Root from 'containers'
 import store from 'redux/store'
 import { Provider } from 'react-redux'
+import { BrowserRouter } from 'react-router-dom'
+import Root from 'containers'
 
 function App() {
     return (
         <Provider store={store}>
-            <Root />
+            <BrowserRouter>
+                <Root />
+            </BrowserRouter>
         </Provider>
     )
 }
