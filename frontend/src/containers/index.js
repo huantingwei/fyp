@@ -2,18 +2,22 @@ import React, { Fragment } from 'react'
 import { LeftDrawer } from 'components/drawer'
 import CloudQueueOutlinedIcon from '@material-ui/icons/CloudQueueOutlined'
 // import StorageOutlinedIcon from '@material-ui/icons/StorageOutlined'
-// import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined'
+import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined'
 import DashboardOutlinedIcon from '@material-ui/icons/DashboardOutlined'
-// import DeveloperBoardOutlinedIcon from '@material-ui/icons/DeveloperBoardOutlined'
+import DeveloperBoardOutlinedIcon from '@material-ui/icons/DeveloperBoardOutlined'
 import VerifiedUserOutlinedIcon from '@material-ui/icons/VerifiedUserOutlined'
-// import { KubeScoreReportList } from 'containers/report/kubescore'
+import BubbleChartOutlinedIcon from '@material-ui/icons/BubbleChartOutlined'
+import PermDataSettingOutlinedIcon from '@material-ui/icons/PermDataSettingOutlined'
+import DonutSmallOutlinedIcon from '@material-ui/icons/DonutSmallOutlined'
+import AccountTreeOutlinedIcon from '@material-ui/icons/AccountTreeOutlined'
 import Cluster from 'containers/cluster'
-// import Workload from 'containers/workload'
 import Node from 'containers/node/node'
 import NodePool from 'containers/node/nodepool'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import KubeBenchReportList from 'containers/report/kubebench/list'
 import Deployment from 'containers/workload/deployment'
+import Pod from 'containers/workload/pod'
+import Service from 'containers/network/service'
 
 const Root = (props) => {
     const routeItems = [
@@ -26,22 +30,6 @@ const Root = (props) => {
             component: () => <h1>HOME</h1>,
         },
         {
-            id: 'node',
-            path: '/node',
-            exact: true,
-            text: 'Node',
-            icon: <VerifiedUserOutlinedIcon />,
-            component: Node,
-        },
-        {
-            id: 'nodepool',
-            path: '/nodepool',
-            exact: true,
-            text: 'Node Pool',
-            icon: <VerifiedUserOutlinedIcon />,
-            component: NodePool,
-        },
-        {
             id: 'cluster',
             path: '/cluster',
             exact: true,
@@ -50,26 +38,66 @@ const Root = (props) => {
             component: Cluster,
         },
         {
+            id: 'node',
+            path: '/node',
+            exact: true,
+            text: 'Node',
+            icon: <DonutSmallOutlinedIcon />,
+            component: Node,
+        },
+        {
+            id: 'nodepool',
+            path: '/nodepool',
+            exact: true,
+            text: 'Node Pool',
+            icon: <BubbleChartOutlinedIcon />,
+            component: NodePool,
+        },
+        {
             id: 'workload',
             text: 'Workload',
-            icon: <CloudQueueOutlinedIcon />,
+            icon: <PermDataSettingOutlinedIcon />,
             nested: [
                 {
                     id: 'deployment',
                     path: '/workload/deployment',
                     exact: true,
                     text: 'Deployment',
-                    icon: <CloudQueueOutlinedIcon />,
+                    icon: <DeveloperBoardOutlinedIcon />,
                     component: Deployment,
+                },
+                {
+                    id: 'pod',
+                    path: '/workload/pod',
+                    exact: true,
+                    text: 'Pod',
+                    icon: <DeveloperBoardOutlinedIcon />,
+                    component: Pod,
                 },
             ],
         },
+        {
+            id: 'network',
+            text: 'Network',
+            icon: <SettingsEthernetOutlinedIcon />,
+            nested: [
+                {
+                    id: 'service',
+                    path: '/service',
+                    exact: true,
+                    text: 'Service',
+                    icon: <AccountTreeOutlinedIcon />,
+                    component: Service,
+                },
+            ],
+        },
+
         {
             id: 'kubebench',
             path: '/kubebench',
             exact: true,
             text: 'CIS',
-            icon: <DashboardOutlinedIcon />,
+            icon: <VerifiedUserOutlinedIcon />,
             component: KubeBenchReportList,
         },
     ]

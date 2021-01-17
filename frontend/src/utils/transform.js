@@ -1,3 +1,6 @@
+function notNullOrUndefined(value) {
+    return !(value === undefined) && !(value === null)
+}
 const transform = (data) => {
     let res = []
     if (Object.keys(data).length > 0) {
@@ -5,7 +8,9 @@ const transform = (data) => {
             // TODO: type checking
             res.push({
                 label: key,
-                content: data[key].toString(),
+                content: notNullOrUndefined(data[key])
+                    ? data[key].toString()
+                    : 'null',
                 type: 'text',
             })
         }
