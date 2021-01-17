@@ -1,40 +1,35 @@
 package overview
 
 import (
-	//standard lib
 	"fmt"
 	"context"
-	"net/http"
-	//client lib
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	//internal package
-	"github.com/huantingwei/fyp/util"
 	"github.com/huantingwei/fyp/object"
-	//gin
+	"github.com/huantingwei/fyp/util"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *Service) GetPodInfo(c *gin.Context){
-	podInfo := initPodArray();
+func (s *Service) refreshPodInfo(c *gin.Context){
+	podInfo := s.initPodArray();
 
-	insertManyResult, err := s.podCollection.InsertMany(context.TODO(),podInfo);
+	_, err := s.podCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		fmt.Printf(err.Error());
-	}else{
-		fmt.Println("Inserted multiple documents: ", insertManyResult.InsertedIDs);
+		util.ResponseError(c, err)
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"type": "pod",
-		"data": podInfo,
-		"count": len(podInfo),
-	});
+	_, err2 := s.podCollection.InsertMany(context.TODO(),podInfo);
+	if err2 != nil {
+		util.ResponseError(c, err2)
+	}
+
+	fmt.Println("refreshed pod info")
 }
 
-func initPodArray() []interface{}{
-	clientset := util.GetKubeClientSet();
+func (s *Service) initPodArray() []interface{}{
+	// clientset := util.GetKubeClientSet();
 
-	podList, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{});
+	podList, err := s.clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{});
 	if err != nil {
 		panic(err.Error())
 	}
@@ -112,4 +107,20 @@ func initPodArray() []interface{}{
 	}
 	
 	return podSlice;
+}
+
+func (s *Service) GetPodInfo(c *gin.Context) {
+	cursor, err := s.podCollection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		util.ResponseError(c, err)
+	}
+
+	// get a list of all returned documents and print them out
+	// see the mongo.Cursor documentation for more examples of using cursors
+	var results []bson.M
+	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
+		util.ResponseError(c, err2)
+	}
+
+	util.ResponseSuccess(c, results, "pod")
 }

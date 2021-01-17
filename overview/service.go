@@ -1,41 +1,35 @@
 package overview
 
 import (
-	//standard lib
 	"fmt"
 	"context"
-	"net/http"
-	//client lib
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	//internal package
-	"github.com/huantingwei/fyp/util"
 	"github.com/huantingwei/fyp/object"
-	//gin
+	"github.com/huantingwei/fyp/util"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *Service) GetServiceInfo(c *gin.Context){
-	serviceInfo := initServiceArray();
+func (s *Service) refreshServiceInfo(c *gin.Context){
+	serviceInfo := s.initServiceArray();
 
-	insertManyResult, err := s.serviceCollection.InsertMany(context.TODO(),serviceInfo);
+	_, err := s.serviceCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		fmt.Printf(err.Error());
-	}else{
-		fmt.Println("Inserted multiple documents: ", insertManyResult.InsertedIDs);
+		util.ResponseError(c, err)
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"type": "service",
-		"data": serviceInfo,
-		"count": len(serviceInfo),
-	});
+	_, err2 := s.serviceCollection.InsertMany(context.TODO(),serviceInfo);
+	if err2 != nil {
+		util.ResponseError(c, err)
+	}
 	
+	fmt.Println("refreshed service info")
 }
 
-func initServiceArray() []interface{}{
-	clientset := util.GetKubeClientSet();
+func (s *Service) initServiceArray() []interface{}{
+	//clientset := util.GetKubeClientSet();
 
-	serviceList, err := clientset.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{});
+	serviceList, err := s.clientset.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{});
 	if err != nil {
 		panic(err.Error())
 	}
@@ -83,4 +77,20 @@ func initServiceArray() []interface{}{
 		serviceSlice = append(serviceSlice, service);
 	}
 	return serviceSlice;
+}
+
+func (s *Service) GetServiceInfo(c *gin.Context) {
+	cursor, err := s.serviceCollection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		util.ResponseError(c, err)
+	}
+
+	// get a list of all returned documents and print them out
+	// see the mongo.Cursor documentation for more examples of using cursors
+	var results []bson.M
+	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
+		util.ResponseError(c, err2)
+	}
+
+	util.ResponseSuccess(c, results, "service")
 }

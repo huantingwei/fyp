@@ -1,39 +1,33 @@
 package overview
 
 import (
-	//standard lib
 	"fmt"
 	"context"
-	"net/http"
-	//client lib
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	//internal package
-	"github.com/huantingwei/fyp/util"
 	"github.com/huantingwei/fyp/object"
-	//gin
+	"github.com/huantingwei/fyp/util"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *Service) GetDeploymentInfo(c *gin.Context){
-	deploymentInfo := initDeploymentArray();
+func (s *Service) refreshDeploymentInfo(c *gin.Context){
+	deploymentInfo := s.initDeploymentArray();
 
-	insertManyResult, err := s.deploymentCollection.InsertMany(context.TODO(),deploymentInfo);
+	_, err := s.deploymentCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		fmt.Printf(err.Error());
-	}else{
-		fmt.Println("Inserted multiple documents: ", insertManyResult.InsertedIDs);
+		util.ResponseError(c, err)
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"type": "deployment",
-		"data": deploymentInfo,
-		"count": len(deploymentInfo),
-	});
+	_, err2 := s.deploymentCollection.InsertMany(context.TODO(),deploymentInfo);
+	if err2 != nil {
+		util.ResponseError(c, err2)
+	}
+
+	fmt.Println("refreshed deployment info")
 }
 
-func initDeploymentArray() []interface{}{
-	clientset := util.GetKubeClientSet();
-	deploymentList, err := clientset.AppsV1().Deployments("").List(context.TODO(), metav1.ListOptions{});
+func (s *Service) initDeploymentArray() []interface{}{
+	deploymentList, err := s.clientset.AppsV1().Deployments("").List(context.TODO(), metav1.ListOptions{});
 	if err != nil {
 		panic(err.Error())
 	}
@@ -89,4 +83,20 @@ func initDeploymentArray() []interface{}{
 	}
 
 	return deploymentSlice;
+}
+
+func (s *Service) GetDeploymentInfo(c *gin.Context) {
+	cursor, err := s.deploymentCollection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		util.ResponseError(c, err)
+	}
+
+	// get a list of all returned documents and print them out
+	// see the mongo.Cursor documentation for more examples of using cursors
+	var results []bson.M
+	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
+		util.ResponseError(c, err2)
+	}
+
+	util.ResponseSuccess(c, results, "deployment")
 }
