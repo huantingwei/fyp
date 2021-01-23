@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"os/exec"
+	"sync"
 
 	"github.com/huantingwei/fyp/util"
 	// "github.com/zegl/kube-score/scorecard"
@@ -133,6 +136,22 @@ func (s *Service) GetKubebench(c *gin.Context) {
 	}
 }
 
+func (s *Service) ListKubebench(c *gin.Context) {
+	var kbs []Kubebench
+	cursor, err := s.kubebenchCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		fmt.Printf("Error in list Kubebench results: %v\n", err)
+		util.ResponseError(c, err)
+		return
+	}
+	if err = cursor.All(context.TODO(), &kbs); err != nil {
+		fmt.Printf("Error in decoding Kubebench result list: %v\n", err)
+		util.ResponseError(c, err)
+		return
+	}
+	util.ResponseSuccess(c, kbs, "kubebench")
+}
+
 // NewKubebench run the kubebench script, read from result file, and create result object in DB
 // Response: id of the result object
 func (s *Service) NewKubebench(c *gin.Context) {
@@ -142,7 +161,26 @@ func (s *Service) NewKubebench(c *gin.Context) {
 	var err error
 
 	// run script
-	// TODO
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	cmd := exec.Command("./kubebench/run.sh")
+	err = cmd.Start()
+	if err != nil {
+		fmt.Printf("Error in execute kubebench script: %v\n", err)
+		goto responseError
+	}
+	go func() {
+		err = cmd.Wait()
+		if err != nil {
+			fmt.Printf("Error in waiting for kubebench script executing: %v\n", err)
+			log.Fatal(err)
+		} else {
+			wg.Done()
+		}
+	}()
+
+	wg.Wait()
 
 	// read from result file
 	kbbench, err = readFile()
