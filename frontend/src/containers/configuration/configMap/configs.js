@@ -12,22 +12,10 @@ const headCells = [
         label: 'Namespace',
     },
     {
-        id: 'Containers',
+        id: 'Keys',
         numeric: false,
         disablePadding: false,
-        label: 'Containers',
-    },
-    {
-        id: 'OwnerReferences',
-        numeric: false,
-        disablePadding: false,
-        label: 'Controlled By',
-    },
-    {
-        id: 'CreationTime',
-        numeric: false,
-        disablePadding: false,
-        label: 'Creation Time',
+        label: 'Keys',
     },
 ]
 

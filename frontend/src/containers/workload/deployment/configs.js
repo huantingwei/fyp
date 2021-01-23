@@ -1,11 +1,5 @@
 const headCells = [
     {
-        id: 'Uid',
-        numeric: false,
-        disablePadding: false,
-        label: 'ID',
-    },
-    {
         id: 'Name',
         numeric: false,
         disablePadding: false,
@@ -16,6 +10,28 @@ const headCells = [
         numeric: false,
         disablePadding: false,
         label: 'Namespace',
+    },
+    {
+        id: 'DesiredPods',
+        numeric: false,
+        disablePadding: false,
+        label: 'Desired Pods',
+    },
+    {
+        id: 'MatchLabels',
+        numeric: false,
+        disablePadding: false,
+        label: 'Match Labels',
+    },
+    // should display like
+    // ReadyReplicas / AvailableReplicas / UnavailableReplicas
+    // 1 / 1 / 0
+    // skip UpdatedReplicas for now
+    {
+        id: 'AvailableReplicas',
+        numeric: false,
+        disablePadding: false,
+        label: 'Available Replicas',
     },
     {
         id: 'CreationTime',
