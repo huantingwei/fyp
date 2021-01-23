@@ -5,18 +5,16 @@ import ContainerLayout from 'components/layout'
 import TableComponent from 'components/table/list'
 import { headCells } from './configs'
 import Switch from 'components/switch'
-import { req } from 'api'
-import kubebenchAPI from 'api/kubebench'
+// import { req } from 'api'
+// import kubebenchAPI from 'api/kubebench'
 import PWFCard from 'components/card/pwf'
 import KubeBenchDetail from '../detail'
 
 const KubeBenchSection = (props) => {
+    const { data } = props
     const [selected, setSelected] = useState([])
     const [selectedTitle, setSelectedTitle] = useState('')
     const [detailOpen, setDetailOpen] = useState(false)
-    // raw data
-    const [data, setData] = useState({})
-    // parsed data
     const [tableContent, setTableContent] = useState([])
     const [stat, setStat] = useState({
         pass: '',
@@ -51,19 +49,6 @@ const KubeBenchSection = (props) => {
         }
         return [tests, stat]
     }
-
-    // api get raw data
-    useEffect(() => {
-        async function get() {
-            try {
-                const res = await req(kubebenchAPI.get())
-                setData(res['Chapters'])
-            } catch (err) {
-                console.error(err)
-            }
-        }
-        get()
-    }, [])
 
     // parse data
     useEffect(() => {

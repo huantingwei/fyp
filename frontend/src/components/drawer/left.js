@@ -23,7 +23,7 @@ import CloudQueueOutlinedIcon from '@material-ui/icons/CloudQueueOutlined'
 import { ExpandLess, ExpandMore } from '@material-ui/icons'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 
-const drawerWidth = 240
+const drawerWidth = 260
 
 const useStyles = makeStyles((theme) => ({
     root: {
