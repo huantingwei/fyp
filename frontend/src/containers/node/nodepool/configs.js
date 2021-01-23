@@ -1,30 +1,30 @@
 const headCells = [
     {
-        id: 'Name',
+        id: 'name',
         numeric: false,
         disablePadding: false,
         label: 'Name',
     },
     {
-        id: 'ServiceAccount',
+        id: 'serviceaccount',
         numeric: false,
         disablePadding: false,
         label: 'Service Account',
     },
     {
-        id: 'Version',
+        id: 'version',
         numeric: false,
         disablePadding: false,
         label: 'Version',
     },
     {
-        id: 'Location',
+        id: 'location',
         numeric: false,
         disablePadding: false,
         label: 'Location',
     },
     {
-        id: 'AutoscalingEnabled',
+        id: 'autoscalingenabled',
         numeric: false,
         disablePadding: false,
         label: 'Autoscaling Enabled',

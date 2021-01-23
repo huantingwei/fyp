@@ -19,7 +19,7 @@ const transform = (data) => {
 }
 
 const flattenWorkload = (data) => {
-    const needFlatten = ['ObjectMeta']
+    const needFlatten = ['objectmeta']
     const flatten = (item) => {
         let resObj = {}
         for (let key of Object.keys(item)) {

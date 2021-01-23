@@ -77,7 +77,7 @@ const TableComponent = (props) => {
     const [orderBy, setOrderBy] = React.useState(defaultOrderBy)
     const [selected, setSelected] = React.useState([])
     const [page, setPage] = React.useState(0)
-    const [rowsPerPage, setRowsPerPage] = React.useState(5)
+    const [rowsPerPage, setRowsPerPage] = React.useState(10)
 
     const handleRowClick = (e, row) => {
         onRowSelect(row)

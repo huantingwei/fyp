@@ -1,30 +1,30 @@
 const headCells = [
     {
-        id: 'Name',
+        id: 'name',
         numeric: false,
         disablePadding: false,
         label: 'Name',
     },
     {
-        id: 'Namespace',
+        id: 'namespace',
         numeric: false,
         disablePadding: false,
         label: 'Namespace',
     },
     {
-        id: 'Containers',
+        id: 'containers',
         numeric: false,
         disablePadding: false,
         label: 'Containers',
     },
     {
-        id: 'OwnerReferences',
+        id: 'ownerreferences',
         numeric: false,
         disablePadding: false,
         label: 'Controlled By',
     },
     {
-        id: 'CreationTime',
+        id: 'creationtime',
         numeric: false,
         disablePadding: false,
         label: 'Creation Time',

@@ -1,24 +1,24 @@
 const headCells = [
     {
-        id: 'Name',
+        id: 'name',
         numeric: false,
         disablePadding: false,
         label: 'Name',
     },
     {
-        id: 'Namespace',
+        id: 'namespace',
         numeric: false,
         disablePadding: false,
         label: 'Namespace',
     },
     {
-        id: 'DesiredPods',
+        id: 'desiredpods',
         numeric: false,
         disablePadding: false,
         label: 'Desired Pods',
     },
     {
-        id: 'MatchLabels',
+        id: 'matchlabels',
         numeric: false,
         disablePadding: false,
         label: 'Match Labels',
@@ -28,13 +28,13 @@ const headCells = [
     // 1 / 1 / 0
     // skip UpdatedReplicas for now
     {
-        id: 'AvailableReplicas',
+        id: 'availablereplicas',
         numeric: false,
         disablePadding: false,
         label: 'Available Replicas',
     },
     {
-        id: 'CreationTime',
+        id: 'creationtime',
         numeric: false,
         disablePadding: false,
         label: 'Creation Time',

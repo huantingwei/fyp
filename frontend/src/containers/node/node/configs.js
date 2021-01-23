@@ -1,6 +1,6 @@
 const headCells = [
     {
-        id: 'Name',
+        id: 'name',
         numeric: false,
         disablePadding: false,
         label: 'Name',
@@ -12,13 +12,13 @@ const headCells = [
         label: 'Namespace',
     },
     {
-        id: 'CpuCap',
+        id: 'cpucap',
         numeric: false,
         disablePadding: false,
         label: 'CPU Cap',
     },
     {
-        id: 'MemoryCap',
+        id: 'memorycap',
         numeric: false,
         disablePadding: false,
         label: 'Memory Cap',

@@ -39,6 +39,7 @@ export default function KubeBenchReportList(props) {
     }
 
     const list = useCallback(async () => {
+        setApiStatus('loading')
         try {
             const res = await req(kubebenchAPI._list())
             setData(
@@ -46,7 +47,10 @@ export default function KubeBenchReportList(props) {
                     return { ...r, id: index + 1 }
                 })
             )
+            setApiStatus('success')
         } catch (err) {
+            setApiStatus('fail')
+            setApiMessage('API Server Error...')
             console.error(err)
         }
     }, [])
@@ -61,9 +65,7 @@ export default function KubeBenchReportList(props) {
 
     // api get raw data
     useEffect(() => {
-        setApiStatus('loading')
         list()
-        setApiStatus('success')
     }, [list])
 
     return (
