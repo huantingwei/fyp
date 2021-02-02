@@ -19,6 +19,7 @@ const headCells = [
     },
     {
         id: 'matchlabels',
+        type: 'chip',
         numeric: false,
         disablePadding: false,
         label: 'Match Labels',

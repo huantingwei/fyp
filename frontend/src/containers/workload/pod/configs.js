@@ -11,14 +11,17 @@ const headCells = [
         disablePadding: false,
         label: 'Namespace',
     },
-    {
-        id: 'containers',
-        numeric: false,
-        disablePadding: false,
-        label: 'Containers',
-    },
+    // {
+    //     id: 'containers',
+    //     numeric: false,
+    //     disablePadding: false,
+    //     label: 'Containers',
+    // },
+    // should link to deployment
     {
         id: 'ownerreferences',
+        type: 'arrayObj',
+        primaryKey: 'name',
         numeric: false,
         disablePadding: false,
         label: 'Controlled By',

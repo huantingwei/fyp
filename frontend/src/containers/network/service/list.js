@@ -5,7 +5,7 @@ import { headCells } from './configs'
 import Switch from 'components/switch'
 import ServiceDetail from './detail'
 import StatusHandler from 'components/statusHandler'
-import { transform, flattenWorkload } from 'utils/transform'
+import { flattenWorkload } from 'utils/transform'
 import { req } from 'api'
 import overviewAPI from 'api/overview'
 
@@ -49,7 +49,7 @@ export default function ServiceList(props) {
                 open={detailOpen}
                 onBackClick={handleDetailClose}
                 title={selectedTitle}
-                content={<ServiceDetail items={transform(selected)} />}
+                content={<ServiceDetail items={selected} />}
             >
                 <TableComponent
                     column={headCells}

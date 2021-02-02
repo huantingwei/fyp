@@ -23,12 +23,12 @@ const headCells = [
         disablePadding: false,
         label: 'Memory Cap',
     },
-    {
-        id: 'Conditions',
-        numeric: false,
-        disablePadding: false,
-        label: 'Conditions',
-    },
+    // {
+    //     id: 'Conditions',
+    //     numeric: false,
+    //     disablePadding: false,
+    //     label: 'Conditions',
+    // },
 ]
 
 export { headCells }

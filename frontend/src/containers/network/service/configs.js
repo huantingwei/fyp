@@ -23,12 +23,12 @@ const headCells = [
         disablePadding: false,
         label: 'Cluster IP',
     },
-    {
-        id: 'serviceports',
-        numeric: false,
-        disablePadding: false,
-        label: 'Service Port',
-    },
+    // {
+    //     id: 'serviceports',
+    //     numeric: false,
+    //     disablePadding: false,
+    //     label: 'Service Port',
+    // },
     {
         id: 'ingressip',
         numeric: false,
@@ -37,6 +37,7 @@ const headCells = [
     },
     {
         id: 'labelselectors',
+        type: 'chip',
         numeric: false,
         disablePadding: false,
         label: 'Label Selector',

@@ -5,7 +5,7 @@ import { headCells } from './configs'
 import Switch from 'components/switch'
 import NodeDetail from './detail'
 import StatusHandler from 'components/statusHandler'
-import { transform, flattenWorkload } from 'utils/transform'
+import { flattenWorkload } from 'utils/transform'
 import { req } from 'api'
 import overviewAPI from 'api/overview'
 
@@ -48,7 +48,7 @@ const NodeList = (props) => {
                 open={detailOpen}
                 onBackClick={handleDetailClose}
                 title={selectedTitle}
-                content={<NodeDetail items={transform(selected)} />}
+                content={<NodeDetail items={selected} />}
             >
                 <TableComponent
                     column={headCells}

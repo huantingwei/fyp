@@ -1,18 +1,57 @@
 function notNullOrUndefined(value) {
     return !(value === undefined) && !(value === null)
 }
-const transform = (data) => {
+const transform = (data, primaryKey = 'name', secondaryKey = '') => {
+    console.log(primaryKey, secondaryKey)
     let res = []
     if (Object.keys(data).length > 0) {
         for (let key of Object.keys(data)) {
-            // TODO: type checking
-            res.push({
-                label: key,
-                content: notNullOrUndefined(data[key])
-                    ? data[key].toString()
-                    : 'null',
-                type: 'text',
-            })
+            // null
+            if (data[key] === null) {
+                res.push({
+                    label: key,
+                    type: 'text',
+                    primaryKey: primaryKey,
+                    content: 'null',
+                })
+                // array
+            } else if (Array.isArray(data[key])) {
+                res.push({
+                    label: key,
+                    type: 'arrayObj',
+                    primaryKey: primaryKey,
+                    secondaryKey: secondaryKey,
+                    content: notNullOrUndefined(data[key]) ? data[key] : 'null',
+                })
+                // object
+            } else if (typeof data[key] === 'object') {
+                res.push({
+                    label: key,
+                    type: 'chip',
+                    content: notNullOrUndefined(data[key]) ? data[key] : 'null',
+                })
+                // long text
+            } else if (
+                typeof data[key] === 'string' &&
+                data[key].length > 100
+            ) {
+                res.push({
+                    label: key,
+                    type: 'multiline',
+                    content: notNullOrUndefined(data[key])
+                        ? data[key].toString()
+                        : 'null',
+                })
+                // short text
+            } else {
+                res.push({
+                    label: key,
+                    type: 'text',
+                    content: notNullOrUndefined(data[key])
+                        ? data[key].toString()
+                        : 'null',
+                })
+            }
         }
     }
     return res
@@ -51,4 +90,4 @@ const flattenWorkload = (data) => {
     }
 }
 
-export { transform, flattenWorkload }
+export { transform, flattenWorkload, notNullOrUndefined }

@@ -13,12 +13,13 @@ const useStyles = makeStyles((theme) => ({
 export default function DataPresentationTable(props) {
     const { items } = props
     const classes = useStyles()
-
+    console.log(items)
+    // TODO: label mapping
     return (
         <div className={classes.root}>
             <Grid container direction="column" spacing={3}>
                 {items.map((item) => {
-                    const { label, content, type } = item
+                    const { label } = item
                     return (
                         <Fragment key={uuid()}>
                             <Grid container item>
@@ -26,7 +27,7 @@ export default function DataPresentationTable(props) {
                                     <Typography>{label}</Typography>
                                 </Grid>
                                 <Grid item xs={9}>
-                                    <InputType type={type} value={content} />
+                                    <InputType {...item} />
                                 </Grid>
                             </Grid>
                             <Divider />

@@ -12,6 +12,7 @@ import {
 
 import TableTitle from './title'
 import TableHeader from './header'
+import Cell from './display'
 import { rows, headCells } from './configs'
 
 function descendingComparator(a, b, orderBy) {
@@ -148,9 +149,15 @@ const TableComponent = (props) => {
                                                 <TableCell key={'col' + index}>
                                                     {notNullOrUndefined(
                                                         row[col.id]
-                                                    )
-                                                        ? row[col.id].toString()
-                                                        : null}
+                                                    ) ? (
+                                                        <Cell
+                                                            type={col.type}
+                                                            value={row[col.id]}
+                                                            primaryKey={
+                                                                col.primaryKey
+                                                            }
+                                                        />
+                                                    ) : null}
                                                 </TableCell>
                                             )
                                         })}
