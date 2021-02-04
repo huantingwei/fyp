@@ -1,4 +1,10 @@
 class overviewAPI {
+    static refresh() {
+        return {
+            method: 'POST',
+            url: '/api/v1/overview/new',
+        }
+    }
     static getCluster() {
         return {
             method: 'GET',

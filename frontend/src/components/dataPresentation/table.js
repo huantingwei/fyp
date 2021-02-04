@@ -6,7 +6,7 @@ import uuid from 'react-uuid'
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        maxWidth: '60rem',
+        // maxWidth: '60rem',
     },
 }))
 
