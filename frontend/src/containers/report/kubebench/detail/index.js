@@ -1,7 +1,7 @@
-import React, { useState, Fragment } from 'react'
+import React, { useState } from 'react'
 // import PropTypes from 'prop-types'
 // import { Typography, Grid } from '@material-ui/core'
-// import ContainerLayout from 'components/layout'
+import ContainerLayout from 'components/layout'
 import TableComponent from 'components/table/list'
 import { RightDrawer } from 'components/drawer'
 import { headCells, rows } from './configs'
@@ -15,13 +15,15 @@ const KubeBenchDetail = (props) => {
     const [detailOpen, setDetailOpen] = useState(false)
 
     const handleRowSelect = (row) => {
-        setSelected(transform(row))
+        let tmp = { ...row }
+        tmp['test_info'] = row['test_info'].join('\r\n')
+        setSelected(transform(tmp))
         setSelectedTitle(row['section'])
         setDetailOpen(true)
     }
 
     return (
-        <Fragment>
+        <ContainerLayout>
             <TableComponent
                 column={headCells}
                 dataSource={data['results']}
@@ -35,7 +37,7 @@ const KubeBenchDetail = (props) => {
             >
                 <DataPresentationTable items={selected} />
             </RightDrawer>
-        </Fragment>
+        </ContainerLayout>
     )
 }
 

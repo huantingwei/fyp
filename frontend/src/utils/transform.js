@@ -2,7 +2,6 @@ function notNullOrUndefined(value) {
     return !(value === undefined) && !(value === null)
 }
 const transform = (data, primaryKey = 'name', secondaryKey = '') => {
-    console.log(primaryKey, secondaryKey)
     let res = []
     if (Object.keys(data).length > 0) {
         for (let key of Object.keys(data)) {

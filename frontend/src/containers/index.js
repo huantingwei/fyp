@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react'
 import { LeftDrawer } from 'components/drawer'
 import CloudQueueOutlinedIcon from '@material-ui/icons/CloudQueueOutlined'
-
 import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined'
 import DeveloperBoardOutlinedIcon from '@material-ui/icons/DeveloperBoardOutlined'
 import VerifiedUserOutlinedIcon from '@material-ui/icons/VerifiedUserOutlined'
@@ -27,6 +26,7 @@ import KubeBenchReportList from 'containers/report/kubebench/list'
 import Deployment from 'containers/workload/deployment'
 import Pod from 'containers/workload/pod'
 import Service from 'containers/network/service'
+import Auth from 'containers/login'
 
 const Root = (props) => {
     const routeItems = [
@@ -158,8 +158,14 @@ const Root = (props) => {
     ]
     return (
         <Fragment>
-            <LeftDrawer listItems={routeItems}>
-                <Switch>
+            <Switch>
+                <Route
+                    key={'login'}
+                    path={'/login'}
+                    exact={true}
+                    render={(routeProps) => <Auth {...routeProps} />}
+                />
+                <LeftDrawer listItems={routeItems}>
                     {routeItems
                         .reduce((acc, curr) => {
                             if (curr.nested) {
@@ -181,8 +187,8 @@ const Root = (props) => {
                             )
                         })}
                     <Redirect to={'/'} />
-                </Switch>
-            </LeftDrawer>
+                </LeftDrawer>
+            </Switch>
         </Fragment>
     )
 }

@@ -36,7 +36,7 @@ export default function InputType(props) {
                     multiline
                     fullWidth
                     variant="outlined"
-                    rows={5}
+                    rows={8}
                     value={content}
                     readOnly
                 />
