@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react'
-import { LeftDrawer } from 'components/drawer'
+import { useSelector } from 'react-redux'
+// import { LeftDrawer } from 'components/drawer'
 import CloudQueueOutlinedIcon from '@material-ui/icons/CloudQueueOutlined'
 import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined'
 import DeveloperBoardOutlinedIcon from '@material-ui/icons/DeveloperBoardOutlined'
@@ -18,6 +19,7 @@ import VpnKeyOutlinedIcon from '@material-ui/icons/VpnKeyOutlined'
 // import MemoryOutlinedIcon from '@material-ui/icons/MemoryOutlined'
 // import MenuBookOutlinedIcon from '@material-ui/icons/MenuBookOutlined'
 // import PollOutlinedIcon from '@material-ui/icons/PollOutlined'
+import LeftDrawer from 'containers/sidebar'
 import Cluster from 'containers/cluster'
 import Node from 'containers/node/node'
 import NodePool from 'containers/node/nodepool'
@@ -26,7 +28,7 @@ import KubeBenchReportList from 'containers/report/kubebench/list'
 import Deployment from 'containers/workload/deployment'
 import Pod from 'containers/workload/pod'
 import Service from 'containers/network/service'
-import Auth from 'containers/login'
+import Login from 'containers/login'
 
 const Root = (props) => {
     const routeItems = [
@@ -156,38 +158,47 @@ const Root = (props) => {
             component: KubeBenchReportList,
         },
     ]
+
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
+
     return (
         <Fragment>
             <Switch>
-                <Route
-                    key={'login'}
-                    path={'/login'}
-                    exact={true}
-                    render={(routeProps) => <Auth {...routeProps} />}
-                />
-                <LeftDrawer listItems={routeItems}>
-                    {routeItems
-                        .reduce((acc, curr) => {
-                            if (curr.nested) {
-                                return [...acc, ...curr.nested]
-                            } else {
-                                return [...acc, curr]
-                            }
-                        }, [])
-                        .map((routeItem) => {
-                            return (
-                                <Route
-                                    key={routeItem.id}
-                                    path={routeItem.path}
-                                    exact={routeItem.exact}
-                                    render={(routeProps) => (
-                                        <routeItem.component {...routeProps} />
-                                    )}
-                                />
-                            )
-                        })}
-                    <Redirect to={'/'} />
-                </LeftDrawer>
+                {isLoggedIn ? (
+                    <LeftDrawer listItems={routeItems}>
+                        {routeItems
+                            .reduce((acc, curr) => {
+                                if (curr.nested) {
+                                    return [...acc, ...curr.nested]
+                                } else {
+                                    return [...acc, curr]
+                                }
+                            }, [])
+                            .map((routeItem) => {
+                                return (
+                                    <Route
+                                        key={routeItem.id}
+                                        path={routeItem.path}
+                                        exact={routeItem.exact}
+                                        render={(routeProps) => (
+                                            <routeItem.component
+                                                {...routeProps}
+                                            />
+                                        )}
+                                    />
+                                )
+                            })}
+                        <Redirect to={'/'} />
+                    </LeftDrawer>
+                ) : (
+                    // <Route
+                    //     key={'login'}
+                    //     path={'/login'}
+                    //     exact={true}
+                    //     render={(routeProps) => <Login {...routeProps} />}
+                    // />
+                    <Login />
+                )}
             </Switch>
         </Fragment>
     )

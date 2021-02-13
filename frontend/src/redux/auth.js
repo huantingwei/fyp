@@ -1,24 +1,30 @@
 export const Types = {
     LOGIN: 'auth/LOGIN',
+    LOGOUT: 'auth/LOGOUT',
 }
 
 export const Actions = {
-    login: (data) => ({
+    login: () => ({
         type: Types.LOGIN,
-        payload: data,
+    }),
+    logout: () => ({
+        type: Types.LOGOUT,
     }),
 }
 
 const initialState = {
-    isLoggedIn: false,
+    isLoggedIn: true,
 }
 
 export default function identify(state = initialState, action) {
-    const { payload } = action
+    // const { payload } = action
 
     switch (action.type) {
         case Types.LOGIN: {
-            return { isLoggedIn: payload, ...state }
+            return { ...state, isLoggedIn: true }
+        }
+        case Types.LOGOUT: {
+            return { ...state, isLoggedIn: false }
         }
         default:
             return state

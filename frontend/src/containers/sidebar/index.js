@@ -14,14 +14,20 @@ import {
     ListItemText,
     Typography,
     Collapse,
+    MenuItem,
+    Menu,
 } from '@material-ui/core'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import CloudQueueOutlinedIcon from '@material-ui/icons/CloudQueueOutlined'
+import AccountBoxOutlinedIcon from '@material-ui/icons/AccountBoxOutlined'
 import { ExpandLess, ExpandMore } from '@material-ui/icons'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
+
+import { Actions } from 'redux/auth'
+import { useDispatch } from 'react-redux'
 
 const drawerWidth = 260
 
@@ -94,10 +100,15 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(2),
         marginBottom: theme.spacing(3),
     },
+    profile: {
+        position: 'absolute',
+        right: '3rem',
+    },
 }))
 
 export default function LeftDrawer(props) {
     const { listItems, children } = props
+    const dispatch = useDispatch()
     const classes = useStyles()
     const theme = useTheme()
     const [pathName, setPathName] = useState(useLocation().pathname)
@@ -111,7 +122,15 @@ export default function LeftDrawer(props) {
             }
         }, {})
     )
+    const [profileAnchor, setProfileAnchor] = React.useState(null)
 
+    const handleProfileClick = (event) => {
+        setProfileAnchor(event.currentTarget)
+    }
+
+    const handleProfileClose = () => {
+        setProfileAnchor(null)
+    }
     const handleDrawerOpen = () => {
         setOpen(true)
     }
@@ -133,6 +152,7 @@ export default function LeftDrawer(props) {
     return (
         <div className={classes.root}>
             <CssBaseline />
+            {/*----------------top bar -------------------- */}
             <AppBar
                 position="fixed"
                 className={clsx(classes.appBar, {
@@ -152,11 +172,38 @@ export default function LeftDrawer(props) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    {/* <Typography variant="h6" noWrap>
-                        TOP BAR TITLE HERE
-                    </Typography> */}
+                    <div className={classes.profile}>
+                        <IconButton
+                            color="inherit"
+                            aria-label="profile"
+                            onClick={handleProfileClick}
+                        >
+                            <AccountBoxOutlinedIcon />
+                            <Typography component="span">
+                                &nbsp;&nbsp;Profile
+                            </Typography>
+                        </IconButton>
+
+                        <Menu
+                            id="profile-menu"
+                            anchorEl={profileAnchor}
+                            keepMounted
+                            open={Boolean(profileAnchor)}
+                            onClose={handleProfileClose}
+                        >
+                            <MenuItem onClick={handleProfileClose}>
+                                Accout Info
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => dispatch(Actions.logout())}
+                            >
+                                Logout
+                            </MenuItem>
+                        </Menu>
+                    </div>
                 </Toolbar>
             </AppBar>
+            {/*----------------top bar -------------------- */}
             <Drawer
                 variant="permanent"
                 className={clsx(classes.drawer, {
