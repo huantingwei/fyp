@@ -3,31 +3,32 @@ package login
 import (
 	"fmt"
 	"io"
+
 	//"io/ioutil"
+	"bufio"
 	"log"
 	"os"
 	"os/exec"
-	"net/http"
-	"bufio"
 
 	"github.com/gin-gonic/gin"
+	"github.com/huantingwei/fyp/util"
 )
 
-type Service struct{
-	cmdStdinPipe			io.WriteCloser
+type Service struct {
+	cmdStdinPipe io.WriteCloser
 }
 
-func NewService(r *gin.RouterGroup){
-	s := &Service{};
+func NewService(r *gin.RouterGroup) {
+	s := &Service{}
 
 	go s.asyncBash()
 
-	r.POST("/", s.postProjectInfo);
+	r.POST("/login", s.postProjectInfo)
 	r.POST("/googleAuth", s.postGoogleCode)
 
 }
 
-func (s *Service) asyncBash(){
+func (s *Service) asyncBash() {
 	cmd := exec.Command("./login/kubebench.sh")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
@@ -38,56 +39,62 @@ func (s *Service) asyncBash(){
 	cmd.Run()
 }
 
-func (s *Service) postProjectInfo(c *gin.Context){
-	clusterName := c.PostForm("clusterName");
-	projectName := c.PostForm("projectName");
-	zoneName := c.PostForm("zoneName");
+type Project struct {
+	ClusterName string `json:"clusterName"`
+	ProjectName string `json:"projectName"`
+	ZoneName    string `json:"zoneName"`
+}
 
-	io.WriteString(s.cmdStdinPipe, clusterName + "\n")
-	io.WriteString(s.cmdStdinPipe, projectName + "\n")
-	io.WriteString(s.cmdStdinPipe, zoneName + "\n")
+type GoogleCode struct {
+	Code string `json:"code"`
+}
+
+func (s *Service) postProjectInfo(c *gin.Context) {
+
+	var p Project
+	c.ShouldBindJSON(&p)
+
+	io.WriteString(s.cmdStdinPipe, p.ClusterName+"\n")
+	io.WriteString(s.cmdStdinPipe, p.ProjectName+"\n")
+	io.WriteString(s.cmdStdinPipe, p.ZoneName+"\n")
 
 	urlChan := make(chan string)
 
-	go func(){
+	go func() {
 		urlChan <- readURLFromFile()
 	}()
 
-	url := <- urlChan
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"URL": url,
-	})
+	url := <-urlChan
+	util.ResponseSuccess(c, url, "login")
 }
 
-func readURLFromFile() string{
-	for{
-		if f, err := os.Stat("./url.txt") ; err == nil {
-			if f.Size() > 0{
+func readURLFromFile() string {
+	for {
+		if f, err := os.Stat("./url.txt"); err == nil {
+			if f.Size() > 0 {
 				file, err2 := os.Open("./url.txt")
 				if err2 != nil {
-					fmt.Printf(err2.Error());
+					fmt.Printf(err2.Error())
 				}
 				defer file.Close()
 
 				scanner := bufio.NewScanner(file)
-				scanner.Scan();
+				scanner.Scan()
 				return scanner.Text()
 			}
 		}
 	}
 }
 
-func (s *Service) postGoogleCode(c *gin.Context){
-	verificationCode := c.PostForm("code")
-	//io.WriteString(s.cmdStdinPipe, verificationCode + "\n")
+func (s *Service) postGoogleCode(c *gin.Context) {
+	var verificationCode GoogleCode
+	c.ShouldBindJSON(&verificationCode)
+
 	f, _ := os.Create("./token.txt")
-	_, err := f.WriteString(verificationCode)
+	_, err := f.WriteString(verificationCode.Code)
 	f.Close()
 	if err != nil {
-		log.Fatal(err)
+		util.ResponseError(c, err)
 	}
-	fmt.Printf("code: %s\n", verificationCode)
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"code": verificationCode,
-	})
+	util.ResponseSuccess(c, verificationCode, "verification")
 }
