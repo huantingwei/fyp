@@ -29,7 +29,7 @@ Before using the library, configure your kubectl using the command below
 gcloud container clusters get-credentials ${cluster name} --zone ${zone name} --project ${project name}
 ```
 
-running kubebench.sh in the kubebench folder will do this configuration for you automatically.
+running `login.sh` in the `/login` will do this configuration for you automatically.
 
 ## 2. Go client library for talking to GCP to retrieve cluster info (e.g. cluster, node pool)
 

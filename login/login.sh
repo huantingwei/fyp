@@ -1,4 +1,10 @@
 #!/bin/bash
+#-------Part 0: revoke all gcloud accounts-------------
+if [ $FYPENV = "prod" ]; then
+	gcloud auth revoke --all
+	echo hello
+fi
+
 #-------Part 1: automated authentication, connect gcloud to user's cloud project--------
 #-------as well as connect kubectl to the GKE cluster in that project--------
 
@@ -45,11 +51,11 @@ function loop {
 	#loop until the access token is passed by from user and written into token.txt		
 	while true
 	do
-		#true if token.txt exists
+		# true if token.txt exists
 		if [ -s $token ]; then
 			while read line; do
 			echo $line
-			done < $token	
+			done < $token
 			
 			break
 		else
@@ -59,15 +65,15 @@ function loop {
 	
 	while true
 	do
-		#true if the project options appears in stdout
+		# true if the project options appears in stdout
 		if [ -e $stdout ] && [[ ! -z $(grep "$projectname" "$stdout") ]]; then
-	
-			#extract the desired project option from stdout, write it to projindex.txt
+			
+			# extract the desired project option from stdout, write it to projindex.txt
 			grep $projectname $stdout | xargs > $projindex
 			
-			#extract the index number which is the third char
+			# extract the index number which is the third char
 			while read line; do
-			#echo the third char of line
+			# echo the third char of line
 			echo ${line:1:1}
 			done < $projindex
 			
@@ -84,26 +90,14 @@ function loop {
 }
 
 # 2>&1 | tee will write a copy of stdout to output.txt
-loop | gcloud init --console-only 2>&1 | tee ./output.txt
+loop | gcloud init --console-only --skip-diagnostics 2>&1 | tee ./output.txt
 
 #connect kubectl to the target GKE cluster
 gcloud container clusters get-credentials $clustername --zone $zonename --project $projectname
 
 sleep 10
 
-#-------Part 2: run kubebench remotely in user's cloud shell-------
-#-------pass the text output of kubebench back to local machine-------
-installkubebench="docker run --rm -v `pwd`:/host aquasec/kube-bench:latest install"
-runkubebench="../jeff/Desktop/kube-bench --benchmark gke-1.0 > output.txt"
-
-#ssh to user's remote cloud shell and install kubebench there
-gcloud beta cloud-shell ssh --command="$installkubebench"
-
-#run kube bench in cloud shell, write output to text file
-gcloud beta cloud-shell ssh --command="$runkubebench"
-
-#copy kubebench text output back to local machine
-gcloud beta cloud-shell scp cloudshell:~/output.txt  localhost:kubebench.txt
+echo "Finish authentication"
 
 #cleanup
 rm $stdout $url $token $projindex

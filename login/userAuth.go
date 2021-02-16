@@ -18,6 +18,16 @@ type Service struct {
 	cmdStdinPipe io.WriteCloser
 }
 
+type Project struct {
+	ClusterName string `json:"clusterName"`
+	ProjectName string `json:"projectName"`
+	ZoneName    string `json:"zoneName"`
+}
+
+type GoogleCode struct {
+	Code string `json:"code"`
+}
+
 func NewService(r *gin.RouterGroup) {
 	s := &Service{}
 
@@ -29,7 +39,7 @@ func NewService(r *gin.RouterGroup) {
 }
 
 func (s *Service) asyncBash() {
-	cmd := exec.Command("./login/kubebench.sh")
+	cmd := exec.Command("./login/login.sh")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		log.Fatal(err)
@@ -37,16 +47,6 @@ func (s *Service) asyncBash() {
 	s.cmdStdinPipe = stdin
 
 	cmd.Run()
-}
-
-type Project struct {
-	ClusterName string `json:"clusterName"`
-	ProjectName string `json:"projectName"`
-	ZoneName    string `json:"zoneName"`
-}
-
-type GoogleCode struct {
-	Code string `json:"code"`
 }
 
 func (s *Service) postProjectInfo(c *gin.Context) {
@@ -91,7 +91,7 @@ func (s *Service) postGoogleCode(c *gin.Context) {
 	c.ShouldBindJSON(&verificationCode)
 
 	f, _ := os.Create("./token.txt")
-	_, err := f.WriteString(verificationCode.Code)
+	_, err := f.WriteString(verificationCode.Code + "\n")
 	f.Close()
 	if err != nil {
 		util.ResponseError(c, err)
