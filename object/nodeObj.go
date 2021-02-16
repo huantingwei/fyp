@@ -1,44 +1,46 @@
 package object
 
-type Node struct{
+// Node is the vm instance
+type Node struct {
 	//Object metadata
-	ObjectMeta ObjectMeta
+	ObjectMeta ObjectMeta `json:"objectMeta"`
 
 	//Node spec
-	PodCIDR string
-	NodeID string
+	PodCIDR string `json:"podCIDR"`
+	NodeID  string `json:"nodeID"`
 
 	//Node system info
-	MachineID string
-	KernelVersion string
-	OsImage string
-	Os string
-	ContainerRuntime string
-	KubeletVersion string
-	KubeProxyVersion string
+	MachineID        string `json:"machineID"`
+	KernelVersion    string `json:"kernelVersion"`
+	OsImage          string `json:"osImage"`
+	Os               string `json:"os"`
+	ContainerRuntime string `json:"containerRuntime"`
+	KubeletVersion   string `json:"kubeletVersion"`
+	KubeProxyVersion string `json:"kubeProxyVersion"`
 
 	//resources capacity
-	CpuCap int
-	MemoryCap float64
-	PodsCap int
-	EphemeralStorageCap float64
-	StorageCap int
+	CPUCap              int     `json:"cpuCap"`
+	MemoryCap           float64 `json:"memoryCap"`
+	PodsCap             int     `json:"podsCap"`
+	EphemeralStorageCap float64 `json:"ephemeralStorageCap"`
+	StorageCap          int     `json:"storageCap"`
 
 	//resources allocatable
-	CpuAllocatable int
-	MemoryAllocatable float64
-	PodsAllocatable int
-	EphemeralStorageAllocatable float64
-	StorageAllocatable int
+	CPUAllocatable              int     `json:"cpuAllocatable"`
+	MemoryAllocatable           float64 `json:"memoryAllocatable"`
+	PodsAllocatable             int     `json:"podsAllocatable"`
+	EphemeralStorageAllocatable float64 `json:"ephemeralStorageAllocatable"`
+	StorageAllocatable          int     `json:"storageAllocatable"`
 
 	//Node conditions
-	Conditions []Condition
+	Conditions []Condition `json:"conditions"`
 }
 
-type Condition struct{
-	ConditionName string
-	Status string //true, false, or unknown
-	LastHeartbeatTime string
-	LastTransitionTime string
-	Message string
+// Condition of the node
+type Condition struct {
+	ConditionName      string `json:"conditionName"`
+	Status             string `json:"status"` //true, false, or unknown
+	LastHeartbeatTime  string `json:"lastHeartbeatTime"`
+	LastTransitionTime string `json:"lastTransitionTime"`
+	Message            string `json:"message"`
 }

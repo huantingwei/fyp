@@ -45,7 +45,7 @@ func (s *Service) initPodArray() []interface{}{
 				CreationTime: p.CreationTimestamp.String(),
 			},
 
-			DnsPolicy: string(p.Spec.DNSPolicy),
+			DNSPolicy: string(p.Spec.DNSPolicy),
 			RestartPolicy: string(p.Spec.RestartPolicy),
 			NodeName: p.Spec.NodeName,
 			HostIP: p.Status.HostIP,

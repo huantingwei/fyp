@@ -43,7 +43,7 @@ func (s *Service) initDeploymentArray() []interface{}{
 				CreationTime: d.CreationTimestamp.String(),
 			},
 			DesiredPods: int(*d.Spec.Replicas),
-			DnsPolicy: string(d.Spec.Template.Spec.DNSPolicy),
+			DNSPolicy: string(d.Spec.Template.Spec.DNSPolicy),
 			RestartPolicy: string(d.Spec.Template.Spec.RestartPolicy),
 			NodeName: d.Spec.Template.Spec.NodeName,
 			UpdatedReplicas: int(d.Status.UpdatedReplicas),
