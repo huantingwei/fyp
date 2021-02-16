@@ -9,8 +9,10 @@ import (
 	"os"
 	"os/exec"
 	"sync"
+	"time"
 
 	"github.com/huantingwei/fyp/util"
+
 	// "github.com/zegl/kube-score/scorecard"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -30,7 +32,9 @@ const (
 )
 
 type Kubebench struct {
-	Chapters []Chapter
+	ID         primitive.ObjectID `json:"id"`
+	CreateTime string             `json:"createTime"`
+	Chapters   []Chapter
 }
 
 type Chapter struct {
@@ -89,8 +93,11 @@ func readFile() (*Kubebench, error) {
 		fmt.Printf("Error in reading kubebench result json file: %v\n", err)
 		return nil, err
 	}
+	id := primitive.NewObjectID()
+	t := time.Now()
+	fmtS := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
 
-	return &Kubebench{kbchapters}, nil
+	return &Kubebench{id, fmtS, kbchapters}, nil
 }
 
 func create(kubebench *Kubebench, s *Service) (insertedID interface{}, err error) {
@@ -201,4 +208,16 @@ responseError:
 	util.ResponseError(c, err)
 	return
 
+}
+
+func (s *Service) DeleteKubebench(c *gin.Context) {
+	var tmp Kubebench
+	c.ShouldBindJSON(&tmp)
+
+	res, err := s.kubebenchCollection.DeleteOne(context.TODO(), bson.M{"id": tmp.ID})
+	if err != nil {
+		util.ResponseError(c, err)
+		return
+	}
+	util.ResponseSuccess(c, int(res.DeletedCount), "kubebench")
 }
