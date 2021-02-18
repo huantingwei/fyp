@@ -1,7 +1,7 @@
 const axios = require('axios')
 const instance = axios.create({
     baseURL: '',
-    timeout: 10000,
+    timeout: 20000,
 })
 
 async function req(apiConfig) {

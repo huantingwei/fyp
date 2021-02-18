@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { cloneElement } from 'react'
 import PropTypes from 'prop-types'
+import uuid from 'react-uuid'
 import { makeStyles } from '@material-ui/core/styles'
 import {
     Table,
@@ -72,7 +73,7 @@ function notNullOrUndefined(value) {
 }
 
 const TableComponent = (props) => {
-    const { dataSource, title, column, onRowSelect, pageControl } = props
+    const { dataSource, title, column, onRowSelect, pageControl, action } = props
     const classes = useStyles()
     const [order, setOrder] = React.useState('asc')
     const [orderBy, setOrderBy] = React.useState(defaultOrderBy)
@@ -108,9 +109,7 @@ const TableComponent = (props) => {
         setPage(0)
     }
 
-    const emptyRows =
-        rowsPerPage -
-        Math.min(rowsPerPage, dataSource.length - page * rowsPerPage)
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, dataSource.length - page * rowsPerPage)
 
     return (
         <div className={classes.root}>
@@ -124,6 +123,7 @@ const TableComponent = (props) => {
                 >
                     <TableHeader
                         column={column}
+                        action={action}
                         classes={classes}
                         numSelected={selected.length}
                         order={order}
@@ -134,10 +134,7 @@ const TableComponent = (props) => {
                     />
                     <TableBody>
                         {stableSort(dataSource, getComparator(order, orderBy))
-                            .slice(
-                                page * rowsPerPage,
-                                page * rowsPerPage + rowsPerPage
-                            )
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row, index) => {
                                 return (
                                     <TableRow
@@ -147,17 +144,25 @@ const TableComponent = (props) => {
                                         {column.map((col, index) => {
                                             return (
                                                 <TableCell key={'col' + index}>
-                                                    {notNullOrUndefined(
-                                                        row[col.id]
-                                                    ) ? (
+                                                    {notNullOrUndefined(row[col.id]) ? (
                                                         <Cell
                                                             type={col.type}
                                                             value={row[col.id]}
-                                                            primaryKey={
-                                                                col.primaryKey
-                                                            }
+                                                            primaryKey={col.primaryKey}
                                                         />
                                                     ) : null}
+                                                </TableCell>
+                                            )
+                                        })}
+                                        {action.map((act) => {
+                                            return (
+                                                <TableCell key={uuid()}>
+                                                    {cloneElement(act.item, {
+                                                        onClick: (e) => {
+                                                            e.stopPropagation()
+                                                            act.onClick(e, row)
+                                                        },
+                                                    })}
                                                 </TableCell>
                                             )
                                         })}
@@ -193,10 +198,12 @@ TableComponent.propTypes = {
     column: PropTypes.arrayOf(PropTypes.object),
     pageControl: PropTypes.bool,
     onRowSelect: PropTypes.func,
+    action: PropTypes.arrayOf(PropTypes.object),
 }
 
 TableComponent.defaultProps = {
     column: headCells,
+    action: [],
     dataSource: rows,
     title: false,
     onRowSelect: (e) => console.log(e),

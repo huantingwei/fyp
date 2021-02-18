@@ -13,7 +13,7 @@ export const Actions = {
 }
 
 const initialState = {
-    isLoggedIn: true,
+    isLoggedIn: localStorage.getItem('authenticated') ? true : true,
 }
 
 export default function identify(state = initialState, action) {
@@ -21,9 +21,11 @@ export default function identify(state = initialState, action) {
 
     switch (action.type) {
         case Types.LOGIN: {
+            localStorage.setItem('authenticated', true)
             return { ...state, isLoggedIn: true }
         }
         case Types.LOGOUT: {
+            localStorage.setItem('authenticated', false)
             return { ...state, isLoggedIn: false }
         }
         default:

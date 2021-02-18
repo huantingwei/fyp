@@ -13,6 +13,7 @@ import DetailsOutlinedIcon from '@material-ui/icons/DetailsOutlined'
 import DashboardOutlinedIcon from '@material-ui/icons/DashboardOutlined'
 import AccountBoxOutlinedIcon from '@material-ui/icons/AccountBoxOutlined'
 import VpnKeyOutlinedIcon from '@material-ui/icons/VpnKeyOutlined'
+import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined'
 // import ApartmentOutlinedIcon from '@material-ui/icons/ApartmentOutlined'
 // import FitnessCenterOutlinedIcon from '@material-ui/icons/FitnessCenterOutlined'
 // import StorageOutlinedIcon from '@material-ui/icons/StorageOutlined'
@@ -159,14 +160,26 @@ const Root = (props) => {
         },
     ]
 
+    const botItems = [
+        {
+            id: 'info',
+            path: '/info',
+            exact: true,
+            text: 'Account Info',
+            icon: <SettingsOutlinedIcon />,
+            component: () => <h1>Google Cloud Account Info</h1>,
+        },
+    ]
+
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
 
     return (
         <Fragment>
             <Switch>
                 {isLoggedIn ? (
-                    <LeftDrawer listItems={routeItems}>
+                    <LeftDrawer listItems={routeItems} botItems={botItems}>
                         {routeItems
+                            .concat(botItems)
                             .reduce((acc, curr) => {
                                 if (curr.nested) {
                                     return [...acc, ...curr.nested]
@@ -181,9 +194,7 @@ const Root = (props) => {
                                         path={routeItem.path}
                                         exact={routeItem.exact}
                                         render={(routeProps) => (
-                                            <routeItem.component
-                                                {...routeProps}
-                                            />
+                                            <routeItem.component {...routeProps} />
                                         )}
                                     />
                                 )
@@ -191,12 +202,6 @@ const Root = (props) => {
                         <Redirect to={'/'} />
                     </LeftDrawer>
                 ) : (
-                    // <Route
-                    //     key={'login'}
-                    //     path={'/login'}
-                    //     exact={true}
-                    //     render={(routeProps) => <Login {...routeProps} />}
-                    // />
                     <Login />
                 )}
             </Switch>

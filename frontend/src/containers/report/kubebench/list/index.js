@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 // import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
+// import { makeStyles } from '@material-ui/core/styles'
 import TableComponent from 'components/table/list'
 import ContainerLayout from 'components/layout'
 import { headCells } from './configs'
@@ -10,17 +10,15 @@ import { req } from 'api'
 import kubebenchAPI from 'api/kubebench'
 import { Button, Box } from '@material-ui/core'
 import StatusHandler from 'components/statusHandler'
-
-const useStyles = makeStyles((theme) => ({}))
+import { IconButton } from '@material-ui/core'
+import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined'
 
 export default function KubeBenchReportList(props) {
-    const classes = useStyles()
-    // TODO: call kubebench/list API and pass selected data into KubeBenchSection
     const [data, setData] = useState([])
     const [selected, setSelected] = useState([])
     const [detailOpen, setDetailOpen] = useState(false)
 
-    const [apiStatus, setApiStatus] = useState('initial')
+    const [apiStatus, setApiStatus] = useState('loading')
     const [apiMessage, setApiMessage] = useState('')
 
     const handleRowSelect = (row) => {
@@ -40,13 +38,10 @@ export default function KubeBenchReportList(props) {
 
     const list = useCallback(async () => {
         setApiStatus('loading')
+        setApiMessage('Loading...')
         try {
             const res = await req(kubebenchAPI._list())
-            setData(
-                res.map((r, index) => {
-                    return { ...r, id: index + 1 }
-                })
-            )
+            setData(res)
             setApiStatus('success')
         } catch (err) {
             setApiStatus('fail')
@@ -63,40 +58,71 @@ export default function KubeBenchReportList(props) {
         setApiStatus('success')
     }
 
+    const handleDeleteClick = async (row) => {
+        let { id } = row
+        setApiStatus('loading')
+        setApiMessage('Deleting...')
+        try {
+            await req(kubebenchAPI._delete({ id: id }))
+            await list()
+            setApiStatus('success')
+        } catch (err) {
+            setApiStatus('fail')
+            setApiMessage('API Server Error...')
+            console.error(err)
+        }
+    }
+
     // api get raw data
     useEffect(() => {
         list()
     }, [list])
 
+    const actions = [
+        {
+            item: (
+                <IconButton onClick={() => console.log('hi')} size="small">
+                    <DeleteOutlineOutlinedIcon fontSize="small" />
+                </IconButton>
+            ),
+            onClick: (e, row) => {
+                window.alert('delete ' + row.id + ' ?')
+                handleDeleteClick(row)
+            },
+        },
+    ]
+
     return (
-        <StatusHandler status={apiStatus} message={apiMessage}>
-            <Switch
-                open={detailOpen}
-                onBackClick={handleDetailClose}
-                title={'CIS Report'}
-                content={<KubeBenchSection data={selected} />} // detail content
-            >
-                <ContainerLayout title="CIS">
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="flex-end"
+        <div>
+            <StatusHandler status={apiStatus} message={apiMessage}>
+                <Switch
+                    open={detailOpen}
+                    onBackClick={handleDetailClose}
+                    title={'CIS Report'}
+                    content={<KubeBenchSection data={selected} />} // detail content
+                >
+                    <ContainerLayout
+                        title="CIS"
+                        boxProps={{ display: 'flex', flexDirection: 'column' }}
                     >
                         <Button
                             variant="outlined"
-                            className={classes.newButton}
                             onClick={handleNewClick}
+                            style={{ alignSelf: 'flex-end', width: '10rem', marginBottom: '1rem' }}
                         >
                             New Report
                         </Button>
-                        <TableComponent
-                            column={headCells}
-                            dataSource={data}
-                            onRowSelect={handleRowSelect}
-                        />
-                    </Box>
-                </ContainerLayout>
-            </Switch>
-        </StatusHandler>
+                        <Box display="flex" flexDirection="column" alignItems="flex-end">
+                            <TableComponent
+                                column={headCells}
+                                action={actions}
+                                dataSource={data}
+                                onRowSelect={handleRowSelect}
+                            />
+                        </Box>
+                    </ContainerLayout>
+                </Switch>
+            </StatusHandler>
+        </div>
     )
 }

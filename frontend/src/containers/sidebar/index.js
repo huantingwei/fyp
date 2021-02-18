@@ -107,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function LeftDrawer(props) {
-    const { listItems, children } = props
+    const { listItems, botItems, children } = props
     const dispatch = useDispatch()
     const classes = useStyles()
     const theme = useTheme()
@@ -179,9 +179,7 @@ export default function LeftDrawer(props) {
                             onClick={handleProfileClick}
                         >
                             <AccountBoxOutlinedIcon />
-                            <Typography component="span">
-                                &nbsp;&nbsp;Profile
-                            </Typography>
+                            <Typography component="span">&nbsp;&nbsp;Profile</Typography>
                         </IconButton>
 
                         <Menu
@@ -191,14 +189,7 @@ export default function LeftDrawer(props) {
                             open={Boolean(profileAnchor)}
                             onClose={handleProfileClose}
                         >
-                            <MenuItem onClick={handleProfileClose}>
-                                Accout Info
-                            </MenuItem>
-                            <MenuItem
-                                onClick={() => dispatch(Actions.logout())}
-                            >
-                                Logout
-                            </MenuItem>
+                            <MenuItem onClick={() => dispatch(Actions.logout())}>Logout</MenuItem>
                         </Menu>
                     </div>
                 </Toolbar>
@@ -220,11 +211,7 @@ export default function LeftDrawer(props) {
                 {/** open/close icon **/}
                 <div className={classes.toolbar}>
                     <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'rtl' ? (
-                            <ChevronRightIcon />
-                        ) : (
-                            <ChevronLeftIcon />
-                        )}
+                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                     </IconButton>
                 </div>
                 <Divider />
@@ -243,42 +230,23 @@ export default function LeftDrawer(props) {
                                 >
                                     <ListItemIcon>{icon}</ListItemIcon>
                                     <ListItemText primary={text} />
-                                    {moduleOpen[id] ? (
-                                        <ExpandLess />
-                                    ) : (
-                                        <ExpandMore />
-                                    )}
+                                    {moduleOpen[id] ? <ExpandLess /> : <ExpandMore />}
                                 </ListItem>
-                                <Collapse
-                                    in={moduleOpen[id]}
-                                    timeout="auto"
-                                    unmountOnExit
-                                >
+                                <Collapse in={moduleOpen[id]} timeout="auto" unmountOnExit>
                                     <List component="div" disablePadding>
                                         {nested.map((nestedItem) => {
-                                            let {
-                                                id,
-                                                icon,
-                                                text,
-                                                path,
-                                            } = nestedItem
+                                            let { id, icon, text, path } = nestedItem
                                             return (
                                                 <ListItem
                                                     key={id}
                                                     button
                                                     component={RouterLink}
                                                     to={path}
-                                                    onClick={() =>
-                                                        handleItemClick(path)
-                                                    }
+                                                    onClick={() => handleItemClick(path)}
                                                     selected={path === pathName}
                                                 >
-                                                    <ListItemIcon>
-                                                        {icon}
-                                                    </ListItemIcon>
-                                                    <ListItemText
-                                                        primary={text}
-                                                    />
+                                                    <ListItemIcon>{icon}</ListItemIcon>
+                                                    <ListItemText primary={text} />
                                                 </ListItem>
                                             )
                                         })}
@@ -300,8 +268,26 @@ export default function LeftDrawer(props) {
                             </ListItem>
                         )
                     })}
+                    <Divider />
+                    {/** -------------------bottom items------------------- **/}
+                    {botItems.map((item, index) => {
+                        const { id, icon, text, path } = item
+                        return (
+                            <ListItem
+                                key={id}
+                                button
+                                component={RouterLink}
+                                to={path}
+                                selected={path === pathName}
+                                onClick={() => handleItemClick(path)}
+                            >
+                                <ListItemIcon>{icon}</ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItem>
+                        )
+                    })}
                 </List>
-                <Divider />
+                {/** -------------------bottom items------------------- **/}
                 {/** ----------------------drawer---------------------- **/}
             </Drawer>
             {/** ----------------------content---------------------- **/}

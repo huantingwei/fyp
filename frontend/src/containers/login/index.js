@@ -15,14 +15,14 @@ import {
     CircularProgress,
 } from '@material-ui/core'
 import FilterDramaOutlinedIcon from '@material-ui/icons/FilterDramaOutlined'
-// import MuiAlert from '@material-ui/lab/Alert'
+import MuiAlert from '@material-ui/lab/Alert'
 import authAPI from 'api/login'
 import { req } from 'api'
 import { Actions } from 'redux/auth'
 
-// function Alert(props) {
-//     return <MuiAlert elevation={6} variant="filled" {...props} />
-// }
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />
+}
 
 const initialData = {
     projectName: '',
@@ -30,9 +30,10 @@ const initialData = {
     clusterName: '',
 }
 const initialErr = {
-    projectName: true,
-    zoneName: true,
-    clusterName: true,
+    projectName: false,
+    zoneName: false,
+    clusterName: false,
+    aggr: false,
 }
 
 function isEmptyOrSpaces(str) {
@@ -61,28 +62,40 @@ export default function Init(props) {
             setAuthUrlDialog(false)
             dispatch(Actions.login())
             setIsLoading(false)
-            // window.location = '/'
         } catch (err) {
             console.error(err)
         }
     }
 
     const handleLogin = async () => {
-        setIsLoading(true)
+        // check empty value
+        let er = false
         for (let k in data) {
             if (isEmptyOrSpaces(data[k])) {
                 setErr((prev) => {
                     return { ...prev, [k]: true, aggr: true }
                 })
-                return
+                er = true
             }
         }
+        if (er) return
+        // api call
         try {
+            setIsLoading(true)
             const url = await req(authAPI.login(data))
+            // check if no URL
+            if (isEmptyOrSpaces(url)) {
+                throw new Error('No URL found')
+            }
             setAuthUrl(url)
             setAuthUrlDialog(true)
+            setIsLoading(false)
         } catch (err) {
+            setErr((prev) => {
+                return { ...prev, aggr: true }
+            })
             console.error(err)
+            setIsLoading(false)
         }
     }
 
@@ -95,25 +108,21 @@ export default function Init(props) {
             setErr((prev) => {
                 return { ...prev, [id]: false }
             })
+        } else {
+            setErr((prev) => {
+                return { ...prev, [id]: true }
+            })
         }
     }
 
     return (
-        <Box
-            display="block"
-            margin="auto"
-            marginTop="5rem"
-            height={'100%'}
-            width={'60%'}
-        >
+        <Box display="block" margin="auto" marginTop="5rem" height={'100%'} width={'60%'}>
             <Grid container direction="column" spacing={3}>
                 <Grid item style={{ alignSelf: 'center' }}>
                     <FilterDramaOutlinedIcon style={{ fontSize: '5rem' }} />
                 </Grid>
                 <Grid item style={{ alignSelf: 'center' }}>
-                    <Typography variant="h5">
-                        Authenticate Your GCP Cluster
-                    </Typography>
+                    <Typography variant="h5">Authenticate Your GCP Cluster</Typography>
                 </Grid>
                 <Grid item>
                     <TextField
@@ -149,22 +158,16 @@ export default function Init(props) {
                     />
                 </Grid>
                 <Grid item>
-                    <Button
-                        onClick={handleLogin}
-                        disabled={isLoading}
-                        fullWidth
-                        variant="outlined"
-                    >
+                    <Button onClick={handleLogin} disabled={isLoading} fullWidth variant="outlined">
                         Authenticate &nbsp; &nbsp;
-                        {isLoading ? <CircularProgress /> : null}
+                        {isLoading ? <CircularProgress size={30} /> : null}
                     </Button>
                 </Grid>
-
-                {/* <Grid item>
-                        <Alert severity="error">
-                            Please enter the correct information!
-                        </Alert>
-                    </Grid> */}
+                {err.aggr ? (
+                    <Grid item>
+                        <Alert severity="error">Please enter the correct information!</Alert>
+                    </Grid>
+                ) : null}
             </Grid>
             <Dialog
                 open={authUrlDialog}
@@ -185,9 +188,7 @@ export default function Init(props) {
                         </Link>
                     </DialogContentText>
                     <DialogContentText id="auth-dialog-vericode">
-                        <Typography>
-                            And paste the verification code here:
-                        </Typography>
+                        <Typography>And paste the verification code here:</Typography>
                         <TextField
                             multiline
                             rows={8}
