@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
+	// "log"
 	"os"
 	"os/exec"
-	"sync"
+	// "sync"
 	"time"
 
 	"github.com/huantingwei/fyp/util"
@@ -24,25 +24,29 @@ const (
 	coll   = "kubebench"
 	// windows
 	// resultFile = "kubebench\\result.json"
-	// scriptFile = "kubebench\\kubebench.sh"
+	// runScript = "kubebench\\kubebench.sh"
 
 	// linux
-	resultFile = "./kubebench/result.json"
-	scriptFile = "./kubebench/kubebench.sh"
+	resultFile = "./kubebench/kb_output.json"
+	runScript = "./kubebench/run.sh"
 )
 
 type Kubebench struct {
 	ID         primitive.ObjectID `json:"id"`
 	CreateTime string             `json:"createTime"`
-	Chapters   []Chapter
+	Controls   []Control		  `json:"Controls"`
+	Totals	   Totals			  `json:"Totals"`
 }
 
-type Chapter struct {
+type Control struct {
 	ID       string    `json:"id"`
 	Version  string    `json:"version"`
 	Text     string    `json:"text"`
 	NodeType string    `json:"node_type"`
 	Sections []Section `json:"tests"`
+
+}
+type Totals struct {
 
 	TotalPass int `json:"total_pass"`
 	TotalFail int `json:"total_fail"`
@@ -52,6 +56,7 @@ type Chapter struct {
 
 type Section struct {
 	Section string   `json:"section"`
+	Type string `json:"type"`
 	Pass    int      `json:"pass"`
 	Warn    int      `json:"warn"`
 	Info    int      `json:"info"`
@@ -63,6 +68,7 @@ type Result struct {
 	TestNumber     string   `json:"test_number"`
 	TestDesc       string   `json:"test_desc"`
 	Audit          string   `json:"audit"`
+	AuditEnv       string   `json:"AuditEnv"`
 	AuditConfig    string   `json:"AuditConfig"`
 	Type           string   `json:"type"`
 	Remediation    string   `json:"remediation"`
@@ -86,9 +92,9 @@ func readFile() (*Kubebench, error) {
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	var kbchapters []Chapter
+	var kb Kubebench
 
-	err = json.Unmarshal(byteValue, &kbchapters)
+	err = json.Unmarshal(byteValue, &kb)
 	if err != nil {
 		fmt.Printf("Error in reading kubebench result json file: %v\n", err)
 		return nil, err
@@ -97,7 +103,10 @@ func readFile() (*Kubebench, error) {
 	t := time.Now()
 	fmtS := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
 
-	return &Kubebench{id, fmtS, kbchapters}, nil
+	kb.ID = id
+	kb.CreateTime = fmtS
+
+	return &kb, nil
 }
 
 func create(kubebench *Kubebench, s *Service) (insertedID interface{}, err error) {
@@ -166,28 +175,17 @@ func (s *Service) NewKubebench(c *gin.Context) {
 	var kbbench *Kubebench
 	var id interface{}
 	var err error
+	// var wg sync.WaitGroup
+	// goErr := make(chan error)
+	// wgDone := make(chan bool)
+	
 
-	// run script
-	var wg sync.WaitGroup
-	wg.Add(1)
-
-	cmd := exec.Command("./kubebench/run.sh")
-	err = cmd.Start()
+	cmd := exec.Command(runScript)
+	err = cmd.Run()
 	if err != nil {
-		fmt.Printf("Error in execute kubebench script: %v\n", err)
+		fmt.Printf("Error in waiting for kubebench script executing: %v\n", err)
 		goto responseError
 	}
-	go func() {
-		err = cmd.Wait()
-		if err != nil {
-			fmt.Printf("Error in waiting for kubebench script executing: %v\n", err)
-			log.Fatal(err)
-		} else {
-			wg.Done()
-		}
-	}()
-
-	wg.Wait()
 
 	// read from result file
 	kbbench, err = readFile()
@@ -203,6 +201,70 @@ func (s *Service) NewKubebench(c *gin.Context) {
 	}
 	util.ResponseSuccess(c, id, "kubebench")
 	return
+
+/*
+	err = cmd.Start()
+	if err != nil {
+		fmt.Printf("Error in starting kubebench script: %v\n", err)
+		goto responseError
+	}
+	// run script
+	
+	wg.Add(1)
+
+	go func() {
+		err = cmd.Run()
+		//err = cmd.Wait()
+		fmt.Printf("executing...")
+		if err != nil {
+			fmt.Printf("Error in waiting for kubebench script executing: %v\n", err)
+			goErr <- err
+		}
+		wg.Done()
+	}()
+
+	go func(){
+		wg.Wait()
+		close(wgDone)
+	}()
+	select {
+	case <-wgDone:
+		// read from result file
+		kbbench, err = readFile()
+		if err != nil {
+			fmt.Printf("Error in read kubebench result file: %v\n", err)
+			goto responseError
+		}
+		// create result in DB
+		id, err = create(kbbench, s)
+		if err != nil {
+			fmt.Printf("Error in create kubebench result in DB: %v\n", err)
+			goto responseError
+		}
+		util.ResponseSuccess(c, id, "kubebench")
+		return
+	case err = <-goErr:
+		close(goErr)
+		goto responseError
+	}
+	*/
+
+/*
+	// read from result file
+	kbbench, err = readFile()
+	if err != nil {
+		fmt.Printf("Error in read kubebench result file: %v\n", err)
+		goto responseError
+	}
+	// create result in DB
+	id, err = create(kbbench, s)
+	if err != nil {
+		fmt.Printf("Error in create kubebench result in DB: %v\n", err)
+		goto responseError
+	}
+	util.ResponseSuccess(c, id, "kubebench")
+	return
+	*/
 
 responseError:
 	util.ResponseError(c, err)
