@@ -30,6 +30,8 @@ import Deployment from 'containers/workload/deployment'
 import Pod from 'containers/workload/pod'
 import Service from 'containers/network/service'
 import Login from 'containers/login'
+import KubeScoreObjList from 'containers/report/kubescore/objList'
+import Home from 'containers/home'
 
 const Root = (props) => {
     const routeItems = [
@@ -39,7 +41,7 @@ const Root = (props) => {
             exact: true,
             text: 'Home',
             icon: <HouseOutlinedIcon />,
-            component: () => <h1>HOME</h1>,
+            component: Home,
         },
         {
             id: 'cluster',
@@ -157,6 +159,14 @@ const Root = (props) => {
             text: 'CIS',
             icon: <VerifiedUserOutlinedIcon />,
             component: KubeBenchReportList,
+        },
+        {
+            id: 'kubescore',
+            path: '/kubescore',
+            exact: true,
+            text: 'Object Analysis',
+            icon: <VerifiedUserOutlinedIcon />,
+            component: KubeScoreObjList,
         },
     ]
 
