@@ -7,9 +7,10 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/huantingwei/fyp/util"
-	// "github.com/zegl/kube-score/scorecard"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -24,8 +25,8 @@ const (
 	// scriptFile = "kubescore\\kubescore.sh"
 
 	// linux
-	resultFile = "kubescore/result_test.json"
-	scriptFile = "./kubescore/kubescore.sh"
+	resultFile = "./kubescore/res.json"
+	runScript = "./kubescore/run.sh"
 )
 
 type Check struct {
@@ -59,29 +60,11 @@ type TestScoreComment struct {
 }
 
 type KubeScore struct {
+	ID         primitive.ObjectID `json:"id"`
+	CreateTime string             `json:"createTime"`
 	ScoredObjects []ScoredObject `json:"kubescore"`
 }
 
-func runScript() error {
-	// temp name for dev
-	// namespace := "fyp"
-
-	fmt.Printf("Run kubescore validation...\n")
-	/*	err := exec.Command("ls").Run()
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}*/
-	cmd := exec.Command("./kubescore/kubescore.sh")
-	err := cmd.Run()
-
-	if err != nil {
-		fmt.Printf("Error in running kubescore: %v\n", err)
-		return err
-	}
-
-	return nil
-}
 
 func readFile() (*KubeScore, error) {
 	jsonFile, err := os.Open(resultFile)
@@ -101,20 +84,23 @@ func readFile() (*KubeScore, error) {
 		fmt.Printf("Error in reading kubescore result json file: %v\n", err)
 		return nil, err
 	}
+	id := primitive.NewObjectID()
+	t := time.Now()
+	fmtS := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
 
-	return &KubeScore{kbscores}, nil
+	return &KubeScore{id, fmtS, kbscores}, nil
 }
 
 func create(kubescore *KubeScore, s *Service) (insertedID interface{}, err error) {
 
-	res, err := s.kubescoreCollection.InsertOne(context.Background(), *kubescore)
+	_, err = s.kubescoreCollection.InsertOne(context.Background(), *kubescore)
 	if err != nil {
 		fmt.Printf("Error in creating kubescore result: %v\n", err)
 		return "-1", err
 	}
 
-	fmt.Printf("Successful create; Inserted ID: %s\n", res.InsertedID)
-	return res.InsertedID, nil
+	fmt.Printf("Successful create; Inserted ID: %s\n", kubescore.ID)
+	return kubescore.ID, nil
 
 }
 
@@ -156,11 +142,10 @@ func (s *Service) NewKubescore(c *gin.Context) {
 	var id interface{}
 	var err error
 
-	// run script
-	// TODO
-
-	err = runScript()
+	cmd := exec.Command(runScript)
+	err = cmd.Run()
 	if err != nil {
+		fmt.Printf("Error in waiting for kubescore script executing: %v\n", err)
 		goto responseError
 	}
 
@@ -183,4 +168,32 @@ responseError:
 	util.ResponseError(c, err)
 	return
 
+}
+// ListKubescore list all results
+func (s *Service) ListKubescore(c *gin.Context) {
+	var kcs []KubeScore
+	cursor, err := s.kubescoreCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		fmt.Printf("Error in list Kubescore results: %v\n", err)
+		util.ResponseError(c, err)
+		return
+	}
+	if err = cursor.All(context.TODO(), &kcs); err != nil {
+		fmt.Printf("Error in decoding Kubescore result list: %v\n", err)
+		util.ResponseError(c, err)
+		return
+	}
+	util.ResponseSuccess(c, kcs, "kubescore")
+}
+
+func (s *Service) DeleteKubescore(c *gin.Context) {
+	var tmp KubeScore
+	c.ShouldBindJSON(&tmp)
+
+	res, err := s.kubescoreCollection.DeleteOne(context.TODO(), bson.M{"id": tmp.ID})
+	if err != nil {
+		util.ResponseError(c, err)
+		return
+	}
+	util.ResponseSuccess(c, int(res.DeletedCount), "kubescore")
 }

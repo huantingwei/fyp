@@ -5,15 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	// "log"
 	"os"
 	"os/exec"
-	// "sync"
 	"time"
 
 	"github.com/huantingwei/fyp/util"
 
-	// "github.com/zegl/kube-score/scorecard"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -111,14 +108,14 @@ func readFile() (*Kubebench, error) {
 
 func create(kubebench *Kubebench, s *Service) (insertedID interface{}, err error) {
 
-	res, err := s.kubebenchCollection.InsertOne(context.Background(), *kubebench)
+	_, err = s.kubebenchCollection.InsertOne(context.Background(), *kubebench)
 	if err != nil {
 		fmt.Printf("Error in creating kubebench result: %v\n", err)
 		return "-1", err
 	}
 
-	fmt.Printf("Successful create; Inserted ID: %s\n", res.InsertedID)
-	return res.InsertedID, nil
+	fmt.Printf("Successful create; Inserted ID: %s\n",kubebench.ID)
+	return kubebench.ID, nil
 
 }
 
@@ -175,10 +172,6 @@ func (s *Service) NewKubebench(c *gin.Context) {
 	var kbbench *Kubebench
 	var id interface{}
 	var err error
-	// var wg sync.WaitGroup
-	// goErr := make(chan error)
-	// wgDone := make(chan bool)
-	
 
 	cmd := exec.Command(runScript)
 	err = cmd.Run()
@@ -201,70 +194,6 @@ func (s *Service) NewKubebench(c *gin.Context) {
 	}
 	util.ResponseSuccess(c, id, "kubebench")
 	return
-
-/*
-	err = cmd.Start()
-	if err != nil {
-		fmt.Printf("Error in starting kubebench script: %v\n", err)
-		goto responseError
-	}
-	// run script
-	
-	wg.Add(1)
-
-	go func() {
-		err = cmd.Run()
-		//err = cmd.Wait()
-		fmt.Printf("executing...")
-		if err != nil {
-			fmt.Printf("Error in waiting for kubebench script executing: %v\n", err)
-			goErr <- err
-		}
-		wg.Done()
-	}()
-
-	go func(){
-		wg.Wait()
-		close(wgDone)
-	}()
-	select {
-	case <-wgDone:
-		// read from result file
-		kbbench, err = readFile()
-		if err != nil {
-			fmt.Printf("Error in read kubebench result file: %v\n", err)
-			goto responseError
-		}
-		// create result in DB
-		id, err = create(kbbench, s)
-		if err != nil {
-			fmt.Printf("Error in create kubebench result in DB: %v\n", err)
-			goto responseError
-		}
-		util.ResponseSuccess(c, id, "kubebench")
-		return
-	case err = <-goErr:
-		close(goErr)
-		goto responseError
-	}
-	*/
-
-/*
-	// read from result file
-	kbbench, err = readFile()
-	if err != nil {
-		fmt.Printf("Error in read kubebench result file: %v\n", err)
-		goto responseError
-	}
-	// create result in DB
-	id, err = create(kbbench, s)
-	if err != nil {
-		fmt.Printf("Error in create kubebench result in DB: %v\n", err)
-		goto responseError
-	}
-	util.ResponseSuccess(c, id, "kubebench")
-	return
-	*/
 
 responseError:
 	util.ResponseError(c, err)
