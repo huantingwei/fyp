@@ -32,6 +32,7 @@ import Service from 'containers/network/service'
 import Login from 'containers/login'
 import KubeScoreObjList from 'containers/report/kubescore/objList'
 import Home from 'containers/home'
+import Project from 'containers/project'
 
 const Root = (props) => {
     const routeItems = [
@@ -175,9 +176,9 @@ const Root = (props) => {
             id: 'info',
             path: '/info',
             exact: true,
-            text: 'Account Info',
+            text: 'Project Info',
             icon: <SettingsOutlinedIcon />,
-            component: () => <h1>Google Cloud Account Info</h1>,
+            component: Project,
         },
     ]
 

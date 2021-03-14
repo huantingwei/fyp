@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 // import PropTypes from 'prop-types'
+import { Button } from '@material-ui/core'
 import TableComponent from 'components/table/list'
 import ContainerLayout from 'components/layout'
 import { headCells } from './configs'
@@ -21,8 +22,8 @@ const KubeScoreObjList = (props) => {
         setApiMessage('Loading...')
         try {
             const res = await req(kubescoreAPI._list())
-            // always displays the first one
-            setData(res[0]['kubescore'])
+            // always displays the newest one
+            setData(res[res.length - 1]['kubescore'])
             setApiStatus('success')
         } catch (err) {
             setApiStatus('fail')
@@ -57,13 +58,24 @@ const KubeScoreObjList = (props) => {
     }
 
     const handleRowSelect = (row) => {
-        console.log(row['checks'])
         setSelected(row['checks'])
         setDetailOpen(true)
     }
 
     const handleDetailClose = () => setDetailOpen(false)
 
+    const handleRefreshClick = async () => {
+        setApiStatus('loading')
+        setApiMessage('Refreshing object analysis...Please wait...')
+        try {
+            await req(kubescoreAPI._new())
+            await list()
+            setApiStatus('success')
+        } catch (err) {
+            setApiStatus('fail')
+            setApiMessage('Cannot refresh. Please try again')
+        }
+    }
     return (
         <StatusHandler status={apiStatus} message={apiMessage}>
             <Switch
@@ -72,7 +84,17 @@ const KubeScoreObjList = (props) => {
                 title={'Object Analysis'}
                 content={<KubeScoreChecks data={selected} />}
             >
-                <ContainerLayout title={'Object Analysis'}>
+                <ContainerLayout
+                    title={'Object Analysis'}
+                    boxProps={{ display: 'flex', flexDirection: 'column' }}
+                >
+                    <Button
+                        variant="outlined"
+                        onClick={handleRefreshClick}
+                        style={{ alignSelf: 'flex-end', width: '10rem', marginBottom: '1rem' }}
+                    >
+                        Refresh
+                    </Button>
                     <TableComponent
                         column={headCells}
                         dataSource={getMeta(data)}
