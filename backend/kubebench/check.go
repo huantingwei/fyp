@@ -24,8 +24,8 @@ const (
 	// runScript = "kubebench\\kubebench.sh"
 
 	// linux
-	resultFile = "./kubebench/kb_output.json"
-	runScript = "./kubebench/run.sh"
+	resultFile = "$(pwd)/backend/kubebench/kb_output.json"
+	runScript ="$(pwd)/backend/kubebench/run.sh"
 )
 
 type Kubebench struct {
