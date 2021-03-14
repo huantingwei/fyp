@@ -41,7 +41,3 @@ namespace="default"
 cd ${objectDir}
 sudo docker run --rm -v $(pwd):/project zegl/kube-score:v1.10.0 score *.yaml -o ${format} >  ../res.json
 cd ${pwd}
-
-# clean up
-rm -r ${objectDir}
-rm ${resultFile}

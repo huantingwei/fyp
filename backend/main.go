@@ -33,7 +33,7 @@ func main() {
 
 	auth := router.Group("/")
 	{
-		login.NewService(auth)
+		login.NewService(auth, db)
 	}
 
 	router.Run()

@@ -1,6 +1,7 @@
 package login
 
 import (
+	"context"
 	"fmt"
 	"io"
 
@@ -11,11 +12,14 @@ import (
 	"os/exec"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"github.com/huantingwei/fyp/util"
 )
 
 type Service struct {
 	cmdStdinPipe io.WriteCloser
+	userCollection *mongo.Collection
 }
 
 type Project struct {
@@ -28,13 +32,18 @@ type GoogleCode struct {
 	Code string `json:"code"`
 }
 
-func NewService(r *gin.RouterGroup) {
-	s := &Service{}
+
+func NewService(r *gin.RouterGroup, db util.Database) {
+	s := &Service{
+		userCollection: db.Handle.Collection("user"),
+	}
 
 	go s.asyncBash()
 
 	r.POST("/login", s.postProjectInfo)
 	r.POST("/googleAuth", s.postGoogleCode)
+	r.GET("/project", s.GetProject)
+	r.POST("/project", s.NewProject)
 
 }
 
@@ -49,10 +58,53 @@ func (s *Service) asyncBash() {
 	cmd.Run()
 }
 
+func (s *Service) NewProject(c *gin.Context){
+	var p Project
+	c.ShouldBindJSON(&p)
+	var err error
+	// delete any previous records
+	_, err = s.userCollection.DeleteMany(context.Background(), bson.M{})
+	if err != nil {
+		util.ResponseError(c, err)
+		return
+	}
+
+	// insert a new one
+	_, err = s.userCollection.InsertOne(context.Background(), p)
+	if err != nil {
+		util.ResponseError(c, err)
+		return
+	}
+	util.ResponseSuccess(c, p, "new project")
+}
+
+func (s *Service) GetProject(c *gin.Context){
+	var p *Project
+	err :=  s.userCollection.FindOne(context.Background(), bson.M{}).Decode(&p)
+	if err != nil {
+		util.ResponseError(c, err)
+		return
+	}
+	util.ResponseSuccess(c, p, "project info")
+}
+
 func (s *Service) postProjectInfo(c *gin.Context) {
 
 	var p Project
 	c.ShouldBindJSON(&p)
+	/*
+	// delete any previous records
+	_, err := s.userCollection.DeleteMany(context.Background(), bson.M{})
+	if err != nil {
+		util.ResponseError(c, err)
+	}
+
+	// insert a new one
+	_, err := s.userCollection.InsertOne(context.Background(), *p)
+	if err != nil {
+		util.ResponseError(c, err)
+	}
+	*/
 
 	io.WriteString(s.cmdStdinPipe, p.ClusterName+"\n")
 	io.WriteString(s.cmdStdinPipe, p.ProjectName+"\n")
