@@ -49,3 +49,15 @@ Your app is ready to be deployed!
 * [Typechecking With PropTypes](https://reactjs.org/docs/typechecking-with-proptypes.html)
 * [How Web Apps Work: JavaScript and the DOM](https://blog.isquaredsoftware.com/2020/11/how-web-apps-work-javascript-dom/) and other articles in the "How Web Apps Work" series
 * [Javascript - Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+
+## Deployment
+
+### npm
+
+### pm2
+```
+npm install -g serve
+npm install -g pm2
+npm run build 
+pm2 serve build 5000 --name fyp --spa 
+```

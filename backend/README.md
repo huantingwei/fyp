@@ -17,6 +17,9 @@ curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-
 tar xvzf google-cloud-sdk-331.0.0-linux-x86_64.tar.gz
 ./google-cloud-sdk/install.sh
 
+gcloud components install kubectl
+gcloud components install beta
+
 ### Docker
 ```
 sudo apt-get remove docker docker-engine docker.io containerd runc
@@ -39,7 +42,7 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
 
 verify with
-`sudo apt-get install docker-ce docker-ce-cli containerd.io`
+`sudo docker run hello-world`
 
 ### Database Setup: MongoDB
 
