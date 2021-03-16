@@ -5,6 +5,7 @@ import (
 
 	//internal package
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 	"github.com/huantingwei/fyp/kubebench"
 	"github.com/huantingwei/fyp/kubescore"
 	"github.com/huantingwei/fyp/login"
@@ -23,6 +24,8 @@ func main() {
 		setup Gin route
 	*/
 	router := gin.Default()
+
+	router.Use(cors.Default())
 
 	v1 := router.Group("/api/v1")
 	{

@@ -5,5 +5,5 @@ gcloud beta cloud-shell ssh --authorize-session --command="docker run --rm -v ~:
 
 gcloud beta cloud-shell ssh --authorize-session --command="./kube-bench --benchmark gke-1.0 --json > kb_output.json"
 
-gcloud beta cloud-shell scp cloudshell:~/kb_output.json  localhost:./kubebench/kb_output.json
+gcloud beta cloud-shell scp cloudshell:~/kb_output.json  localhost:./backend/kubebench/kb_output.json
 

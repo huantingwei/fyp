@@ -25,8 +25,8 @@ const (
 	// scriptFile = "kubescore\\kubescore.sh"
 
 	// linux
-	resultFile = "$(pwd)/backend/kubescore/res.json"
-	runScript = "$(pwd)/backend/kubescore/run.sh"
+	resultFile = "./backend/kubescore/res.json"
+	runScript = "./backend/kubescore/run.sh"
 )
 
 type Check struct {
