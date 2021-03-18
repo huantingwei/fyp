@@ -54,6 +54,12 @@ Your app is ready to be deployed!
 
 ### npm
 
+```
+sudo apt update
+sudo apt install nodejs
+sudo apt install npm
+```
+
 ### pm2
 ```
 npm install -g serve
