@@ -22,7 +22,7 @@ export default function KubeBenchReportList(props) {
     const [apiMessage, setApiMessage] = useState('')
 
     const handleRowSelect = (row) => {
-        setSelected(row['Controls'])
+        setSelected(row)
         setDetailOpen(true)
     }
 

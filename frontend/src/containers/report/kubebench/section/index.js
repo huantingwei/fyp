@@ -30,31 +30,35 @@ const KubeBenchSection = (props) => {
         setDetailOpen(true)
     }
 
-    const getTests = (data = []) => {
-        let tests = []
+    const getStats = (data = {}) => {
         let stat = {
-            pass: 0,
-            warn: 0,
-            fail: 0,
+            pass: '',
+            warn: '',
+            fail: '',
         }
-        if (data.length > 0) {
-            for (let ch of data) {
-                stat.pass += ch['total_pass']
-                stat.warn += ch['total_warn']
-                stat.fail += ch['total_fail']
-                for (let t of ch['tests']) {
-                    tests.push(t)
+        if (Object.keys(data).includes('Totals')) {
+            stat['pass'] = data['Totals']['total_pass']
+            stat['warn'] = data['Totals']['total_warn']
+            stat['fail'] = data['Totals']['total_fail']
+        }
+        return stat
+    }
+    const getTests = (data = {}) => {
+        let tests = []
+        if (Object.keys(data).includes('Controls')) {
+            for (let item of data['Controls']) {
+                for (let ch of item['tests']) {
+                    tests.push(ch)
                 }
             }
         }
-        return [tests, stat]
+        return tests
     }
 
     // parse data
     useEffect(() => {
-        let [tests, stat] = getTests(data)
-        setStat(stat)
-        setTableContent(tests)
+        setStat(getStats(data))
+        setTableContent(getTests(data))
     }, [data, setStat])
 
     return (
@@ -65,11 +69,7 @@ const KubeBenchSection = (props) => {
             content={<KubeBenchDetail data={selected} />}
             indent={1}
         >
-            <ContainerLayout
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-            >
+            <ContainerLayout display="flex" flexDirection="column" justifyContent="space-between">
                 <Grid container direction="column" spacing={3}>
                     <Grid item>
                         <Typography variant="h6">Overview</Typography>
