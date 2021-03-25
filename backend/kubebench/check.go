@@ -57,6 +57,7 @@ type Section struct {
 	Pass    int      `json:"pass"`
 	Warn    int      `json:"warn"`
 	Info    int      `json:"info"`
+	Fail	int		 `json:"fail"`
 	Desc    string   `json:"desc"`
 	Results []Result `json:"results"`
 }

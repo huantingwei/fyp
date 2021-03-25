@@ -45,8 +45,7 @@ const rows = [
             },
             {
                 test_number: '5.1.3',
-                test_desc:
-                    'Minimize wildcard use in Roles and ClusterRoles (Not Scored)',
+                test_desc: 'Minimize wildcard use in Roles and ClusterRoles (Not Scored)',
                 audit: '',
                 AuditConfig: '',
                 type: 'manual',
@@ -79,8 +78,7 @@ const rows = [
             },
             {
                 test_number: '5.1.5',
-                test_desc:
-                    'Ensure that default service accounts are not actively used. (Scored)',
+                test_desc: 'Ensure that default service accounts are not actively used. (Scored)',
                 audit: '',
                 AuditConfig: '',
                 type: 'manual',
@@ -126,8 +124,7 @@ const rows = [
         results: [
             {
                 test_number: '5.2.1',
-                test_desc:
-                    'Minimize the admission of privileged containers (Not Scored)',
+                test_desc: 'Minimize the admission of privileged containers (Not Scored)',
                 audit: '',
                 AuditConfig: '',
                 type: 'manual',
@@ -258,8 +255,7 @@ const rows = [
             },
             {
                 test_number: '5.2.8',
-                test_desc:
-                    'Minimize the admission of containers with added capabilities (Scored)',
+                test_desc: 'Minimize the admission of containers with added capabilities (Scored)',
                 audit: '',
                 AuditConfig: '',
                 type: 'manual',
@@ -312,16 +308,22 @@ const headCells = [
         label: 'Description',
     },
     {
-        id: 'pass',
+        id: 'fail',
         numeric: false,
         disablePadding: false,
-        label: 'Pass',
+        label: 'Fail',
     },
     {
         id: 'warn',
         numeric: false,
         disablePadding: false,
         label: 'Warn',
+    },
+    {
+        id: 'pass',
+        numeric: false,
+        disablePadding: false,
+        label: 'Pass',
     },
     {
         id: 'info',
