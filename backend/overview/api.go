@@ -10,24 +10,28 @@ import (
 )
 
 type Service struct {
-	clusterCollection    *mongo.Collection
-	deploymentCollection *mongo.Collection
-	nodeCollection       *mongo.Collection
-	nodepoolCollection   *mongo.Collection
-	podCollection        *mongo.Collection
-	serviceCollection    *mongo.Collection
-	clientset            *kube.Clientset
+	clusterCollection    	*mongo.Collection
+	deploymentCollection 	*mongo.Collection
+	nodeCollection       	*mongo.Collection
+	nodepoolCollection   	*mongo.Collection
+	podCollection        	*mongo.Collection
+	serviceCollection    	*mongo.Collection
+	roleCollection		 	*mongo.Collection
+	roleBindingCollection	*mongo.Collection
+	clientset            	*kube.Clientset
 }
 
 func NewService(r *gin.RouterGroup, db util.Database) {
 	s := &Service{
-		clusterCollection:    db.Handle.Collection("cluster"),
-		deploymentCollection: db.Handle.Collection("deployment"),
-		nodeCollection:       db.Handle.Collection("node"),
-		nodepoolCollection:   db.Handle.Collection("nodepool"),
-		podCollection:        db.Handle.Collection("pod"),
-		serviceCollection:    db.Handle.Collection("service"),
-		clientset:            util.GetKubeClientSet(),
+		clusterCollection:    		db.Handle.Collection("cluster"),
+		deploymentCollection: 		db.Handle.Collection("deployment"),
+		nodeCollection:       		db.Handle.Collection("node"),
+		nodepoolCollection:   		db.Handle.Collection("nodepool"),
+		podCollection:        		db.Handle.Collection("pod"),
+		serviceCollection:    		db.Handle.Collection("service"),
+		roleCollection:		  		db.Handle.Collection("role"),
+		roleBindingCollection:		db.Handle.Collection("roleBinding"),
+		clientset:            		util.GetKubeClientSet(),
 	}
 
 	r = r.Group("/overview")
@@ -38,6 +42,8 @@ func NewService(r *gin.RouterGroup, db util.Database) {
 	r.GET("/node", s.GetNodeInfo)
 	r.GET("/pod", s.GetPodInfo)
 	r.GET("/service", s.GetServiceInfo)
+	r.GET("/role", s.GetRoleInfo)
+	r.GET("/roleBinding", s.GetRoleBindingInfo)
 
 	r.POST("/new", s.Refresh)
 }
@@ -45,10 +51,12 @@ func NewService(r *gin.RouterGroup, db util.Database) {
 func (s *Service) Refresh(c *gin.Context) {
 	s.refreshClusterInfo(c)
 	s.refreshNodepoolInfo(c)
-	s.refreshDeploymentInfo(c);
+	s.refreshDeploymentInfo(c)
 	s.refreshPodInfo(c)
 	s.refreshServiceInfo(c)
 	s.refreshNodeInfo(c)
+	s.refreshRoleInfo(c)
+	s.refreshRoleBindingInfo(c)
 
 	var data interface{}
 	util.ResponseSuccess(c, data, "refreshed all kube resources")
