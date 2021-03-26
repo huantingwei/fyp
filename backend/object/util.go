@@ -15,3 +15,22 @@ type ObjectMeta struct {
 	Uid          string `json:"uid"`
 	CreationTime string `json:"creationTime"`
 }
+
+type LabelSelector struct {
+	MatchLabels 		map[string]string 			`json:"matchLabels"`
+	MatchExpressions 	[]LabelSelectorRequirement 	`json:"matchExpressions"`
+}
+
+type LabelSelectorRequirement struct {
+	Key			string					`json:"key"`
+	Operator	LabelSelectorOperator	`json:"operator"`
+	Values		[]string				`json:"values"`
+}
+
+type LabelSelectorOperator string
+const (
+	LabelSelectorOpIn			LabelSelectorOperator  	= "In"
+	LabelSelectorOpNotIn		LabelSelectorOperator	= "NotIn"
+	LabelSelectorOpExists		LabelSelectorOperator	= "Exists"
+	LabelSelectorOpDoesNotExist	LabelSelectorOperator	= "DoesNotExist"
+)

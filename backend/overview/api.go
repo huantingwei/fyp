@@ -18,6 +18,9 @@ type Service struct {
 	serviceCollection    	*mongo.Collection
 	roleCollection		 	*mongo.Collection
 	roleBindingCollection	*mongo.Collection
+	networkPolicyCollection *mongo.Collection
+	statefulSetCollection	*mongo.Collection
+	replicaSetCollection	*mongo.Collection
 	clientset            	*kube.Clientset
 }
 
@@ -31,6 +34,9 @@ func NewService(r *gin.RouterGroup, db util.Database) {
 		serviceCollection:    		db.Handle.Collection("service"),
 		roleCollection:		  		db.Handle.Collection("role"),
 		roleBindingCollection:		db.Handle.Collection("roleBinding"),
+		networkPolicyCollection:	db.Handle.Collection("networkPolicy"),
+		statefulSetCollection: 		db.Handle.Collection("statefulSet"),
+		replicaSetCollection:		db.Handle.Collection("replicaSet"),
 		clientset:            		util.GetKubeClientSet(),
 	}
 
@@ -44,7 +50,10 @@ func NewService(r *gin.RouterGroup, db util.Database) {
 	r.GET("/service", s.GetServiceInfo)
 	r.GET("/role", s.GetRoleInfo)
 	r.GET("/roleBinding", s.GetRoleBindingInfo)
-
+	r.GET("/networkPolicy", s.GetNetworkPolicyInfo)
+	r.GET("/statefulSet", s.GetStatefulSetInfo)
+	r.GET("/replicaSet", s.GetReplicaSetInfo)
+	
 	r.POST("/new", s.Refresh)
 }
 
@@ -57,6 +66,9 @@ func (s *Service) Refresh(c *gin.Context) {
 	s.refreshNodeInfo(c)
 	s.refreshRoleInfo(c)
 	s.refreshRoleBindingInfo(c)
+	s.refreshNetworkPolicyInfo(c)
+	s.refreshStatefulSetInfo(c)
+	s.refreshReplicaSetInfo(c)
 
 	var data interface{}
 	util.ResponseSuccess(c, data, "refreshed all kube resources")

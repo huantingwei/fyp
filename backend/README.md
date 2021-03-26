@@ -46,8 +46,7 @@ verify with
 
 ### Database Setup: MongoDB
 
-sudo docker run -dp 27017:27017 -v $(pwd)/tmp/db:/data/db mongo:4.2-bionic
-
+sudo docker run --name fyp-db --restart unless-stopped -dp 27017:27017 -v $(pwd)/tmp/db:/data/db mongo:4.2-bionic
 
 ## Run
 
@@ -71,7 +70,7 @@ for example:
 export CLUSTERNAME="demo" \
 export ZONENAME="us-central1-a" \
 export PROJECTNAME="fyp-demo-306511" \
-export CLUSTER="projects/$PROJECTNAME/locations/$ZONENAME/clusters/$CLUSTERNAME"
-export CRED="/home/justbadcodes/fyp/backend/fyp-demo-sa.json"
+export CLUSTER="projects/$PROJECTNAME/locations/$ZONENAME/clusters/$CLUSTERNAME" \
+export CRED="$HOME/fyp/backend/fyp-demo-sa.json"
 ```
 
