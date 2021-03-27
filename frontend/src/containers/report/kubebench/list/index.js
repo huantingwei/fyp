@@ -41,11 +41,14 @@ export default function KubeBenchReportList(props) {
         setApiMessage('Loading...')
         try {
             const res = await req(kubebenchAPI._list())
+            if (res === null || res.length === 0) {
+                throw new Error('No CIS Report Available')
+            }
             setData(res)
             setApiStatus('success')
         } catch (err) {
             setApiStatus('fail')
-            setApiMessage('API Server Error...')
+            setApiMessage(err.toString())
             console.error(err)
         }
     }, [])
@@ -94,24 +97,24 @@ export default function KubeBenchReportList(props) {
 
     return (
         <div>
-            <StatusHandler status={apiStatus} message={apiMessage}>
-                <Switch
-                    open={detailOpen}
-                    onBackClick={handleDetailClose}
-                    title={'CIS Report'}
-                    content={<KubeBenchSection data={selected} />} // detail content
+            <Switch
+                open={detailOpen}
+                onBackClick={handleDetailClose}
+                title={'CIS Report'}
+                content={<KubeBenchSection data={selected} />} // detail content
+            >
+                <ContainerLayout
+                    title="CIS"
+                    boxProps={{ display: 'flex', flexDirection: 'column' }}
                 >
-                    <ContainerLayout
-                        title="CIS"
-                        boxProps={{ display: 'flex', flexDirection: 'column' }}
+                    <Button
+                        variant="outlined"
+                        onClick={handleNewClick}
+                        style={{ alignSelf: 'flex-end', width: '10rem', marginBottom: '1rem' }}
                     >
-                        <Button
-                            variant="outlined"
-                            onClick={handleNewClick}
-                            style={{ alignSelf: 'flex-end', width: '10rem', marginBottom: '1rem' }}
-                        >
-                            New Report
-                        </Button>
+                        New Report
+                    </Button>
+                    <StatusHandler status={apiStatus} message={apiMessage}>
                         <Box display="flex" flexDirection="column" alignItems="flex-end">
                             <TableComponent
                                 column={headCells}
@@ -120,9 +123,9 @@ export default function KubeBenchReportList(props) {
                                 onRowSelect={handleRowSelect}
                             />
                         </Box>
-                    </ContainerLayout>
-                </Switch>
-            </StatusHandler>
+                    </StatusHandler>
+                </ContainerLayout>
+            </Switch>
         </div>
     )
 }

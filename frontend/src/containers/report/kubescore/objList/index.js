@@ -22,12 +22,15 @@ const KubeScoreObjList = (props) => {
         setApiMessage('Loading...')
         try {
             const res = await req(kubescoreAPI._list())
+            if (res === null || res.length === 0) {
+                throw new Error('No Static Object Analysis Report Available')
+            }
             // always displays the newest one
             setData(res[res.length - 1]['kubescore'])
             setApiStatus('success')
         } catch (err) {
             setApiStatus('fail')
-            setApiMessage('API Server Error...')
+            setApiMessage(err.toString())
             console.error(err)
         }
     }, [])
@@ -77,32 +80,32 @@ const KubeScoreObjList = (props) => {
         }
     }
     return (
-        <StatusHandler status={apiStatus} message={apiMessage}>
-            <Switch
-                open={detailOpen}
-                onBackClick={handleDetailClose}
-                title={'Object Analysis'}
-                content={<KubeScoreChecks data={selected} />}
+        <Switch
+            open={detailOpen}
+            onBackClick={handleDetailClose}
+            title={'Static Object Analysis'}
+            content={<KubeScoreChecks data={selected} />}
+        >
+            <ContainerLayout
+                title={'Static Object Analysis'}
+                boxProps={{ display: 'flex', flexDirection: 'column' }}
             >
-                <ContainerLayout
-                    title={'Object Analysis'}
-                    boxProps={{ display: 'flex', flexDirection: 'column' }}
+                <Button
+                    variant="outlined"
+                    onClick={handleRefreshClick}
+                    style={{ alignSelf: 'flex-end', width: '10rem', marginBottom: '1rem' }}
                 >
-                    <Button
-                        variant="outlined"
-                        onClick={handleRefreshClick}
-                        style={{ alignSelf: 'flex-end', width: '10rem', marginBottom: '1rem' }}
-                    >
-                        Refresh
-                    </Button>
+                    Refresh
+                </Button>
+                <StatusHandler status={apiStatus} message={apiMessage}>
                     <TableComponent
                         column={headCells}
                         dataSource={getMeta(data)}
                         onRowSelect={handleRowSelect}
                     />
-                </ContainerLayout>
-            </Switch>
-        </StatusHandler>
+                </StatusHandler>
+            </ContainerLayout>
+        </Switch>
     )
 }
 

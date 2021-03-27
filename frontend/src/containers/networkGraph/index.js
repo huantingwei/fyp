@@ -11,8 +11,8 @@ import networkAPI from 'api/network'
 
 export default function Graph() {
     const [data, setData] = useState({})
-    const [apiStatus, setApiStatus] = useState('fail')
-    const [apiMessage, setApiMessage] = useState('')
+    const [apiStatus, setApiStatus] = useState('success')
+    const [apiMessage, setApiMessage] = useState('Please select a Namespace')
     const [namespaces, setNamespaces] = useState([])
     const [selectedNP, setSelectedNP] = useState('')
 

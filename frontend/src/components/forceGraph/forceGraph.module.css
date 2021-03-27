@@ -14,12 +14,17 @@
   width: 100%;
   height: 100%;
 }
-
+.pod {
+  fill: #a8bdd3;
+}
 .service {
   fill: #fbd491;
 }
-.pod {
-  fill: #6c86a5;
+.node {
+  fill: #63b2e7;
+}
+.client {
+  fill: #899ea8;
 }
 
 div.tooltip {
