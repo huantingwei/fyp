@@ -10,6 +10,7 @@ import (
 	"github.com/huantingwei/fyp/login"
 	"github.com/huantingwei/fyp/overview"
 	"github.com/huantingwei/fyp/util"
+	"github.com/huantingwei/fyp/network"
 )
 
 func main() {
@@ -18,6 +19,8 @@ func main() {
 	*/
 	db, ctx := util.NewDatabase()
 	defer db.Client.Disconnect(ctx)
+
+	k8sClient := util.GetKubeClientSet()
 
 	/*
 		setup Gin route
@@ -28,9 +31,10 @@ func main() {
 
 	v1 := router.Group("/api/v1")
 	{
-		overview.NewService(v1, db)
+		overview.NewService(v1, db, k8sClient)
 		kubebench.NewService(v1, db)
 		kubescore.NewService(v1, db)
+		network.NewService(v1, db, k8sClient)
 	}
 
 	auth := router.Group("/")

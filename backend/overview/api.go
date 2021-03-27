@@ -24,7 +24,7 @@ type Service struct {
 	clientset            	*kube.Clientset
 }
 
-func NewService(r *gin.RouterGroup, db util.Database) {
+func NewService(r *gin.RouterGroup, db util.Database, client *kube.Clientset) {
 	s := &Service{
 		clusterCollection:    		db.Handle.Collection("cluster"),
 		deploymentCollection: 		db.Handle.Collection("deployment"),
@@ -37,7 +37,7 @@ func NewService(r *gin.RouterGroup, db util.Database) {
 		networkPolicyCollection:	db.Handle.Collection("networkPolicy"),
 		statefulSetCollection: 		db.Handle.Collection("statefulSet"),
 		replicaSetCollection:		db.Handle.Collection("replicaSet"),
-		clientset:            		util.GetKubeClientSet(),
+		clientset:            		client,
 	}
 
 	r = r.Group("/overview")
