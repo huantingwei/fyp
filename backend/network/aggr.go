@@ -6,6 +6,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"github.com/huantingwei/fyp/util"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Pod struct {
@@ -55,8 +56,9 @@ type GraphLink struct {
 }
 
 type Graph struct {
-	Nodes	[]GraphNode	`json:"nodes"`
-	Links	[]GraphLink	`json:"links"`
+	Nodes		[]GraphNode	`json:"nodes"`
+	Links		[]GraphLink	`json:"links"`
+	Namespace 	string	`json:"namespace"`
 }
 
 func (s *Service) getNodes() (nodes []Node){
@@ -250,20 +252,24 @@ func (s *Service) buildGraph(namespace string) (gnodes []GraphNode, glinks []Gra
 
 		// Service -> Pod
 		for _, pod := range pods {
+			added := false
 			for pk, pv := range pod.Labels {
 				svv, ok := sv.Selector[pk]
 				// Service.Selector == Pod.Labels
 				if ok == true && svv == pv {
 					// Service.Ports
-					for _, port := range sv.Ports{
-						link := GraphLink {
-							ID: sv.ID + ":" + pod.ID,
-							Source: sv.ID,
-							Target: pod.ID,
-							// port : targetPort
-							Content: port.Port + ":" + port.TargetPort,
+					if added == false {
+						for _, port := range sv.Ports{
+							link := GraphLink {
+								ID: sv.ID + ":" + pod.ID,
+								Source: sv.ID,
+								Target: pod.ID,
+								// port : targetPort
+								Content: port.Port + ":" + port.TargetPort,
+							}
+							glinks = append(glinks, link)
 						}
-						glinks = append(glinks, link)
+						added = true
 					}
 				}
 				
@@ -324,8 +330,78 @@ func (s *Service) buildGraph(namespace string) (gnodes []GraphNode, glinks []Gra
 	return
 }
 
+func (s *Service) insertGraph() error {
+	var graphs []interface{}
+	namespaces := s.getNamespace()
+	for _, np := range namespaces {
+		nodes, links := s.buildGraph(np)
+
+		// remove unlinked nodes
+		/*
+		l := 0
+		for i, node := range nodes {
+			linked := 0
+			for _, link := range links {
+				if link.Source == node.ID || link.Target == node.ID {
+					linked = 1
+					break
+				}
+			}
+			// not linked to anyone -> remove from nodes
+			if linked == 0 {
+				nodes[i] = nodes[len(nodes)-l-1]
+				l++
+			}
+		}
+		*/
+
+		graph := Graph {
+			Nodes: nodes,
+			Links: links,
+			Namespace: np,
+		}
+		graphs = append(graphs, graph)
+
+	}
+	// delete old data
+	_, err := s.networkGraphCollection.DeleteMany(context.TODO(), bson.D{})
+	if err != nil {
+		return err
+	}
+	// insert to db
+	_, err2 := s.networkGraphCollection.InsertMany(context.TODO(), graphs);
+	if err2 != nil {
+		return err2
+	}
+	return nil
+}
 
 func (s *Service) GetGraph(c *gin.Context) {
+	namespace := c.Query("namespace")
+
+	var graph Graph
+	if err := s.networkGraphCollection.FindOne(context.TODO(), bson.M{"namespace": namespace}).Decode(&graph); err != nil {
+		util.ResponseError(c, err)
+		return
+	}
+
+	if graph.Nodes == nil || graph.Links == nil {
+		util.ResponseError(c, fmt.Errorf("No Graph Available"))
+		return
+	}
+
+	util.ResponseSuccess(c, graph, "networkGraph")
+}
+
+func (s *Service) RefreshGraph(c *gin.Context){
+	if err := s.insertGraph(); err != nil {
+		util.ResponseError(c, err)
+		return
+	}
+	util.ResponseSuccess(c, "refreshed networkGraph", "networkGraph")
+}
+
+func (s *Service) GetGV1(c *gin.Context) {
 	namespace := c.Query("namespace")
 
 	nodes, links := s.buildGraph(namespace)
@@ -337,7 +413,8 @@ func (s *Service) GetGraph(c *gin.Context) {
 	}
 
 	// remove unlinked nodes
-	for _, node := range nodes {
+	l := 0
+	for i, node := range nodes {
 		linked := 0
 		for _, link := range links {
 			if link.Source == node.ID || link.Target == node.ID {
@@ -347,12 +424,13 @@ func (s *Service) GetGraph(c *gin.Context) {
 		}
 		// not linked to anyone -> remove from nodes
 		if linked == 0 {
-			//TODO
+			nodes[i] = nodes[len(nodes)-l-1]
+			l++
 		}
 	}
 
 	graph := Graph{
-		Nodes: nodes,
+		Nodes: nodes[:len(nodes)-l+1],
 		Links: links,
 	}
 	util.ResponseSuccess(c, graph, "graph")
