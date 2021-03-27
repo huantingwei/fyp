@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import uuid from 'react-uuid'
-import { FormControl, Box, Select, InputLabel, MenuItem } from '@material-ui/core'
+import { FormControl, Box, Select, InputLabel, MenuItem, Button } from '@material-ui/core'
 import ContainerLayout from 'components/layout'
 import StatusHandler from 'components/statusHandler'
 import { ForceGraph } from 'components/forceGraph'
@@ -53,18 +53,38 @@ export default function Graph() {
         }
     }, [selectedNP])
 
+    const refresh = async () => {
+        try {
+            setApiStatus('loading')
+            await req(networkAPI.refreshGraph())
+            setApiStatus('success')
+        } catch (err) {
+            setApiStatus('fail')
+            setApiMessage('API Server Error...')
+            console.error(err)
+        }
+    }
+    const handleRefresh = async () => {
+        await refresh()
+    }
+
     return (
         <ContainerLayout
             title="Cluster Network Diagram"
             boxProps={{ display: 'flex', flexDirection: 'column' }}
         >
-            <FormControl variant="outlined" style={{ marginBottom: '1rem' }}>
+            <FormControl
+                variant="outlined"
+                disabled={namespaces.length === 0}
+                style={{ marginBottom: '1rem' }}
+            >
                 <InputLabel id="select-namespace">Namespace</InputLabel>
                 <Select
                     labelId="select-namespace"
                     value={selectedNP}
                     onChange={handleChange}
                     label="Namespace"
+                    SelectDisplayProps={{ color: 'black' }}
                 >
                     {namespaces.map((np) => {
                         return (
@@ -76,7 +96,7 @@ export default function Graph() {
                 </Select>
             </FormControl>
             <Box display="flex" flexDirection="column" alignItems="flex-end">
-                <StatusHandler status={apiStatus} message={apiMessage}>
+                <StatusHandler status={apiStatus} message={apiMessage} height={'32rem'}>
                     {data === undefined ||
                     data === null ||
                     Object.keys(data).length === 0 ||
@@ -88,6 +108,9 @@ export default function Graph() {
                     )}
                 </StatusHandler>
             </Box>
+            <Button onClick={handleRefresh} variant="outlined" style={{ marginTop: '1rem' }}>
+                Refresh Network Diagram
+            </Button>
         </ContainerLayout>
     )
 }

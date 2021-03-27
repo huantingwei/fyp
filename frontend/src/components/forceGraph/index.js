@@ -2,10 +2,11 @@ import React from 'react'
 import * as d3 from 'd3'
 import styles from './forceGraph.module.css'
 
-const linkLength = 300
+const linkLength = 400
 const linkWidth = 1
-const nodeRadius = 40
+const nodeRadius = 50
 const labelFontsize = '12px'
+const linkFontsize = '11px'
 
 export function runForceGraph(container, linksData, nodesData) {
     const links = linksData.map((d) => Object.assign({}, d))
@@ -32,16 +33,18 @@ export function runForceGraph(container, linksData, nodesData) {
             }
         }
     })
-    //any links with duplicate source and target get an incremented 'linknum'
-    for (var i = 0; i < links.length; i++) {
+    // concatenate the content of links with same source-target
+    let curr = 0
+    for (var i = 1; i < links.length; i++) {
         if (
-            i !== 0 &&
-            links[i].source === links[i - 1].source &&
-            links[i].target === links[i - 1].target
+            links[i].source === links[curr].source &&
+            links[i].target === links[curr].target &&
+            links[i].content !== links[curr].content
         ) {
-            links[i].linknum = links[i - 1].linknum + 1
+            links[curr].content += ' / ' + links[i].content
+            links[i].content = ''
         } else {
-            links[i].linknum = 1
+            curr = i
         }
     }
 
@@ -119,8 +122,8 @@ export function runForceGraph(container, linksData, nodesData) {
         .append('g')
         .attr('class', 'linklabelholder')
         .append('text')
-        .attr('class', 'linklabel')
-        .style('font-size', '10px')
+        // .attr('class', 'linklabel')
+        .style('font-size', linkFontsize)
         .attr('x', '50')
         .attr('y', '-20')
         .attr('text-anchor', 'start')
@@ -203,7 +206,7 @@ export function runForceGraph(container, linksData, nodesData) {
         link.attr('d', function (d) {
             // var dx = d.target.x - d.source.x,
             //     dy = d.target.y - d.source.y,
-            // var dr = 75 / d.linknum //linknum is defined above
+            // var dr = 60 / d.linknum // linknum is defined above
             return (
                 'M' +
                 d.source.x +

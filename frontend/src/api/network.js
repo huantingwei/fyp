@@ -1,4 +1,10 @@
 class networkAPI {
+    static refreshGraph() {
+        return {
+            method: 'POST',
+            url: '/api/v1/network/graph',
+        }
+    }
     static getGraph(namespace = '') {
         return {
             method: 'GET',
