@@ -2,7 +2,6 @@ package network
 
 import (
 	"fmt"
-	"errors"
 	"context"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"github.com/huantingwei/fyp/util"
@@ -23,25 +22,28 @@ type SV struct {
 	ClusterIP	string		
 	ExternalIP	string		
 	Selector	map[string]string
-	//Ports	[]SVPort	`json:"ports"`	
+	Ports		[]SVPort
 }
 
 type Node struct {
+	ID			string
 	Name		string
-	IP			string
+	ExternalIP	string
+	ClusterIP	string
 }
 
-//type SVPort struct {
-//	Port       int    `json:"port"`
-//	NodePort   int    `json:"nodePort"`
-//	TargetPort int    `json:"targetPort"`
-//	Protocol   string `json:"protocol"`
-//}
+type SVPort struct {
+	Port       string 
+	NodePort   string
+	TargetPort string
+	Protocol   string
+}
 
 type GraphNode struct {
 	ID		string	`json:"id"`
-	Name	string	`json:"name"`
+	Kind	string	`json:"kind"`
 	Type 	string	`json:"type"`
+	Name	string	`json:"name"`
 	Content	string	`json:"content"`
 }
 
@@ -64,8 +66,14 @@ func (s *Service) getNodes() (nodes []Node){
 	}
 	for _, n := range nodeList.Items {
 		node := Node {
+			ID: string(n.UID),
 			Name: n.Name,
-			IP: n.Spec.PodCIDR,
+			ClusterIP: n.Spec.PodCIDR,
+		}
+		for _, a := range n.Status.Addresses {
+			if a.Type == "ExternalIP" {
+				node.ExternalIP = a.Address
+			}
 		}
 		nodes = append(nodes, node)
 	}
@@ -84,6 +92,11 @@ func (s *Service) getNamespace() (namespaces []string) {
 }
 
 func (s *Service) getServices(namespace string) (services []SV) {
+	nodes := s.getNodes()
+	if nodes == nil {
+		panic(fmt.Errorf("No Nodes"))
+	}
+
 	serviceList, err := s.clientset.CoreV1().Services(namespace).List(context.TODO(), metav1.ListOptions{});
 	if err != nil {
 		panic(err.Error())
@@ -105,6 +118,17 @@ func (s *Service) getServices(namespace string) (services []SV) {
 		case "ClusterIP":
 			sv.Type =  "ClusterIP"
 			sv.ExternalIP = ""
+			// no nodePort
+			var ports []SVPort
+			for _, p := range n.Spec.Ports {
+				port := SVPort{
+					Port: fmt.Sprintf("%v", p.Port),
+					TargetPort: fmt.Sprintf("%v", p.TargetPort.IntVal),
+					Protocol: fmt.Sprintf("%v", p.Protocol),
+				}
+				ports = append(ports, port)
+			}
+			sv.Ports = ports
 			break
 		case "LoadBalancer":
 			sv.Type = "LoadBalancer"
@@ -114,10 +138,35 @@ func (s *Service) getServices(namespace string) (services []SV) {
 				}
 				sv.ExternalIP += ing.IP
 			}
+			var ports []SVPort
+			for _, p := range n.Spec.Ports {
+				port := SVPort{
+					NodePort: fmt.Sprintf("%v", p.NodePort),
+					Port: fmt.Sprintf("%v", p.Port),
+					TargetPort: fmt.Sprintf("%v", p.TargetPort.IntVal),
+					Protocol: fmt.Sprintf("%v", p.Protocol),
+				}
+				ports = append(ports, port)
+			}
+			sv.Ports = ports
 			break
 		case "NodePort":
 			sv.Type = "NodePort"
-			sv.ExternalIP = ""
+			// external IP = Node's external IP
+			sv.ExternalIP = nodes[0].ExternalIP
+
+			// 
+			var ports []SVPort
+			for _, p := range n.Spec.Ports {
+				port := SVPort{
+					NodePort: fmt.Sprintf("%v", p.NodePort),
+					Port: fmt.Sprintf("%v", p.Port),
+					TargetPort: fmt.Sprintf("%v", p.TargetPort.IntVal),
+					Protocol: fmt.Sprintf("%v", p.Protocol),
+				}
+				ports = append(ports, port)
+			}
+			sv.Ports = ports
 			break
 		}
 		services = append(services, sv)
@@ -149,35 +198,73 @@ func (s *Service) getPods(namespace string) (pods []Pod){
 }
 
 func (s *Service) buildGraph(namespace string) (gnodes []GraphNode, glinks []GraphLink){
+	nodes := s.getNodes()
 	services := s.getServices(namespace)
 	pods := s.getPods(namespace)
 
+	var nodePorts []string
+
+	// client
+	clientNode := GraphNode{
+		ID:	"ex-client",
+		Name: "External Client",
+		Type: "Client",
+		Kind: "Client",
+		Content: "",
+	}
+	gnodes = append(gnodes, clientNode)
+
+	// Service & Pod
 	count := 1
 	for _, sv := range services {
 
-		svNode := GraphNode {
+		// get nodePorts for building NodeNode later
+		if sv.Type == "NodePort"{
+			for _, p := range sv.Ports{
+				nodePorts = append(nodePorts, p.NodePort)
+			}
+		}
+
+		// Client -> Service.LoadBalancer
+		if sv.Type == "LoadBalancer" {
+			for _, port := range sv.Ports {
+				link := GraphLink {
+					ID: "ex-client" + ":" + sv.ID,
+					Source: "ex-client",
+					Target: sv.ID,
+					Content: sv.ExternalIP + ":" + port.Port,
+				}
+				glinks = append(glinks, link)
+			}
+		}
+
+		// Service GraphNode
+		svNode := GraphNode{
 			ID:	sv.ID,
 			Name: sv.Name,
-			Type: "Service",
-			Content: "ClusterIP: " + sv.ClusterIP,
-		}
-		if sv.ExternalIP != "" {
-			svNode.Content += (" / ExternalIP: " + sv.ExternalIP)
+			Kind: "Service",
+			Type: sv.Type,
+			Content: sv.ClusterIP,
 		}
 		gnodes = append(gnodes, svNode)
 
-		// Service -- Pod
+		// Service -> Pod
 		for _, pod := range pods {
 			for pk, pv := range pod.Labels {
 				svv, ok := sv.Selector[pk]
+				// Service.Selector == Pod.Labels
 				if ok == true && svv == pv {
-					link := GraphLink {
-						ID: sv.ID + ":" + pod.ID,
-						Source: sv.ID,
-						Target: pod.ID,
-						Content: pk + ":" + pv,
+					// Service.Ports
+					for _, port := range sv.Ports{
+						link := GraphLink {
+							ID: sv.ID + ":" + pod.ID,
+							Source: sv.ID,
+							Target: pod.ID,
+							// port : targetPort
+							Content: port.Port + ":" + port.TargetPort,
+						}
+						glinks = append(glinks, link)
 					}
-					glinks = append(glinks, link)
 				}
 				
 			}
@@ -187,6 +274,7 @@ func (s *Service) buildGraph(namespace string) (gnodes []GraphNode, glinks []Gra
 					ID:	pod.ID,
 					Name: pod.Name,
 					Type: "Pod",
+					Kind: "Pod",
 					Content: pod.IP,
 				}
 				gnodes = append(gnodes, podNode)
@@ -196,8 +284,46 @@ func (s *Service) buildGraph(namespace string) (gnodes []GraphNode, glinks []Gra
 		count++
 	}
 
+	// Node GraphNode
+	for _, n := range nodes {
+		nodeNode := GraphNode{
+			ID:	n.ID,
+			Name: n.Name,
+			Type: "Node",
+			Kind: "Node",
+			Content: n.ExternalIP,
+		}
+		gnodes = append(gnodes, nodeNode)
+		// Client -> Node
+		// use nodePorts
+		for _, np := range nodePorts {
+			link := GraphLink {
+				ID: "ex-client" + ":" + nodeNode.ID,
+				Source: "ex-client",
+				Target: nodeNode.ID,
+				Content: n.ExternalIP + ":" + np,
+			}
+			glinks = append(glinks, link)
+		}
+
+		// Node -> Service-NodePort
+		for _, sv := range services {
+			if sv.Type == "NodePort" {
+				for _, port := range sv.Ports {
+					link := GraphLink {
+						ID: n.ID + ":" + sv.ID,
+						Source: n.ID,
+						Target: sv.ID,
+						Content: port.NodePort + ":" + port.Port,
+					}
+					glinks = append(glinks, link)
+				}
+			}
+		}
+	}
 	return
 }
+
 
 func (s *Service) GetGraph(c *gin.Context) {
 	namespace := c.Query("namespace")
@@ -205,24 +331,38 @@ func (s *Service) GetGraph(c *gin.Context) {
 	nodes, links := s.buildGraph(namespace)
 	// check null
 	if nodes == nil || links == nil {
-		err := errors.New("No Graph available")
+		err := fmt.Errorf("No Graph available")
 		util.ResponseError(c, err)
 		return
+	}
+
+	// remove unlinked nodes
+	for _, node := range nodes {
+		linked := 0
+		for _, link := range links {
+			if link.Source == node.ID || link.Target == node.ID {
+				linked = 1
+				break
+			}
+		}
+		// not linked to anyone -> remove from nodes
+		if linked == 0 {
+			//TODO
+		}
 	}
 
 	graph := Graph{
 		Nodes: nodes,
 		Links: links,
 	}
-	fmt.Println("hi")
 	util.ResponseSuccess(c, graph, "graph")
 }
 
 func (s *Service) GetNamespace(c *gin.Context) {
 	namespaces := s.getNamespace()
-	
+
 	if namespaces == nil {
-		err := errors.New("No Namespace available")
+		err := fmt.Errorf("No Namespace available")
 		util.ResponseError(c, err)
 		return
 	}

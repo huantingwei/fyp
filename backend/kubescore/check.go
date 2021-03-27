@@ -183,6 +183,11 @@ func (s *Service) ListKubescore(c *gin.Context) {
 		util.ResponseError(c, err)
 		return
 	}
+	if kcs == nil || len(kcs) == 0 {
+		var empty []interface{}
+		util.ResponseSuccess(c, empty, "kubescore")
+		return
+	}
 	util.ResponseSuccess(c, kcs, "kubescore")
 }
 

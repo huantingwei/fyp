@@ -163,6 +163,12 @@ func (s *Service) ListKubebench(c *gin.Context) {
 		util.ResponseError(c, err)
 		return
 	}
+	if kbs == nil || len(kbs) == 0 {
+		var empty []interface{}
+		util.ResponseSuccess(c, empty, "kubebench")
+		return
+	}
+
 	util.ResponseSuccess(c, kbs, "kubebench")
 }
 
