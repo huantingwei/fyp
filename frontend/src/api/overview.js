@@ -41,6 +41,25 @@ class overviewAPI {
             url: '/api/v1/overview/service',
         }
     }
+
+    static getNetworkPolicy() {
+        return {
+            method: 'GET',
+            url: '/api/v1/overview/networkPolicy',
+        }
+    }
+    static getRole() {
+        return {
+            method: 'GET',
+            url: '/api/v1/overview/role',
+        }
+    }
+    static getRoleBinding() {
+        return {
+            method: 'GET',
+            url: '/api/v1/overview/roleBinding',
+        }
+    }
 }
 
 export default overviewAPI

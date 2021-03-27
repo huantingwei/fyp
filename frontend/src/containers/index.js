@@ -14,6 +14,7 @@ import DashboardOutlinedIcon from '@material-ui/icons/DashboardOutlined'
 import AccountBoxOutlinedIcon from '@material-ui/icons/AccountBoxOutlined'
 import VpnKeyOutlinedIcon from '@material-ui/icons/VpnKeyOutlined'
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined'
+import ShareOutlinedIcon from '@material-ui/icons/ShareOutlined'
 // import ApartmentOutlinedIcon from '@material-ui/icons/ApartmentOutlined'
 // import FitnessCenterOutlinedIcon from '@material-ui/icons/FitnessCenterOutlined'
 // import StorageOutlinedIcon from '@material-ui/icons/StorageOutlined'
@@ -33,6 +34,8 @@ import Login from 'containers/login'
 import KubeScoreObjList from 'containers/report/kubescore/objList'
 import Home from 'containers/home'
 import Project from 'containers/project'
+import Role from 'containers/accessControl/role'
+import NetworkDiagram from './networkGraph'
 
 const Root = (props) => {
     const routeItems = [
@@ -123,6 +126,14 @@ const Root = (props) => {
             ],
         },
         {
+            id: 'networkDiagram',
+            path: '/networkDiagram',
+            exact: true,
+            text: 'Network Diagram',
+            icon: <ShareOutlinedIcon />,
+            component: NetworkDiagram,
+        },
+        {
             id: 'accessControl',
             text: 'Access Control',
             icon: <VpnKeyOutlinedIcon />,
@@ -133,7 +144,7 @@ const Root = (props) => {
                     exact: true,
                     text: 'Role',
                     icon: <AccountBoxOutlinedIcon />,
-                    component: () => <h1>Role</h1>,
+                    component: Role,
                 },
                 {
                     id: 'roleBinding',

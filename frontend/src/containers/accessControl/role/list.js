@@ -3,13 +3,13 @@ import React, { useState, useEffect } from 'react'
 import TableComponent from 'components/table/list'
 import { headCells } from './configs'
 import Switch from 'components/switch'
-import ServiceDetail from './detail'
+import RoleDetail from './detail'
 import StatusHandler from 'components/statusHandler'
 import { flattenWorkload } from 'utils/transform'
 import { req } from 'api'
 import overviewAPI from 'api/overview'
 
-export default function ServiceList(props) {
+export default function RoleList(props) {
     const [data, setData] = useState([])
     const [selected, setSelected] = useState([])
     const [selectedTitle, setSelectedTitle] = useState('')
@@ -23,7 +23,7 @@ export default function ServiceList(props) {
         const get = async () => {
             try {
                 setApiStatus('loading')
-                const res = await req(overviewAPI.getService())
+                const res = await req(overviewAPI.getRole())
                 setData(res)
                 setApiStatus('success')
             } catch (err) {
@@ -37,7 +37,7 @@ export default function ServiceList(props) {
 
     const handleRowSelect = (row) => {
         setSelected(flattenWorkload(row))
-        setSelectedTitle(row['name'] + ': ' + row['uid'])
+        setSelectedTitle(row['name'])
         setDetailOpen(true)
     }
 
@@ -48,7 +48,7 @@ export default function ServiceList(props) {
                 open={detailOpen}
                 onBackClick={handleDetailClose}
                 title={selectedTitle}
-                content={<ServiceDetail items={selected} />}
+                content={<RoleDetail items={selected} />}
             >
                 <TableComponent
                     column={headCells}

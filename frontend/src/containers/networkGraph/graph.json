@@ -1,0 +1,132 @@
+{
+    "nodes": [
+        {
+            "id": "a3cdf8c8-0d77-4ea4-875e-0acb501227eb",
+            "name": "hello-app-service",
+            "type": "Service",
+            "content": "ClusterIP: 10.68.3.170 / ExternalIP: 35.226.132.119"
+        },
+        {
+            "id": "a33e49f0-a2bc-4158-a382-fb2095554e57",
+            "name": "hello-app-674b6b67fd-mlnkq",
+            "type": "Pod",
+            "content": "10.64.1.4"
+        },
+        {
+            "id": "9e158472-348a-4a60-a103-811cbd8e0e12",
+            "name": "nginx-gcp-nginx-0",
+            "type": "Pod",
+            "content": "10.64.2.5"
+        },
+        {
+            "id": "cf940622-54ce-4be4-8d3e-f572f3d39d68",
+            "name": "nginx-gcp-nginx-1",
+            "type": "Pod",
+            "content": "10.64.1.7"
+        },
+        {
+            "id": "6d1a7ce1-5a45-42a4-a9e8-63ba6f9c15c8",
+            "name": "nginx-gcp-nginx-2",
+            "type": "Pod",
+            "content": "10.64.1.8"
+        },
+        {
+            "id": "19836994-bf10-4781-8a44-6e27ca539651",
+            "name": "kubernetes",
+            "type": "Service",
+            "content": "ClusterIP: 10.68.0.1"
+        },
+        {
+            "id": "578c035a-aefd-4c9c-9f6b-8a7d7a383554",
+            "name": "nginx-gcp-nginx-prometheus-svc",
+            "type": "Service",
+            "content": "ClusterIP: None"
+        },
+        {
+            "id": "dc11316d-0e94-40e3-b779-a2216e66d140",
+            "name": "nginx-gcp-nginx-svc",
+            "type": "Service",
+            "content": "ClusterIP: 10.68.3.122 / ExternalIP: 34.72.180.21"
+        }
+    ],
+    "links": [
+        {
+            "id": "a3cdf8c8-0d77-4ea4-875e-0acb501227eb:a33e49f0-a2bc-4158-a382-fb2095554e57",
+            "source": "a3cdf8c8-0d77-4ea4-875e-0acb501227eb",
+            "target": "a33e49f0-a2bc-4158-a382-fb2095554e57",
+            "content": "app:hello-app"
+        },
+        {
+            "id": "578c035a-aefd-4c9c-9f6b-8a7d7a383554:9e158472-348a-4a60-a103-811cbd8e0e12",
+            "source": "578c035a-aefd-4c9c-9f6b-8a7d7a383554",
+            "target": "9e158472-348a-4a60-a103-811cbd8e0e12",
+            "content": "app.kubernetes.io/component:nginx-server"
+        },
+        {
+            "id": "578c035a-aefd-4c9c-9f6b-8a7d7a383554:9e158472-348a-4a60-a103-811cbd8e0e12",
+            "source": "578c035a-aefd-4c9c-9f6b-8a7d7a383554",
+            "target": "9e158472-348a-4a60-a103-811cbd8e0e12",
+            "content": "app.kubernetes.io/name:nginx-gcp"
+        },
+        {
+            "id": "578c035a-aefd-4c9c-9f6b-8a7d7a383554:cf940622-54ce-4be4-8d3e-f572f3d39d68",
+            "source": "578c035a-aefd-4c9c-9f6b-8a7d7a383554",
+            "target": "cf940622-54ce-4be4-8d3e-f572f3d39d68",
+            "content": "app.kubernetes.io/component:nginx-server"
+        },
+        {
+            "id": "578c035a-aefd-4c9c-9f6b-8a7d7a383554:cf940622-54ce-4be4-8d3e-f572f3d39d68",
+            "source": "578c035a-aefd-4c9c-9f6b-8a7d7a383554",
+            "target": "cf940622-54ce-4be4-8d3e-f572f3d39d68",
+            "content": "app.kubernetes.io/name:nginx-gcp"
+        },
+        {
+            "id": "578c035a-aefd-4c9c-9f6b-8a7d7a383554:6d1a7ce1-5a45-42a4-a9e8-63ba6f9c15c8",
+            "source": "578c035a-aefd-4c9c-9f6b-8a7d7a383554",
+            "target": "6d1a7ce1-5a45-42a4-a9e8-63ba6f9c15c8",
+            "content": "app.kubernetes.io/name:nginx-gcp"
+        },
+        {
+            "id": "578c035a-aefd-4c9c-9f6b-8a7d7a383554:6d1a7ce1-5a45-42a4-a9e8-63ba6f9c15c8",
+            "source": "578c035a-aefd-4c9c-9f6b-8a7d7a383554",
+            "target": "6d1a7ce1-5a45-42a4-a9e8-63ba6f9c15c8",
+            "content": "app.kubernetes.io/component:nginx-server"
+        },
+        {
+            "id": "dc11316d-0e94-40e3-b779-a2216e66d140:9e158472-348a-4a60-a103-811cbd8e0e12",
+            "source": "dc11316d-0e94-40e3-b779-a2216e66d140",
+            "target": "9e158472-348a-4a60-a103-811cbd8e0e12",
+            "content": "app.kubernetes.io/component:nginx-server"
+        },
+        {
+            "id": "dc11316d-0e94-40e3-b779-a2216e66d140:9e158472-348a-4a60-a103-811cbd8e0e12",
+            "source": "dc11316d-0e94-40e3-b779-a2216e66d140",
+            "target": "9e158472-348a-4a60-a103-811cbd8e0e12",
+            "content": "app.kubernetes.io/name:nginx-gcp"
+        },
+        {
+            "id": "dc11316d-0e94-40e3-b779-a2216e66d140:cf940622-54ce-4be4-8d3e-f572f3d39d68",
+            "source": "dc11316d-0e94-40e3-b779-a2216e66d140",
+            "target": "cf940622-54ce-4be4-8d3e-f572f3d39d68",
+            "content": "app.kubernetes.io/component:nginx-server"
+        },
+        {
+            "id": "dc11316d-0e94-40e3-b779-a2216e66d140:cf940622-54ce-4be4-8d3e-f572f3d39d68",
+            "source": "dc11316d-0e94-40e3-b779-a2216e66d140",
+            "target": "cf940622-54ce-4be4-8d3e-f572f3d39d68",
+            "content": "app.kubernetes.io/name:nginx-gcp"
+        },
+        {
+            "id": "dc11316d-0e94-40e3-b779-a2216e66d140:6d1a7ce1-5a45-42a4-a9e8-63ba6f9c15c8",
+            "source": "dc11316d-0e94-40e3-b779-a2216e66d140",
+            "target": "6d1a7ce1-5a45-42a4-a9e8-63ba6f9c15c8",
+            "content": "app.kubernetes.io/name:nginx-gcp"
+        },
+        {
+            "id": "dc11316d-0e94-40e3-b779-a2216e66d140:6d1a7ce1-5a45-42a4-a9e8-63ba6f9c15c8",
+            "source": "dc11316d-0e94-40e3-b779-a2216e66d140",
+            "target": "6d1a7ce1-5a45-42a4-a9e8-63ba6f9c15c8",
+            "content": "app.kubernetes.io/component:nginx-server"
+        }
+    ]
+}

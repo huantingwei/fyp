@@ -30,25 +30,18 @@ const transform = (data, primaryKey = 'name', secondaryKey = '') => {
                     content: notNullOrUndefined(data[key]) ? data[key] : 'null',
                 })
                 // long text
-            } else if (
-                typeof data[key] === 'string' &&
-                data[key].length > 100
-            ) {
+            } else if (typeof data[key] === 'string' && data[key].length > 100) {
                 res.push({
                     label: key,
                     type: 'multiline',
-                    content: notNullOrUndefined(data[key])
-                        ? data[key].toString()
-                        : 'null',
+                    content: notNullOrUndefined(data[key]) ? data[key].toString() : 'null',
                 })
                 // short text
             } else {
                 res.push({
                     label: key,
                     type: 'text',
-                    content: notNullOrUndefined(data[key])
-                        ? data[key].toString()
-                        : 'null',
+                    content: notNullOrUndefined(data[key]) ? data[key].toString() : 'null',
                 })
             }
         }
