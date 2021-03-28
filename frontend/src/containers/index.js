@@ -35,6 +35,7 @@ import KubeScoreObjList from 'containers/report/kubescore/objList'
 import Home from 'containers/home'
 import Project from 'containers/project'
 import Role from 'containers/accessControl/role'
+import RoleBinding from './accessControl/roleBinding'
 import NetworkDiagram from './networkGraph'
 
 const Root = (props) => {
@@ -152,7 +153,7 @@ const Root = (props) => {
                     exact: true,
                     text: 'Role Binding',
                     icon: <AccountBoxOutlinedIcon />,
-                    component: () => <h1>Role Binding</h1>,
+                    component: RoleBinding,
                 },
                 {
                     id: 'psp',

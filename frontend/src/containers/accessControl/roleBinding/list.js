@@ -3,13 +3,13 @@ import React, { useState, useEffect } from 'react'
 import TableComponent from 'components/table/list'
 import { headCells } from './configs'
 import Switch from 'components/switch'
-import RoleDetail from './detail'
+import RoleBindingDetail from './detail'
 import StatusHandler from 'components/statusHandler'
 import { flattenWorkload } from 'utils/transform'
 import { req } from 'api'
 import overviewAPI from 'api/overview'
 
-export default function RoleList(props) {
+export default function RoleBindingList(props) {
     const [data, setData] = useState([])
     const [selected, setSelected] = useState([])
     const [selectedTitle, setSelectedTitle] = useState('')
@@ -23,7 +23,7 @@ export default function RoleList(props) {
         const get = async () => {
             try {
                 setApiStatus('loading')
-                const res = await req(overviewAPI.getRole())
+                const res = await req(overviewAPI.getRoleBinding())
                 setData(res)
                 setApiStatus('success')
             } catch (err) {
@@ -48,7 +48,7 @@ export default function RoleList(props) {
                 open={detailOpen}
                 onBackClick={handleDetailClose}
                 title={selectedTitle}
-                content={<RoleDetail items={selected} />}
+                content={<RoleBindingDetail items={selected} />}
             >
                 <TableComponent
                     column={headCells}
