@@ -56,6 +56,7 @@ func (s *Service) GetRoleBindingInfo(c *gin.Context) {
 	cursor, err := s.roleBindingCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+        return
 	}
 
 	// get a list of all returned documents and print them out
@@ -75,11 +76,13 @@ func (s *Service) refreshRoleBindingInfo(c *gin.Context){
 	_, err := s.roleBindingCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+		return
 	}
 
 	_, err = s.roleBindingCollection.InsertMany(context.TODO(),roleBindingInfo);
 	if err != nil {
 		util.ResponseError(c, err)
+		return
 	}
 	
 	fmt.Println("refreshed roleBinding info")

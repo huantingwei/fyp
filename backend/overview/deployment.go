@@ -16,11 +16,13 @@ func (s *Service) refreshDeploymentInfo(c *gin.Context){
 	_, err := s.deploymentCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+        return
 	}
 
 	_, err2 := s.deploymentCollection.InsertMany(context.TODO(),deploymentInfo);
 	if err2 != nil {
 		util.ResponseError(c, err2)
+        return
 	}
 
 	fmt.Println("refreshed deployment info")
@@ -89,6 +91,7 @@ func (s *Service) GetDeploymentInfo(c *gin.Context) {
 	cursor, err := s.deploymentCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+		return
 	}
 
 	// get a list of all returned documents and print them out
@@ -96,6 +99,7 @@ func (s *Service) GetDeploymentInfo(c *gin.Context) {
 	var results []bson.M
 	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
 		util.ResponseError(c, err2)
+		return
 	}
 
 	util.ResponseSuccess(c, results, "deployment")

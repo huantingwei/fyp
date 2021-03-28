@@ -73,6 +73,7 @@ func (s *Service) GetRoleInfo(c *gin.Context) {
 	cursor, err := s.roleCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+        return
 	}
 
 	// get a list of all returned documents and print them out
@@ -92,11 +93,13 @@ func (s *Service) refreshRoleInfo(c *gin.Context){
 	_, err := s.roleCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+		return
 	}
 
 	_, err = s.roleCollection.InsertMany(context.TODO(),roleInfo);
 	if err != nil {
 		util.ResponseError(c, err)
+		return
 	}
 	
 	fmt.Println("refreshed role info")

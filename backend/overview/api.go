@@ -40,6 +40,9 @@ func NewService(r *gin.RouterGroup, db util.Database, client *kube.Clientset) {
 		clientset:            		client,
 	}
 
+	// initialize cluser data
+	s.init()
+
 	r = r.Group("/overview")
 
 	r.GET("/cluster", s.GetClusterInfo)
@@ -55,6 +58,22 @@ func NewService(r *gin.RouterGroup, db util.Database, client *kube.Clientset) {
 	r.GET("/replicaSet", s.GetReplicaSetInfo)
 	
 	r.POST("/new", s.Refresh)
+}
+
+func (s *Service) init(){
+	// TODO: remove c gin.Context
+//	s.refreshClusterInfo(c)
+//	s.refreshNodepoolInfo(c)
+//	s.refreshDeploymentInfo(c)
+//	s.refreshPodInfo(c)
+//	s.refreshServiceInfo(c)
+//	s.refreshNodeInfo(c)
+//	s.refreshRoleInfo(c)
+//	s.refreshRoleBindingInfo(c)
+//	s.refreshNetworkPolicyInfo(c)
+//	s.refreshStatefulSetInfo(c)
+//	s.refreshReplicaSetInfo(c)
+	return
 }
 
 func (s *Service) Refresh(c *gin.Context) {

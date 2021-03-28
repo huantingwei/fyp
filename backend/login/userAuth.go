@@ -147,6 +147,7 @@ func (s *Service) postGoogleCode(c *gin.Context) {
 	f.Close()
 	if err != nil {
 		util.ResponseError(c, err)
+        return
 	}
 	util.ResponseSuccess(c, verificationCode, "verification")
 }

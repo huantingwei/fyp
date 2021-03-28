@@ -16,6 +16,7 @@ func (s *Service) refreshServiceInfo(c *gin.Context){
 	_, err := s.serviceCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+        return
 	}
 
 	_, err2 := s.serviceCollection.InsertMany(context.TODO(),serviceInfo);
@@ -83,6 +84,7 @@ func (s *Service) GetServiceInfo(c *gin.Context) {
 	cursor, err := s.serviceCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+		return
 	}
 
 	// get a list of all returned documents and print them out
@@ -90,6 +92,7 @@ func (s *Service) GetServiceInfo(c *gin.Context) {
 	var results []bson.M
 	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
 		util.ResponseError(c, err2)
+		return
 	}
 
 	util.ResponseSuccess(c, results, "service")

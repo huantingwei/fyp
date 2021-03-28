@@ -208,6 +208,7 @@ func (s *Service) GetNetworkPolicyInfo(c *gin.Context) {
 	cursor, err := s.networkPolicyCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+        return
 	}
 
 	// get a list of all returned documents and print them out
@@ -227,11 +228,13 @@ func (s *Service) refreshNetworkPolicyInfo(c *gin.Context){
 	_, err := s.networkPolicyCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+		return
 	}
 
 	_, err = s.networkPolicyCollection.InsertMany(context.TODO(),networkPolicyInfo);
 	if err != nil {
 		util.ResponseError(c, err)
+		return
 	}
 	
 	fmt.Println("refreshed networkPolicy info")

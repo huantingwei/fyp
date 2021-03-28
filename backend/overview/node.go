@@ -16,11 +16,13 @@ func (s *Service) refreshNodeInfo(c *gin.Context){
 	_, err := s.nodeCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+        return
 	}
 
 	_, err2 := s.nodeCollection.InsertMany(context.TODO(),nodeInfo);
 	if err2 != nil {
 		util.ResponseError(c, err2)
+        return
 	}
 
 	fmt.Println("refreshed node info")
@@ -89,6 +91,7 @@ func (s *Service) GetNodeInfo(c *gin.Context) {
 	cursor, err := s.nodeCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
+		return
 	}
 
 	// get a list of all returned documents and print them out
@@ -96,6 +99,7 @@ func (s *Service) GetNodeInfo(c *gin.Context) {
 	var results []bson.M
 	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
 		util.ResponseError(c, err2)
+		return
 	}
 
 	util.ResponseSuccess(c, results, "node")
