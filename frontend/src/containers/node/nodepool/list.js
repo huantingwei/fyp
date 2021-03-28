@@ -37,7 +37,7 @@ const NodePoolList = (props) => {
 
     const handleRowSelect = (row) => {
         setSelected(flattenWorkload(row))
-        setSelectedTitle(row['name'] + ': ' + row['uid'])
+        setSelectedTitle(row['name'])
         setDetailOpen(true)
     }
 

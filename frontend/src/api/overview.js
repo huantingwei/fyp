@@ -29,6 +29,18 @@ class overviewAPI {
             url: '/api/v1/overview/pod',
         }
     }
+    static getStatefulSet() {
+        return {
+            method: 'GET',
+            url: '/api/v1/overview/statefulSet',
+        }
+    }
+    static getReplicaSet() {
+        return {
+            method: 'GET',
+            url: '/api/v1/overview/replicaSet',
+        }
+    }
     static getDeployment() {
         return {
             method: 'GET',

@@ -1,9 +1,8 @@
 import React, { Fragment } from 'react'
 import { useSelector } from 'react-redux'
-// import { LeftDrawer } from 'components/drawer'
 import CloudQueueOutlinedIcon from '@material-ui/icons/CloudQueueOutlined'
-import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined'
-import DeveloperBoardOutlinedIcon from '@material-ui/icons/DeveloperBoardOutlined'
+// import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined'
+// import DeveloperBoardOutlinedIcon from '@material-ui/icons/DeveloperBoardOutlined'
 import VerifiedUserOutlinedIcon from '@material-ui/icons/VerifiedUserOutlined'
 import BubbleChartOutlinedIcon from '@material-ui/icons/BubbleChartOutlined'
 import DonutSmallOutlinedIcon from '@material-ui/icons/DonutSmallOutlined'
@@ -37,6 +36,8 @@ import Project from 'containers/project'
 import Role from 'containers/accessControl/role'
 import RoleBinding from './accessControl/roleBinding'
 import NetworkDiagram from './networkGraph'
+import StatefulSet from './workload/statefulSet'
+import ReplicaSet from './workload/replicaSet'
 
 const Root = (props) => {
     const routeItems = [
@@ -82,8 +83,24 @@ const Root = (props) => {
                     path: '/workload/deployment',
                     exact: true,
                     text: 'Deployment',
-                    icon: <DeveloperBoardOutlinedIcon />,
+                    icon: <DetailsOutlinedIcon />,
                     component: Deployment,
+                },
+                {
+                    id: 'statefulset',
+                    path: '/workload/statefulset',
+                    exact: true,
+                    text: 'StatefulSet',
+                    icon: <DetailsOutlinedIcon />,
+                    component: StatefulSet,
+                },
+                {
+                    id: 'replicaset',
+                    path: '/workload/replicaset',
+                    exact: true,
+                    text: 'ReplicaSet',
+                    icon: <DetailsOutlinedIcon />,
+                    component: ReplicaSet,
                 },
                 {
                     id: 'pod',
@@ -98,8 +115,16 @@ const Root = (props) => {
         {
             id: 'network',
             text: 'Network',
-            icon: <SettingsEthernetOutlinedIcon />,
+            icon: <ShareOutlinedIcon />,
             nested: [
+                {
+                    id: 'networkDiagram',
+                    path: '/networkDiagram',
+                    exact: true,
+                    text: 'Network Diagram',
+                    icon: <ShareOutlinedIcon />,
+                    component: NetworkDiagram,
+                },
                 {
                     id: 'service',
                     path: '/service',
@@ -107,14 +132,6 @@ const Root = (props) => {
                     text: 'Service',
                     icon: <AccountTreeOutlinedIcon />,
                     component: Service,
-                },
-                {
-                    id: 'ingress',
-                    path: '/ingress',
-                    exact: true,
-                    text: 'Ingress',
-                    icon: <AccountTreeOutlinedIcon />,
-                    component: () => <h1>Ingress</h1>,
                 },
                 {
                     id: 'nsp',
@@ -125,14 +142,6 @@ const Root = (props) => {
                     component: () => <h1>Network Security Policy</h1>,
                 },
             ],
-        },
-        {
-            id: 'networkDiagram',
-            path: '/networkDiagram',
-            exact: true,
-            text: 'Network Diagram',
-            icon: <ShareOutlinedIcon />,
-            component: NetworkDiagram,
         },
         {
             id: 'accessControl',

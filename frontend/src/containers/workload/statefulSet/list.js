@@ -3,13 +3,13 @@ import React, { useState, useEffect } from 'react'
 import TableComponent from 'components/table/list'
 import { headCells } from './configs'
 import Switch from 'components/switch'
-import DeploymentDetail from './detail'
+import StatefulSetDetail from './detail'
 import StatusHandler from 'components/statusHandler'
 import { transform, flattenWorkload } from 'utils/transform'
 import { req } from 'api'
 import overviewAPI from 'api/overview'
 
-export default function DeploymentList(props) {
+export default function StatefulSetList(props) {
     const [data, setData] = useState([])
     const [selected, setSelected] = useState([])
     const [selectedTitle, setSelectedTitle] = useState('')
@@ -23,7 +23,7 @@ export default function DeploymentList(props) {
         const get = async () => {
             try {
                 setApiStatus('loading')
-                const res = await req(overviewAPI.getDeployment())
+                const res = await req(overviewAPI.getStatefulSet())
                 setData(res)
                 setApiStatus('success')
             } catch (err) {
@@ -48,7 +48,7 @@ export default function DeploymentList(props) {
                 open={detailOpen}
                 onBackClick={handleDetailClose}
                 title={selectedTitle}
-                content={<DeploymentDetail items={transform(selected)} />}
+                content={<StatefulSetDetail items={transform(selected)} />}
             >
                 <TableComponent
                     column={headCells}

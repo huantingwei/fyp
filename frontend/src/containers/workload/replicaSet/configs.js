@@ -12,27 +12,11 @@ const headCells = [
         label: 'Namespace',
     },
     {
-        id: 'desiredpods',
-        numeric: false,
-        disablePadding: false,
-        label: 'Desired Pods',
-    },
-    {
         id: 'matchlabels',
         type: 'chip',
         numeric: false,
         disablePadding: false,
         label: 'Match Labels',
-    },
-    // should display like
-    // ReadyReplicas / AvailableReplicas / UnavailableReplicas
-    // 1 / 1 / 0
-    // skip UpdatedReplicas for now
-    {
-        id: 'availablereplicas',
-        numeric: false,
-        disablePadding: false,
-        label: 'Available Replicas',
     },
 ]
 
