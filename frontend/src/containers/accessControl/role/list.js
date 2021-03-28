@@ -36,6 +36,8 @@ export default function RoleList(props) {
     }, [])
 
     const handleRowSelect = (row) => {
+        // transform 'rules'
+        // row['rules'] = roleRule(row['rules'])
         setSelected(flattenWorkload(row))
         setSelectedTitle(row['name'])
         setDetailOpen(true)

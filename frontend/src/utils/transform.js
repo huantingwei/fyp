@@ -3,7 +3,7 @@ function notNullOrUndefined(value) {
 }
 const transform = (data, primaryKey = 'name', secondaryKey = '') => {
     let res = []
-    if (Object.keys(data).length > 0) {
+    if (notNullOrUndefined(data) && Object.keys(data).length > 0) {
         for (let key of Object.keys(data)) {
             // null
             if (data[key] === null) {
@@ -23,14 +23,16 @@ const transform = (data, primaryKey = 'name', secondaryKey = '') => {
                     content: notNullOrUndefined(data[key]) ? data[key] : 'null',
                 })
                 // object
-            } else if (typeof data[key] === 'object') {
-                res.push({
-                    label: key,
-                    type: 'chip',
-                    content: notNullOrUndefined(data[key]) ? data[key] : 'null',
-                })
-                // long text
-            } else if (typeof data[key] === 'string' && data[key].length > 100) {
+            }
+            // else if (typeof data[key] === 'object') {
+            //     res.push({
+            //         label: key,
+            //         type: 'chip',
+            //         content: notNullOrUndefined(data[key]) ? data[key] : 'null',
+            //     })
+            //     // long text
+            // }
+            else if (typeof data[key] === 'string' && data[key].length > 100) {
                 res.push({
                     label: key,
                     type: 'multiline',
@@ -49,8 +51,7 @@ const transform = (data, primaryKey = 'name', secondaryKey = '') => {
     return res
 }
 
-const flattenWorkload = (data) => {
-    const needFlatten = ['objectmeta']
+const flattenWorkload = (data, needFlatten = ['objectmeta']) => {
     const flatten = (item) => {
         let resObj = {}
         for (let key of Object.keys(item)) {

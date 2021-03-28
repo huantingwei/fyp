@@ -1,32 +1,45 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import ContainerLayout from 'components/layout'
 import { DataPresentationTable } from 'components/dataPresentation'
 import { transform } from 'utils/transform'
 
-export default function RoleDetail(props) {
-    const { items } = props
-
-    useEffect(() => {
-        if (items.length > 0) {
-            for (let item of items) {
-                if (Object.keys(item).includes('rules')) {
-                    for (let rule of item['rules']) {
-                        rule['apigroups'] = rule['apigroups'].join(',')
-                        rule['nonresourceurls'] = rule['nonresourceurls'].join(',')
-                        rule['resourcenames'] = rule['resourcenames'].join(',')
-                        rule['resources'] = rule['resources'].join(',')
-                        rule['verbs'] = rule['verbs'].join(',')
-                        console.log(rule)
-                    }
-                }
+const roleRule = (rules) => {
+    let res = []
+    for (let rule of rules) {
+        let r = {}
+        for (let key of Object.keys(rule)) {
+            if (rule[key] === null || rule[key] === undefined) {
+                r[key] = ''
+            } else if (Array.isArray(rule[key])) {
+                r[key] = rule[key].join(',')
             }
         }
+        res.push(r)
+    }
+    return res
+}
+
+export default function RoleDetail(props) {
+    const { items } = props
+    const [data, setData] = useState(null)
+
+    useEffect(() => {
+        // transform data before rendering
+        let d = {}
+        for (let k of Object.keys(items)) {
+            if (k !== 'rules') {
+                d[k] = items[k]
+            } else {
+                d['rules'] = roleRule(items['rules'])
+            }
+        }
+        setData(d)
     }, [items])
 
     return (
         <ContainerLayout>
-            <DataPresentationTable items={transform(items, 'apigroups')} />
+            <DataPresentationTable items={transform(data, 'resources')} />
         </ContainerLayout>
     )
 }
