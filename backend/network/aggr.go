@@ -90,6 +90,9 @@ func (s *Service) getNamespace() (namespaces []string) {
 	for _, n := range npList.Items {
 		namespaces = append(namespaces, n.ObjectMeta.Name)
 	}
+
+	// "" for all namespaces
+	namespaces = append(namespaces, "")
 	return
 }
 
@@ -331,7 +334,10 @@ func (s *Service) buildGraph(namespace string) (gnodes []GraphNode, glinks []Gra
 }
 
 func (s *Service) insertGraph() error {
-	var graphs []interface{}
+	var graphs []Graph
+	all := Graph {
+		Namespace: "",
+	}
 	namespaces := s.getNamespace()
 	for _, np := range namespaces {
 		nodes, links := s.buildGraph(np)
@@ -361,7 +367,18 @@ func (s *Service) insertGraph() error {
 			Namespace: np,
 		}
 		graphs = append(graphs, graph)
+		for _, n := range graph.Nodes {
+			all.Nodes = append(all.Nodes, n)
+		}
+		for _, l := range graph.Links {
+			all.Links = append(all.Links, l)
+		}
+	}
+	graphs = append(graphs, all)
 
+	var ins []interface{}
+	for _, g := range graphs {
+		ins = append(ins, g)
 	}
 	// delete old data
 	_, err := s.networkGraphCollection.DeleteMany(context.TODO(), bson.D{})
@@ -369,7 +386,7 @@ func (s *Service) insertGraph() error {
 		return err
 	}
 	// insert to db
-	_, err2 := s.networkGraphCollection.InsertMany(context.TODO(), graphs);
+	_, err2 := s.networkGraphCollection.InsertMany(context.TODO(), ins);
 	if err2 != nil {
 		return err2
 	}
