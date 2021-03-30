@@ -10,22 +10,21 @@ import (
 	"github.com/huantingwei/fyp/object"
 )
 
-func (s *Service) refreshReplicaSetInfo(c *gin.Context){
+func (s *Service) refreshReplicaSetInfo() error {
 	replicaSetInfo := s.initReplicaSetArray();
 
 	_, err := s.replicaSetCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		util.ResponseError(c, err)
-        return
+        return err
 	}
 
 	_, err2 := s.replicaSetCollection.InsertMany(context.TODO(),replicaSetInfo);
 	if err2 != nil {
-		util.ResponseError(c, err2)
-        return
+        return err2
 	}
 
 	fmt.Println("refreshed replicaSet info")
+	return nil
 }
 
 func (s *Service) initReplicaSetArray() []interface{}{

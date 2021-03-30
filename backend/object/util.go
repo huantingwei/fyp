@@ -34,3 +34,27 @@ const (
 	LabelSelectorOpExists		LabelSelectorOperator	= "Exists"
 	LabelSelectorOpDoesNotExist	LabelSelectorOperator	= "DoesNotExist"
 )
+
+// Role / ClusterRole / RoleBinding / ClusterRoleBinding
+type PolicyRule struct {
+	APIGroups 		[]string `json:"apiGroups"`
+	NonResourceURLs []string `json:"nonResourceUrls"`
+	ResourceNames 	[]string `json:"resourceNames"`
+	Resources 		[]string `json:"resources"`
+	Verbs 			[]string `json:"verbs"`
+}
+
+// Subject contains a reference to the object/user identities a Cluster/RoleBinding applies to
+type Subject struct {
+	Kind			string `json:"kind"`
+	APIGroup 		string `json:"apiGroup"`
+	Name			string `json:"name"`
+	Namespace	 	string `json:"namespace"`
+}
+
+// Subject contains a reference to the object/user identities a Cluster/RoleBinding applies to
+type RoleRef struct {
+	APIGroup 		string `json:"apiGroup"`
+	Kind			string `json:"kind"`
+	Name			string `json:"name"`
+}

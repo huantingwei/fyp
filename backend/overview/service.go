@@ -10,21 +10,21 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *Service) refreshServiceInfo(c *gin.Context){
+func (s *Service) refreshServiceInfo() error {
 	serviceInfo := s.initServiceArray();
 
 	_, err := s.serviceCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		util.ResponseError(c, err)
-        return
+        return err
 	}
 
 	_, err2 := s.serviceCollection.InsertMany(context.TODO(),serviceInfo);
 	if err2 != nil {
-		util.ResponseError(c, err)
+		return err2
 	}
 	
 	fmt.Println("refreshed service info")
+	return nil
 }
 
 func (s *Service) initServiceArray() []interface{}{

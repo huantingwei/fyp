@@ -11,17 +11,17 @@ import (
 )
 
 
-func (s *Service) initRoleBindings() []interface{}{
+func (s *Service) initClusterRoleBindings() []interface{}{
 
-	roleBindingList, err := s.clientset.RbacV1().RoleBindings("").List(context.TODO(), metav1.ListOptions{});
+	clusterRoleBindingList, err := s.clientset.RbacV1().ClusterRoleBindings().List(context.TODO(), metav1.ListOptions{});
 	if err != nil {
 		panic(err.Error())
 	}
 
 	var rbs []interface{};
 
-	for _, r := range roleBindingList.Items{
-		rb := object.RoleBinding {
+	for _, r := range clusterRoleBindingList.Items{
+		rb := object.ClusterRoleBinding {
 			ObjectMeta: object.ObjectMeta{
 				Name: r.Name,
 				Namespace: string(r.Namespace),
@@ -52,8 +52,8 @@ func (s *Service) initRoleBindings() []interface{}{
 	return rbs;
 }
 
-func (s *Service) GetRoleBindingInfo(c *gin.Context) {
-	cursor, err := s.roleBindingCollection.Find(context.TODO(), bson.D{})
+func (s *Service) GetClusterRoleBindingInfo(c *gin.Context) {
+	cursor, err := s.clusterRoleBindingCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
         return
@@ -66,23 +66,23 @@ func (s *Service) GetRoleBindingInfo(c *gin.Context) {
 		util.ResponseError(c, err)
 	}
 
-	util.ResponseSuccess(c, results, "roleBinding")
+	util.ResponseSuccess(c, results, "clusterRoleBinding")
 }
 
 
-func (s *Service) refreshRoleBindingInfo() error {
-	roleBindingInfo := s.initRoleBindings();
+func (s *Service) refreshClusterRoleBindingInfo() error {
+	clusterRoleBindingInfo := s.initClusterRoleBindings();
 
-	_, err := s.roleBindingCollection.DeleteMany(context.TODO(), bson.D{})
+	_, err := s.clusterRoleBindingCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		return err
+		return nil
 	}
 
-	_, err = s.roleBindingCollection.InsertMany(context.TODO(),roleBindingInfo);
+	_, err = s.clusterRoleBindingCollection.InsertMany(context.TODO(),clusterRoleBindingInfo);
 	if err != nil {
 		return err
 	}
 	
-	fmt.Println("refreshed roleBinding info")
+	fmt.Println("refreshed clusterRoleBinding info")
 	return nil
 }

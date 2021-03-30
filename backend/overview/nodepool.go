@@ -9,22 +9,21 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *Service) refreshNodepoolInfo(c *gin.Context) {
+func (s *Service) refreshNodepoolInfo() error {
 	nodepoolInfo := initNodepoolsArray();
 
 	_, err := s.nodepoolCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		util.ResponseError(c, err)
-        return
+        return err
 	}
 
 	_, err2 := s.nodepoolCollection.InsertMany(context.TODO(),nodepoolInfo);
 	if err2 != nil {
-		util.ResponseError(c, err2)
-        return
+        return err2
 	}
 
 	fmt.Println("refreshed nodepool info")
+	return nil
 }
 
 func initNodepoolsArray() []interface{}{

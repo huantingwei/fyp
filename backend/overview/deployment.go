@@ -10,22 +10,21 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *Service) refreshDeploymentInfo(c *gin.Context){
+func (s *Service) refreshDeploymentInfo() error {
 	deploymentInfo := s.initDeploymentArray();
 
 	_, err := s.deploymentCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		util.ResponseError(c, err)
-        return
+		return err
 	}
 
 	_, err2 := s.deploymentCollection.InsertMany(context.TODO(),deploymentInfo);
 	if err2 != nil {
-		util.ResponseError(c, err2)
-        return
+		return err2
 	}
 
 	fmt.Println("refreshed deployment info")
+	return nil
 }
 
 func (s *Service) initDeploymentArray() []interface{}{

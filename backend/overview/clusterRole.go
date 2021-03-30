@@ -11,17 +11,17 @@ import (
 )
 
 
-func (s *Service) initRoles() []interface{}{
+func (s *Service) initClusterRoles() []interface{}{
 
-	roleList, err := s.clientset.RbacV1().Roles("").List(context.TODO(), metav1.ListOptions{});
+	clusterRoleList, err := s.clientset.RbacV1().ClusterRoles().List(context.TODO(), metav1.ListOptions{});
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var roles []interface{};
+	var clusterRoles []interface{};
 
-	for _, r := range roleList.Items{
-		role := object.Role {
+	for _, r := range clusterRoleList.Items{
+		clusterRole := object.ClusterRole {
 			ObjectMeta: object.ObjectMeta{
 				Name: r.Name,
 				Namespace: string(r.Namespace),
@@ -62,15 +62,24 @@ func (s *Service) initRoles() []interface{}{
 			}
 			rules = append(rules, pr);
 		}
-		role.Rules = rules;
-		roles = append(roles, role);
+		clusterRole.Rules = rules;
+
+		selectors := make(map[string]string)
+		for _, s := range r.AggregationRule.ClusterRoleSelectors {
+			for k, v := range s.MatchLabels {
+				selectors[k] = v
+			}
+		}
+		clusterRole.ClusterRoleSelectors = selectors
+
+		clusterRoles = append(clusterRoles, clusterRole);
 	}
 
-	return roles;
+	return clusterRoles;
 }
 
-func (s *Service) GetRoleInfo(c *gin.Context) {
-	cursor, err := s.roleCollection.Find(context.TODO(), bson.D{})
+func (s *Service) GetClusterRoleInfo(c *gin.Context) {
+	cursor, err := s.clusterRoleCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
         return
@@ -83,23 +92,23 @@ func (s *Service) GetRoleInfo(c *gin.Context) {
 		util.ResponseError(c, err)
 	}
 
-	util.ResponseSuccess(c, results, "role")
+	util.ResponseSuccess(c, results, "clusterRole")
 }
 
 
-func (s *Service) refreshRoleInfo() error {
-	roleInfo := s.initRoles();
+func (s *Service) refreshClusterRoleInfo() error {
+	clusterRoleInfo := s.initClusterRoles();
 
-	_, err := s.roleCollection.DeleteMany(context.TODO(), bson.D{})
+	_, err := s.clusterRoleCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
 		return err
 	}
 
-	_, err = s.roleCollection.InsertMany(context.TODO(),roleInfo);
+	_, err = s.clusterRoleCollection.InsertMany(context.TODO(),clusterRoleInfo);
 	if err != nil {
 		return err
 	}
 	
-	fmt.Println("refreshed role info")
+	fmt.Println("refreshed clusterRole info")
 	return nil
 }

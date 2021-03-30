@@ -9,21 +9,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *Service) refreshClusterInfo(c *gin.Context) {
+func (s *Service) refreshClusterInfo() error {
 	clusterInfo := initClusterStruct();
 
 	_, err := s.clusterCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		util.ResponseError(c, err)
-        return
+		return err
 	}
 
 	_, err2 := s.clusterCollection.InsertOne(context.TODO(),clusterInfo);
 	if err2 != nil {
-		util.ResponseError(c, err2)
-        return
+        return err2
 	}
 	fmt.Println("refreshed cluster info")
+	return nil
 }
 
 func initClusterStruct() object.Cluster{

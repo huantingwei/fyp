@@ -10,22 +10,21 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *Service) refreshPodInfo(c *gin.Context){
+func (s *Service) refreshPodInfo() error {
 	podInfo := s.initPodArray();
 
 	_, err := s.podCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-		util.ResponseError(c, err)
-        return
+        return err
 	}
 
 	_, err2 := s.podCollection.InsertMany(context.TODO(),podInfo);
 	if err2 != nil {
-		util.ResponseError(c, err2)
-        return
+        return err2
 	}
 
 	fmt.Println("refreshed pod info")
+	return nil
 }
 
 func (s *Service) initPodArray() []interface{}{
