@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from 'react'
-// import PropTypes from 'prop-types'
-// import { makeStyles } from '@material-ui/core/styles'
+import { Button } from '@material-ui/core'
 import ContainerLayout from 'components/layout'
 import { DataPresentationTable } from 'components/dataPresentation'
 import StatusHandler from 'components/statusHandler'
 import { transform } from 'utils/transform'
 import { req } from 'api'
 import projectAPI from 'api/project'
-
-// const useStyles = makeStyles((theme) => ({
-//     button: {
-//         marginTop: theme.spacing(5),
-//         marginBottom: theme.spacing(1),
-//     },
-// }))
+import overviewAPI from 'api/overview'
 
 export default function Project(props) {
-    // const classes = useStyles()
     const [data, setData] = useState([])
     const [apiStatus, setApiStatus] = useState('initial')
     const [apiMessage, setApiMessage] = useState('')
@@ -46,6 +38,21 @@ export default function Project(props) {
         return ret
     }
 
+    const refresh = async () => {
+        try {
+            setApiStatus('loading')
+            await req(overviewAPI.refresh())
+            setApiStatus('success')
+        } catch (err) {
+            setApiStatus('fail')
+            setApiMessage('API Server Error...')
+            console.error(err)
+        }
+    }
+    const handleRefresh = async () => {
+        await refresh()
+    }
+
     return (
         <ContainerLayout
             title="Project Information"
@@ -54,6 +61,9 @@ export default function Project(props) {
             <StatusHandler status={apiStatus} message={apiMessage}>
                 <DataPresentationTable items={transform(rename(data))} />
             </StatusHandler>
+            <Button onClick={handleRefresh} variant="outlined" style={{ marginTop: '1rem' }}>
+                Refresh Cluster
+            </Button>
         </ContainerLayout>
     )
 }

@@ -25,14 +25,16 @@ function Alert(props) {
 }
 
 const initialData = {
-    projectName: '',
-    zoneName: '',
-    clusterName: '',
+    projectName: 'fyp-demo-306511',
+    zoneName: 'us-central1-a',
+    clusterName: 'demo',
+    credPath: '$HOME/fyp/backend/fyp-demo-sa.json',
 }
 const initialErr = {
     projectName: false,
     zoneName: false,
     clusterName: false,
+    credPath: false,
     aggr: false,
 }
 
@@ -58,9 +60,9 @@ export default function Init(props) {
     }
     const handleVerifyCode = async () => {
         try {
-            await req(authAPI.verifyCode({ code: code }))
+            const project = await req(authAPI.verifyCode({ code: code }))
             setAuthUrlDialog(false)
-            dispatch(Actions.login())
+            dispatch(Actions.login(project))
             setIsLoading(false)
         } catch (err) {
             console.error(err)
@@ -82,7 +84,7 @@ export default function Init(props) {
         // api call
         try {
             setIsLoading(true)
-            const url = await req(authAPI.login(data))
+            const url = await req(authAPI.authenticate(data))
             // check if no URL
             if (isEmptyOrSpaces(url)) {
                 throw new Error('No URL found')
@@ -155,6 +157,17 @@ export default function Init(props) {
                         value={data.clusterName}
                         error={err.clusterName}
                         onChange={(e) => handleChange(e, 'clusterName')}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        name="credPath"
+                        label={'Absolute Path of Credential File'}
+                        value={data.credPath}
+                        error={err.credPath}
+                        onChange={(e) => handleChange(e, 'credPath')}
                     />
                 </Grid>
                 <Grid item>

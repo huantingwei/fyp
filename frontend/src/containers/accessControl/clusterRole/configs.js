@@ -1,21 +1,15 @@
 const headCells = [
     {
-        id: 'Name',
+        id: 'name',
         numeric: false,
         disablePadding: false,
         label: 'Name',
     },
     {
-        id: 'Privileged',
+        id: 'uid',
         numeric: false,
         disablePadding: false,
-        label: 'Privileged',
-    },
-    {
-        id: 'Volume',
-        numeric: false,
-        disablePadding: false,
-        label: 'Volume',
+        label: 'UID',
     },
 ]
 

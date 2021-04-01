@@ -14,7 +14,7 @@ export default function Graph() {
     const [apiStatus, setApiStatus] = useState('success')
     const [apiMessage, setApiMessage] = useState('Please select a Namespace')
     const [namespaces, setNamespaces] = useState([])
-    const [selectedNP, setSelectedNP] = useState('')
+    const [selectedNP, setSelectedNP] = useState(null)
 
     const handleChange = (event) => {
         setSelectedNP(event.target.value)
@@ -33,7 +33,7 @@ export default function Graph() {
                 console.error(err)
             }
         }
-        if (selectedNP !== '') {
+        if (selectedNP !== null) {
             setApiMessage('')
             get()
         }
@@ -48,7 +48,7 @@ export default function Graph() {
                 console.error(err)
             }
         }
-        if (selectedNP === '') {
+        if (selectedNP === null) {
             get()
         }
     }, [selectedNP])

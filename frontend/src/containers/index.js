@@ -1,8 +1,7 @@
 import React, { Fragment } from 'react'
-import { useSelector } from 'react-redux'
+import { Switch, Route, Redirect } from 'react-router-dom'
 import CloudQueueOutlinedIcon from '@material-ui/icons/CloudQueueOutlined'
-// import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined'
-// import DeveloperBoardOutlinedIcon from '@material-ui/icons/DeveloperBoardOutlined'
+import DeveloperBoardOutlinedIcon from '@material-ui/icons/DeveloperBoardOutlined'
 import VerifiedUserOutlinedIcon from '@material-ui/icons/VerifiedUserOutlined'
 import BubbleChartOutlinedIcon from '@material-ui/icons/BubbleChartOutlined'
 import DonutSmallOutlinedIcon from '@material-ui/icons/DonutSmallOutlined'
@@ -14,30 +13,35 @@ import AccountBoxOutlinedIcon from '@material-ui/icons/AccountBoxOutlined'
 import VpnKeyOutlinedIcon from '@material-ui/icons/VpnKeyOutlined'
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined'
 import ShareOutlinedIcon from '@material-ui/icons/ShareOutlined'
+import PollOutlinedIcon from '@material-ui/icons/PollOutlined'
 // import ApartmentOutlinedIcon from '@material-ui/icons/ApartmentOutlined'
 // import FitnessCenterOutlinedIcon from '@material-ui/icons/FitnessCenterOutlined'
 // import StorageOutlinedIcon from '@material-ui/icons/StorageOutlined'
 // import MemoryOutlinedIcon from '@material-ui/icons/MemoryOutlined'
 // import MenuBookOutlinedIcon from '@material-ui/icons/MenuBookOutlined'
-// import PollOutlinedIcon from '@material-ui/icons/PollOutlined'
+// import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined'
+
 import LeftDrawer from 'containers/sidebar'
+
 import Cluster from 'containers/cluster'
 import Node from 'containers/node/node'
 import NodePool from 'containers/node/nodepool'
-import { Switch, Route, Redirect } from 'react-router-dom'
 import KubeBenchReportList from 'containers/report/kubebench/list'
 import Deployment from 'containers/workload/deployment'
 import Pod from 'containers/workload/pod'
 import Service from 'containers/network/service'
-import Login from 'containers/login'
+import NetworkDiagram from 'containers/network/graph'
 import KubeScoreObjList from 'containers/report/kubescore/objList'
 import Home from 'containers/home'
 import Project from 'containers/project'
 import Role from 'containers/accessControl/role'
-import RoleBinding from './accessControl/roleBinding'
-import NetworkDiagram from './networkGraph'
-import StatefulSet from './workload/statefulSet'
-import ReplicaSet from './workload/replicaSet'
+import RoleBinding from 'containers/accessControl/roleBinding'
+import ClusterRole from 'containers/accessControl/clusterRole'
+import ClusterRoleBinding from 'containers/accessControl/clusterRoleBinding'
+import StatefulSet from 'containers/workload/statefulSet'
+import ReplicaSet from 'containers/workload/replicaSet'
+import NetworkPolicy from 'containers/policy/networkPolicy'
+import PodSecurityPolicy from 'containers/policy/podSecurityPolicy'
 
 const Root = (props) => {
     const routeItems = [
@@ -122,7 +126,7 @@ const Root = (props) => {
                     path: '/networkDiagram',
                     exact: true,
                     text: 'Network Diagram',
-                    icon: <ShareOutlinedIcon />,
+                    icon: <AccountTreeOutlinedIcon />,
                     component: NetworkDiagram,
                 },
                 {
@@ -132,14 +136,6 @@ const Root = (props) => {
                     text: 'Service',
                     icon: <AccountTreeOutlinedIcon />,
                     component: Service,
-                },
-                {
-                    id: 'nsp',
-                    path: '/nsp',
-                    exact: true,
-                    text: 'Network Security Policy',
-                    icon: <AccountTreeOutlinedIcon />,
-                    component: () => <h1>Network Security Policy</h1>,
                 },
             ],
         },
@@ -165,12 +161,43 @@ const Root = (props) => {
                     component: RoleBinding,
                 },
                 {
+                    id: 'clusterRole',
+                    path: '/clusterRole',
+                    exact: true,
+                    text: 'ClusterRole',
+                    icon: <AccountBoxOutlinedIcon />,
+                    component: ClusterRole,
+                },
+                {
+                    id: 'clusterRoleBinding',
+                    path: '/clusterRoleBinding',
+                    exact: true,
+                    text: 'ClusterRole Binding',
+                    icon: <AccountBoxOutlinedIcon />,
+                    component: ClusterRoleBinding,
+                },
+            ],
+        },
+        {
+            id: 'policy',
+            text: 'Policy',
+            icon: <DeveloperBoardOutlinedIcon />,
+            nested: [
+                {
+                    id: 'nsp',
+                    path: '/nsp',
+                    exact: true,
+                    text: 'Network Security Policy',
+                    icon: <PollOutlinedIcon />,
+                    component: NetworkPolicy,
+                },
+                {
                     id: 'psp',
                     path: '/psp',
                     exact: true,
                     text: 'Pod Security Policy',
-                    icon: <AccountBoxOutlinedIcon />,
-                    component: () => <h1>Pod Security Policy</h1>,
+                    icon: <PollOutlinedIcon />,
+                    component: PodSecurityPolicy,
                 },
             ],
         },
@@ -203,39 +230,31 @@ const Root = (props) => {
         },
     ]
 
-    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
-
     return (
         <Fragment>
             <Switch>
-                {isLoggedIn ? (
-                    <LeftDrawer listItems={routeItems} botItems={botItems}>
-                        {routeItems
-                            .concat(botItems)
-                            .reduce((acc, curr) => {
-                                if (curr.nested) {
-                                    return [...acc, ...curr.nested]
-                                } else {
-                                    return [...acc, curr]
-                                }
-                            }, [])
-                            .map((routeItem) => {
-                                return (
-                                    <Route
-                                        key={routeItem.id}
-                                        path={routeItem.path}
-                                        exact={routeItem.exact}
-                                        render={(routeProps) => (
-                                            <routeItem.component {...routeProps} />
-                                        )}
-                                    />
-                                )
-                            })}
-                        <Redirect to={'/'} />
-                    </LeftDrawer>
-                ) : (
-                    <Login />
-                )}
+                <LeftDrawer listItems={routeItems} botItems={botItems}>
+                    {routeItems
+                        .concat(botItems)
+                        .reduce((acc, curr) => {
+                            if (curr.nested) {
+                                return [...acc, ...curr.nested]
+                            } else {
+                                return [...acc, curr]
+                            }
+                        }, [])
+                        .map((routeItem) => {
+                            return (
+                                <Route
+                                    key={routeItem.id}
+                                    path={routeItem.path}
+                                    exact={routeItem.exact}
+                                    render={(routeProps) => <routeItem.component {...routeProps} />}
+                                />
+                            )
+                        })}
+                    <Redirect to={'/'} />
+                </LeftDrawer>
             </Switch>
         </Fragment>
     )

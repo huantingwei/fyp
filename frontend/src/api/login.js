@@ -1,9 +1,9 @@
 class authAPI {
-    static login(data) {
+    static authenticate(data) {
         return {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            url: '/login',
+            url: '/api/v1/login/authenticate',
             data: data,
         }
     }
@@ -11,7 +11,7 @@ class authAPI {
         return {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            url: '/googleAuth',
+            url: '/api/v1/login/verifyCode',
             data: data,
         }
     }

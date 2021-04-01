@@ -22,12 +22,12 @@ import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import CloudQueueOutlinedIcon from '@material-ui/icons/CloudQueueOutlined'
-// import AccountBoxOutlinedIcon from '@material-ui/icons/AccountBoxOutlined'
+import AccountBoxOutlinedIcon from '@material-ui/icons/AccountBoxOutlined'
 import { ExpandLess, ExpandMore } from '@material-ui/icons'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 
-// import { Actions } from 'redux/auth'
-// import { useDispatch } from 'react-redux'
+import { Actions } from 'redux/auth'
+import { useDispatch } from 'react-redux'
 
 const drawerWidth = 260
 
@@ -102,13 +102,13 @@ const useStyles = makeStyles((theme) => ({
     },
     profile: {
         position: 'absolute',
-        right: '3rem',
+        right: '2rem',
     },
 }))
 
 export default function LeftDrawer(props) {
     const { listItems, botItems, children } = props
-    // const dispatch = useDispatch()
+    const dispatch = useDispatch()
     const classes = useStyles()
     const theme = useTheme()
     const [pathName, setPathName] = useState(useLocation().pathname)
@@ -172,6 +172,17 @@ export default function LeftDrawer(props) {
                     >
                         <MenuIcon />
                     </IconButton>
+                    <div className={classes.profile}>
+                        <IconButton
+                            color="inherit"
+                            aria-label="profile"
+                            onClick={() => dispatch(Actions.logout())}
+                            variant="outlined"
+                        >
+                            <AccountBoxOutlinedIcon />
+                            <Typography component="span">&nbsp;&nbsp;Logout</Typography>
+                        </IconButton>
+                    </div>
                     {/* <div className={classes.profile}>
                         <IconButton
                             color="inherit"

@@ -60,6 +60,12 @@ class overviewAPI {
             url: '/api/v1/overview/networkPolicy',
         }
     }
+    static getPodSecurityPolicy() {
+        return {
+            method: 'GET',
+            url: '/api/v1/overview/podSecurityPolicy',
+        }
+    }
     static getRole() {
         return {
             method: 'GET',
@@ -70,6 +76,18 @@ class overviewAPI {
         return {
             method: 'GET',
             url: '/api/v1/overview/roleBinding',
+        }
+    }
+    static getClusterRole() {
+        return {
+            method: 'GET',
+            url: '/api/v1/overview/clusterRole',
+        }
+    }
+    static getClusterRoleBinding() {
+        return {
+            method: 'GET',
+            url: '/api/v1/overview/clusterRoleBinding',
         }
     }
 }

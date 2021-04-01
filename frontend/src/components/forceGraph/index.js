@@ -7,6 +7,22 @@ const linkWidth = 1
 const nodeRadius = 50
 const labelFontsize = '12px'
 const linkFontsize = '11px'
+const legends = ['Service', 'Pod', 'Node', 'External']
+
+function color(d) {
+    switch (d) {
+        case 'Pod':
+            return '#a8bdd3'
+        case 'Service':
+            return '#fbd491'
+        case 'Node':
+            return '#63b2e7'
+        case 'External':
+            return '#899ea8'
+        default:
+            return '#a8bdd3'
+    }
+}
 
 export function runForceGraph(container, linksData, nodesData) {
     const links = linksData.map((d) => Object.assign({}, d))
@@ -159,28 +175,67 @@ export function runForceGraph(container, linksData, nodesData) {
         simulation.alpha(1).restart()
     }
 
+    // const tooltip = svg.append('svg:g').attr('class', 'tooltip').style('opacity', 0)
+
     const node = svg
         .append('svg:g')
         .attr('stroke', '#fff')
         .attr('stroke-width', linkWidth)
         .selectAll('circle')
-        // rect
-        // .selectAll('rect')
         .data(nodes)
         .enter()
         .append('svg:circle')
-        // .join('circle')
         .attr('r', nodeRadius)
-        // .join('rect')
-        // .attr('width', 100)
-        // .attr('height', 75)
         .classed('node', true)
-        // .classed('fixed', (d) => d.fx !== undefined)
         .classed('fixed', true)
         .attr('class', (d) => `${getClass(d)}`)
-        // .attr('fill', nodeColor)
         .call(drag)
         .on('click', click)
+    // .on('mouseover', function (event, d) {
+    //     tooltip.transition().duration(200).style('opacity', 0.9)
+    //     tooltip
+    //         .html(d.type + '<br/>' + d.name + '<br/>' + d.content)
+    //         .style('left', -width / 2 + event.pageX + 'px')
+    //         .style('top', -height / 2 + event.pageY - 28 + 'px')
+    // })
+    // .on('mouseout', function (d) {
+    //     tooltip.transition().duration(500).style('opacity', 0)
+    // })
+
+    // function wrap(text, width) {
+    //     text.each(function () {
+    //         var text = d3.select(this),
+    //             words = text.text().split(/:+/).reverse(),
+    //             word,
+    //             line = [],
+    //             lineNumber = 0,
+    //             lineHeight = 1.1, // ems
+    //             x = text.attr('x'),
+    //             y = text.attr('y'),
+    //             dy = parseFloat(text.attr('dy')),
+    //             tspan = text
+    //                 .text(null)
+    //                 .append('tspan')
+    //                 .attr('x', x)
+    //                 .attr('y', y)
+    //                 .attr('dy', dy + 'em')
+    //         while ((word = words.pop())) {
+    //             line.push(word)
+    //             tspan.text(line.join(' '))
+    //             if (tspan.node().getComputedTextLength() > width) {
+    //                 line.pop()
+    //                 tspan.text(line.join(' '))
+    //                 line = [word]
+    //                 tspan = text
+    //                     .append('tspan')
+    //                     .attr('x', x)
+    //                     .attr('y', y)
+    //                     .attr('dy', ++lineNumber * lineHeight + dy + 'em')
+    //                     .text(word)
+    //             }
+    //         }
+    //     })
+    // }
 
     const label = svg
         .append('svg:g')
@@ -195,6 +250,33 @@ export function runForceGraph(container, linksData, nodesData) {
         .attr('dominant-baseline', 'central')
         .text((d) => {
             return d.name + ':' + d.content
+        })
+
+    const legendLabel = svg
+        .append('svg:g')
+        .attr('class', 'legend')
+        .selectAll('legendLabels')
+        .data(legends)
+        .enter()
+        .append('text')
+        .text(function (d) {
+            return d
+        })
+        .attr('text-anchor', 'left')
+        .style('alignment-baseline', 'middle')
+        .style('font-size', '12px')
+
+    const legendColor = svg
+        .append('svg:g')
+        .attr('class', 'legend')
+        .selectAll('legendColors')
+        .data(legends)
+        .enter()
+        .append('rect')
+        .attr('width', 20)
+        .attr('height', 20)
+        .style('fill', function (d) {
+            return color(d)
         })
 
     simulation.on('tick', () => {
@@ -234,6 +316,22 @@ export function runForceGraph(container, linksData, nodesData) {
             })
             .attr('y', (d) => {
                 return d.y
+            })
+        // .call(wrap, 10)
+
+        legendLabel
+            .attr('x', (d) => {
+                return -width / 2 + 30
+            })
+            .attr('y', (d, i) => {
+                return -height / 2 + 20 + 20 * i
+            })
+        legendColor
+            .attr('x', (d) => {
+                return -width / 2 + 5
+            })
+            .attr('y', (d, i) => {
+                return -height / 2 + 10 + 20 * i
             })
     })
 

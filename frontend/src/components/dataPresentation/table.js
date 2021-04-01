@@ -13,8 +13,6 @@ const useStyles = makeStyles((theme) => ({
 export default function DataPresentationTable(props) {
     const { items } = props
     const classes = useStyles()
-    console.log(items)
-    // TODO: label mapping
     return (
         <div className={classes.root}>
             <Grid container direction="column" spacing={3}>
