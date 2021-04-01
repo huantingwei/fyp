@@ -1,9 +1,6 @@
 #!/bin/bash
 #-------Part 0: revoke all gcloud accounts-------------
-if [ $FYPENV == "prod" ]; then
-	gcloud auth revoke --all
-	echo hello
-fi
+gcloud auth revoke --all
 
 #-------Part 1: automated authentication, connect gcloud to user's cloud project--------
 #-------as well as connect kubectl to the GKE cluster in that project--------
@@ -23,10 +20,13 @@ string="oauth2"
 #projindex.txt will contain the index number which matches the project name above
 projindex="./projindex.txt"
 
-# ask for project name, cluster name and GCP project name
-read -p 'GKE cluster name: ' clustername
-read -p 'GCP project name: ' projectname
-read -p 'GKE zone name: ' zonename
+# parameters
+clustername=$1
+projectname=$2
+zonename=$3
+
+# export path of gcp credential
+export CRED=$4
 
 function loop {
 	#reinitialise gcloud [default] configuration
@@ -44,7 +44,7 @@ function loop {
 			grep $string $stdout | xargs > $url
 			break
 		else
-			sleep 5
+			sleep 1
 		fi
 	done
 	
@@ -59,7 +59,7 @@ function loop {
 			
 			break
 		else
-			sleep 5
+			sleep 1
 		fi
 	done
 	
@@ -82,7 +82,7 @@ function loop {
 			break
 	
 		else
-			sleep 5
+			sleep 1
 		fi
 	
 	done

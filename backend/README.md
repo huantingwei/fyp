@@ -61,16 +61,15 @@ for production:
 export PROJECTNAME=your_project_name \
 export CLUSTERNAME=your_cluster_name \
 export ZONENAME=your_zone_name \
-export CLUSTER="projects/$PROJECTNAME/locations/$ZONENAME/clusters/$CLUSTERNAME" \
-export CRED=path_to_your_gcp_cred_json_file \
+export CLUSTER="projects/$PROJECTNAME/locations/$ZONENAME/clusters/$CLUSTERNAME"
 ```
 
 for example:
 ```
+export FYPENV="prod" \
 export CLUSTERNAME="demo" \
 export ZONENAME="us-central1-a" \
 export PROJECTNAME="fyp-demo-306511" \
-export CLUSTER="projects/$PROJECTNAME/locations/$ZONENAME/clusters/$CLUSTERNAME" \
-export CRED="$HOME/fyp/backend/fyp-demo-sa.json"
+export CLUSTER="projects/$PROJECTNAME/locations/$ZONENAME/clusters/$CLUSTERNAME"
 ```
 

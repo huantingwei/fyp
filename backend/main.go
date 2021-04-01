@@ -35,11 +35,7 @@ func main() {
 		kubebench.NewService(v1, db)
 		kubescore.NewService(v1, db)
 		network.NewService(v1, db, k8sClient)
-	}
-
-	auth := router.Group("/")
-	{
-		login.NewService(auth, db)
+		login.NewService(v1, db)
 	}
 
 	router.Run()

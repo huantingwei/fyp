@@ -23,7 +23,7 @@ func NewService(r *gin.RouterGroup, db util.Database, client *kube.Clientset) {
 	}
 	
 	// initialize graph
-	s.insertGraph()
+	//s.insertGraph()
 
 	r = r.Group("/network")
 

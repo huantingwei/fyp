@@ -5,15 +5,9 @@ type NetworkPolicy struct {
 	ObjectMeta ObjectMeta 		`json:"objectMeta"`
 
 	// NetworkPolicy spec
-	Spec	NetworkPolicySpec	`json:"networkPolicySpec"`
-}
-
-// NetworkPolicySpec
-type NetworkPolicySpec struct {
-	NetworkPolicyEgressRule			[]NetworkPolicyEgressRule `json:"networkPolicyEgressRule"`
-	NetworkPolicyIngressRule 		[]NetworkPolicyIngressRule `json:"networkPolicyIngressRule"`
-	PodSelector						map[string]string `json:"podSelector"`
-	PolicyTypes	 					[]PolicyType `json:"policyTypes"`
+	NetworkPolicyEgressRule			[]NetworkPolicyEgressRule 	`json:"networkPolicyEgressRule"`
+	NetworkPolicyIngressRule 		[]NetworkPolicyIngressRule 	`json:"networkPolicyIngressRule"`
+	PolicyTypes	 					[]string					`json:"policyTypes"`
 }
 
 type NetworkPolicyEgressRule struct {
@@ -27,18 +21,16 @@ type NetworkPolicyIngressRule struct {
 }
 
 type NetworkPolicyPort struct {
-	Port		interface{} `json:"port"`
-	Protocol	Protocol		`json:"protocol"`
+	Port		int 		`json:"port"`
+	Protocol	interface{}	`json:"protocol"`
 }
 
 type NetworkPolicyPeer struct {
 	// CIDR and Except belongs to NetworkPolicyPeer.IPBlock
 	CIDR				string				`json:"cidr"`
-	Except				string				`json:"except"`
+	Except				[]string			`json:"except"`
 	NamespaceSelector	map[string]string	`json:"namespaceSelector"`
 	PodSelector			map[string]string	`json:"podspaceSelector"`
 }
 
-type PolicyType string
-type Protocol string
 

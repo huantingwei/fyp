@@ -21,6 +21,7 @@ type Service struct {
 	clusterRoleCollection		 	*mongo.Collection
 	clusterRoleBindingCollection	*mongo.Collection
 	networkPolicyCollection 		*mongo.Collection
+	podSecurityPolicyCollection 	*mongo.Collection
 	statefulSetCollection			*mongo.Collection
 	replicaSetCollection			*mongo.Collection
 	clientset            			*kube.Clientset
@@ -39,13 +40,14 @@ func NewService(r *gin.RouterGroup, db util.Database, client *kube.Clientset) {
 		clusterRoleCollection:		  	db.Handle.Collection("clusterRole"),
 		clusterRoleBindingCollection:	db.Handle.Collection("clusterRoleBinding"),
 		networkPolicyCollection:		db.Handle.Collection("networkPolicy"),
+		podSecurityPolicyCollection:	db.Handle.Collection("podSecurityPolicy"),
 		statefulSetCollection: 			db.Handle.Collection("statefulSet"),
 		replicaSetCollection:			db.Handle.Collection("replicaSet"),
 		clientset:            			client,
 	}
 
 	// initialize cluser data
-	s.init()
+	//s.init()
 
 	r = r.Group("/overview")
 
@@ -60,6 +62,7 @@ func NewService(r *gin.RouterGroup, db util.Database, client *kube.Clientset) {
 	r.GET("/clusterRole", s.GetClusterRoleInfo)
 	r.GET("/clusterRoleBinding", s.GetClusterRoleBindingInfo)
 	r.GET("/networkPolicy", s.GetNetworkPolicyInfo)
+	r.GET("/podSecurityPolicy", s.GetPodSecurityPolicyInfo)
 	r.GET("/statefulSet", s.GetStatefulSetInfo)
 	r.GET("/replicaSet", s.GetReplicaSetInfo)
 	
@@ -80,6 +83,8 @@ func (s *Service) init() (err error) {
 		s.refreshRoleBindingInfo,
 		s.refreshClusterInfo,
 		s.refreshClusterRoleBindingInfo,
+		s.refreshNetworkPolicyInfo,
+		s.refreshPodSecurityPolicyInfo,
 	}
 	for _, f := range fs {
 		err = f();
