@@ -25,9 +25,6 @@ clustername=$1
 projectname=$2
 zonename=$3
 
-# export path of gcp credential
-export CRED=$4
-
 function loop {
 	#reinitialise gcloud [default] configuration
 	echo "1"

@@ -159,7 +159,10 @@ func (s *Service) newProject(p Project) (err error) {
 	if err != nil {
 		return err
 	}
-	_, err = f.WriteString(p.ClusterName + "\n")
+
+	// projects/$PROJECTNAME/locations/$ZONENAME/clusters/$CLUSTERNAME
+	clusterMeta := "projects/" + p.ProjectName + "/locations/" + p.ZoneName + "/clusters/" + p.ClusterName + "\n"
+	_, err = f.WriteString(clusterMeta)
 	if err != nil {
 		return err
 	}
