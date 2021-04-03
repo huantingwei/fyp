@@ -8,38 +8,41 @@ import { headCells } from './configs'
 import { DataPresentationTable } from 'components/dataPresentation'
 import { transform } from 'utils/transform'
 
-const KubeBenchDetail = (props) => {
+const KubeScoreDetail = (props) => {
     const { data } = props
     const [selected, setSelected] = useState([])
     const [selectedTitle, setSelectedTitle] = useState('')
     const [detailOpen, setDetailOpen] = useState(false)
 
     const getMeta = (dataList) => {
-        const ret = dataList.map((data) => {
-            try {
-                data['name'] = data['check']['name']
-                data['description'] = data['check']['comment']
-                data['id'] = data['check']['id']
-                data['target_type'] = data['check']['target_type']
-                data['optional'] = data['check']['optional']
-                delete data['check']
-                return data
-            } catch (err) {
-                return data
+        let ret = []
+        for (let data of dataList) {
+            if (data['comments'] !== null && data['comments'] !== undefined) {
+                try {
+                    data['name'] = data['check']['name']
+                    data['description'] = data['check']['comment']
+                    data['id'] = data['check']['id']
+                    data['target_type'] = data['check']['target_type']
+                    data['optional'] = data['check']['optional']
+                    delete data['check']
+                } catch (err) {
+                    // console.error(err)
+                }
+                ret.push(data)
             }
-        })
+        }
         return ret
     }
 
     const rearrange = (rowData) => {
         return {
-            name: rowData.name,
-            id: rowData.id,
-            description: rowData.description,
-            'target type': rowData.target_type,
-            comments: rowData.comments,
-            skipped: rowData.skipped,
-            optional: rowData.optional,
+            Name: rowData.name,
+            ID: rowData.id,
+            Description: rowData.description,
+            'Target Type': rowData.target_type,
+            Comments: rowData.comments,
+            Skipped: rowData.skipped,
+            Optional: rowData.optional,
         }
     }
     const handleRowSelect = (row) => {
@@ -66,6 +69,6 @@ const KubeBenchDetail = (props) => {
     )
 }
 
-KubeBenchDetail.defaultProps = {}
+KubeScoreDetail.defaultProps = {}
 
-export default KubeBenchDetail
+export default KubeScoreDetail

@@ -3,7 +3,7 @@ const headCells = [
         id: 'name',
         numeric: false,
         disablePadding: false,
-        label: 'Name',
+        label: 'Rule Name',
     },
     {
         id: 'description',

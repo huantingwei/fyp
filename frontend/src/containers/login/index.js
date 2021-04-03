@@ -28,7 +28,7 @@ const initialData = {
     projectName: 'fyp-demo-306511',
     zoneName: 'us-central1-a',
     clusterName: 'demo',
-    credPath: '$HOME/fyp/backend/fyp-demo-sa.json',
+    credPath: '/home/fyp/fyp/backend/fyp-demo-sa.json',
 }
 const initialErr = {
     projectName: false,

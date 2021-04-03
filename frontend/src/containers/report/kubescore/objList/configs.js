@@ -3,25 +3,25 @@ const headCells = [
         id: 'name',
         numeric: false,
         disablePadding: false,
-        label: 'Name',
+        label: 'Object Name',
     },
     {
         id: 'type',
         numeric: false,
         disablePadding: false,
-        label: 'Type',
-    },
-    {
-        id: 'uid',
-        numeric: false,
-        disablePadding: false,
-        label: 'UID',
+        label: 'Object Type',
     },
     {
         id: 'labels',
         numeric: false,
         disablePadding: false,
         label: 'Labels',
+    },
+    {
+        id: 'failed_checks',
+        numeric: false,
+        disablePadding: false,
+        label: 'Failed Checks',
     },
 ]
 

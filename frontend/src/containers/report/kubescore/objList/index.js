@@ -52,8 +52,17 @@ const KubeScoreObjList = (props) => {
                         data['labels'] += `${key}: ${value}, `
                     }
                 } catch (err) {}
+                if (data['checks'] !== null && data['checks'] !== undefined) {
+                    data['failed_checks'] = 0
+                    for (let check of data['checks']) {
+                        if (check['comments'] !== null && check['comments'] !== undefined) {
+                            data['failed_checks'] += check['comments'].length
+                        }
+                    }
+                }
                 return data
             } catch (err) {
+                console.error(err)
                 return data
             }
         })
@@ -69,11 +78,11 @@ const KubeScoreObjList = (props) => {
 
     const handleRefreshClick = async () => {
         setApiStatus('loading')
-        setApiMessage('Refreshing object analysis...Please wait...')
         try {
             await req(kubescoreAPI._new())
-            await list()
-            setApiStatus('success')
+            setApiMessage('Refreshing object analysis...Please wait and come back later')
+            // await list()
+            // setApiStatus('success')
         } catch (err) {
             setApiStatus('fail')
             setApiMessage('Cannot refresh. Please try again')
@@ -93,6 +102,7 @@ const KubeScoreObjList = (props) => {
                 <Button
                     variant="outlined"
                     onClick={handleRefreshClick}
+                    disabled={apiStatus === 'loading'}
                     style={{ alignSelf: 'flex-end', width: '10rem', marginBottom: '1rem' }}
                 >
                     Refresh
