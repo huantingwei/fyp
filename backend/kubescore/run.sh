@@ -2,9 +2,8 @@
 
 # consts
 pwd="$(pwd)"
-objectDir="kubescore/objs"
-resultFile="kubescore/res.json"
-resultDir="kubescore"
+objectDir="./backend/kubescore/objs"
+resultFile="./backend/kubescore/res.json"
 format="json"
 
 rm -r ${objectDir}
@@ -12,29 +11,30 @@ mkdir -p ${objectDir}
 
 # get all yaml files
 
-# pass the name of namespace to scan as 1st parameter
-#namespace=$1
-
-# scan default namespace
-namespace="default"
-
-# while read namespace
-# do
-
-    echo "scanning namespace '${namespace}'"
-    #mkdir -p "${objectDir}/${namespace}"
-    while read -r resource
-    do
-        echo "  scanning resource '${resource}'"
-        #mkdir -p "${objectDir}/${resource}"
-        while read -r item
+while read namespace
+do
+    # skip auto-generated namespaces
+    if [[ ${namespace} = "kube-system" || ${namespace} = "kube-node-lease" || ${namespace} = "kube-public" ]]; 
+    then
+        continue
+    else
+        echo "scanning namespace '${namespace}'"
+        while read -r resource
         do
-            echo "    exporting item '${item}'"
-            kubectl get "$resource" -n "$namespace" "$item" -o yaml > "${objectDir}/${resource}-${item}.yaml"
-        done < <(kubectl get "$resource" -n "$namespace" 2>&1 | tail -n +2 | awk '{print $1}')
-    done < <(kubectl api-resources --namespaced=true 2>/dev/null | tail -n +2 | awk '{print $1}')
-
-# done < <(kubectl get namespaces | tail -n +2 | awk '{print $1}')
+            echo "  scanning resource '${resource}'"
+            if [ ${resource} = "events" ]
+            then
+                continue
+            else
+                while read -r item
+                do
+                    echo "    exporting item '${item}'"
+                    kubectl get "$resource" -n "$namespace" "$item" -o yaml > "${objectDir}/${namespace}-${resource}-${item}.yaml"
+                done < <(kubectl get "$resource" -n "$namespace" 2>&1 | tail -n +2 | awk '{print $1}')
+            fi
+        done < <(kubectl api-resources --namespaced=true 2>/dev/null | tail -n +2 | awk '{print $1}')
+    fi
+done < <(kubectl get namespaces | tail -n +2 | awk '{print $1}')
 
 # run kubescore
 

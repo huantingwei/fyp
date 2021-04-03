@@ -137,18 +137,34 @@ func (s *Service) GetKubescore(c *gin.Context) {
 // NewKubescore run the kubescore script, read from result file, and create result object in DB
 // Response: id of the result object
 func (s *Service) NewKubescore(c *gin.Context) {
-
-	var kbscore *KubeScore
-	var id interface{}
 	var err error
-
-	cmd := exec.Command(runScript)
-	err = cmd.Run()
+	
+	// delete previous records
+	err = os.Remove(resultFile)
 	if err != nil {
-		fmt.Printf("Error in waiting for kubescore script executing: %v\n", err)
-		goto responseError
+		util.ResponseError(c, err)
+		return
 	}
 
+	_, err = s.kubescoreCollection.DeleteMany(context.TODO(), bson.D{})
+	if err != nil {
+		util.ResponseError(c, err)
+		return
+	}
+
+	cmd := exec.Command(runScript)
+	// Start(): no wait
+	err = cmd.Start()
+	if err != nil {
+		fmt.Printf("Error in executing for kubescore script executing: %v\n", err)
+		util.ResponseError(c, err)
+		return
+	}
+	// successful execution
+	util.ResponseSuccess(c, "start scanning...", "kubescore")
+	return
+
+	/*
 	// read from result file
 	kbscore, err = readFile()
 	if err != nil {
@@ -163,15 +179,15 @@ func (s *Service) NewKubescore(c *gin.Context) {
 	}
 	util.ResponseSuccess(c, id, "kubescore")
 	return
-
-responseError:
-	util.ResponseError(c, err)
-	return
-
+	*/
 }
 // ListKubescore list all results
 func (s *Service) ListKubescore(c *gin.Context) {
+
 	var kcs []KubeScore
+	var kbscore *KubeScore
+	var err error
+
 	cursor, err := s.kubescoreCollection.Find(context.TODO(), bson.M{})
 	if err != nil {
 		fmt.Printf("Error in list Kubescore results: %v\n", err)
@@ -183,12 +199,31 @@ func (s *Service) ListKubescore(c *gin.Context) {
 		util.ResponseError(c, err)
 		return
 	}
+
+	// no record in db
 	if kcs == nil || len(kcs) == 0 {
-		var empty []interface{}
-		util.ResponseSuccess(c, empty, "kubescore")
-		return
+		// read from result file
+		kbscore, err = readFile()
+		if err != nil {
+			fmt.Printf("Error in read kubescore result file: %v\n", err)
+			goto empty
+		}
+		// create result in DB
+		_, err := create(kbscore, s)
+		if err != nil {
+			fmt.Printf("Error in create kubescore result in DB: %v\n", err)
+			goto empty
+		}
+		kcs = append(kcs, *kbscore)
 	}
+
 	util.ResponseSuccess(c, kcs, "kubescore")
+	return
+
+empty:
+	var empty []interface{}
+	util.ResponseSuccess(c, empty, "kubescore")
+	return
 }
 
 func (s *Service) DeleteKubescore(c *gin.Context) {
