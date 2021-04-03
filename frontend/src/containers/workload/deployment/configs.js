@@ -24,16 +24,6 @@ const headCells = [
         disablePadding: false,
         label: 'Match Labels',
     },
-    // should display like
-    // ReadyReplicas / AvailableReplicas / UnavailableReplicas
-    // 1 / 1 / 0
-    // skip UpdatedReplicas for now
-    {
-        id: 'availablereplicas',
-        numeric: false,
-        disablePadding: false,
-        label: 'Available Replicas',
-    },
 ]
 
 export { headCells }

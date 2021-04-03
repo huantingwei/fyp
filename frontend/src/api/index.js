@@ -16,6 +16,9 @@ async function req(apiConfig) {
             if (!result.Success) {
                 throw new Error(`Server error: ${r.status} ${r.statusText} - ${result.Error || ''}`)
             }
+            if (result.Data === null || result.Data === undefined) {
+                throw new Error(`No data available`)
+            }
             return result.Data
         })
         .then((r) => {

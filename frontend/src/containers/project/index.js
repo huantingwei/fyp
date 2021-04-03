@@ -23,7 +23,7 @@ export default function Project(props) {
                 setApiStatus('success')
             } catch (err) {
                 setApiStatus('fail')
-                setApiMessage('API Server Error...')
+                setApiMessage(err.toString())
                 console.error(err)
             }
         }
@@ -41,6 +41,7 @@ export default function Project(props) {
     const refresh = async () => {
         try {
             setApiStatus('loading')
+            setApiMessage('Refreshing...Please wait...')
             await req(overviewAPI.refresh())
             setApiStatus('success')
         } catch (err) {

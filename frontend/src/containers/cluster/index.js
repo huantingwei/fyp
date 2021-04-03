@@ -44,7 +44,7 @@ export default function Cluster(props) {
                 setApiStatus('success')
             } catch (err) {
                 setApiStatus('fail')
-                setApiMessage('API Server Error...')
+                setApiMessage(err.toString())
                 console.error(err)
             }
         }
