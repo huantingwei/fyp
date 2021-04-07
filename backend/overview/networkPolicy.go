@@ -171,9 +171,11 @@ func (s *Service) refreshNetworkPolicyInfo() error {
 		return err
 	}
 
-	_, err = s.networkPolicyCollection.InsertMany(context.TODO(),networkPolicyInfo);
-	if err != nil {
-		return err
+	if (len(networkPolicyInfo) > 0) {
+		_, err = s.networkPolicyCollection.InsertMany(context.TODO(),networkPolicyInfo);
+		if err != nil {
+			return err
+		}
 	}
 	
 	fmt.Println("refreshed networkPolicy info")
