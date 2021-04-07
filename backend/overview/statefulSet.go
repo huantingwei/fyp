@@ -15,12 +15,16 @@ func (s *Service) refreshStatefulSetInfo() error {
 
 	_, err := s.statefulSetCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
+		fmt.Println("error in deletemany")
         return err
 	}
 
-	_, err2 := s.statefulSetCollection.InsertMany(context.TODO(),statefulSetInfo);
-	if err2 != nil {
-        return err2
+	if (len(statefulSetInfo) > 0) {
+		_, err2 := s.statefulSetCollection.InsertMany(context.TODO(),statefulSetInfo);
+		if err2 != nil {
+			fmt.Println("error in insertmany")
+			return err2
+		}
 	}
 
 	fmt.Println("refreshed statefulSet info")
