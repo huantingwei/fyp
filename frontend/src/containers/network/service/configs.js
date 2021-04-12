@@ -33,7 +33,7 @@ const headCells = [
         id: 'ingressip',
         numeric: false,
         disablePadding: false,
-        label: 'Ingress IP',
+        label: 'External IP',
     },
     {
         id: 'labelselectors',
