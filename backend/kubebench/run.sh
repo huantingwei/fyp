@@ -1,4 +1,5 @@
 #!/bin/sh
+rm ./backend/kubebench/kb_output.json
 
 gcloud beta cloud-shell ssh --authorize-session --command="cd ~"
 gcloud beta cloud-shell ssh --authorize-session --command="docker run --rm -v ~:/host aquasec/kube-bench:latest install"
