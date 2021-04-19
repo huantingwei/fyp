@@ -18,15 +18,12 @@ import (
 )
 
 const (
-	dbName = "fyp"
-	coll   = "kubescore"
-	// windows
-	// resultFile = "kubescore\\result.json"
-	// scriptFile = "kubescore\\kubescore.sh"
-
 	// linux
-	resultFile = "./backend/kubescore/res.json"
-	runScript = "./backend/kubescore/run.sh"
+	resultFile            = "./backend/kubescore/res.json"
+	runScript             = "./backend/kubescore/run.sh"
+	interactiveScript     = "./backend/kubescore/interactive.sh"
+	interactiveFileInput  = "./backend/kubescore/interactive-in.yaml"
+	interactiveFileOutput = "./backend/kubescore/interactive-out.json"
 )
 
 type Check struct {
@@ -60,14 +57,17 @@ type TestScoreComment struct {
 }
 
 type KubeScore struct {
-	ID         primitive.ObjectID `json:"id"`
-	CreateTime string             `json:"createTime"`
-	ScoredObjects []ScoredObject `json:"kubescore"`
+	ID            primitive.ObjectID `json:"id"`
+	CreateTime    string             `json:"createTime"`
+	ScoredObjects []ScoredObject     `json:"kubescore"`
 }
 
+type FileInput struct {
+	Content string `json:"fileContent"`
+}
 
-func readFile() (*KubeScore, error) {
-	jsonFile, err := os.Open(resultFile)
+func readFile(file string) (*KubeScore, error) {
+	jsonFile, err := os.Open(file)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +138,7 @@ func (s *Service) GetKubescore(c *gin.Context) {
 // Response: id of the result object
 func (s *Service) NewKubescore(c *gin.Context) {
 	var err error
-	
+
 	// delete previous records
 	err = os.Remove(resultFile)
 	if err != nil {
@@ -163,24 +163,8 @@ func (s *Service) NewKubescore(c *gin.Context) {
 	// successful execution
 	util.ResponseSuccess(c, "start scanning...", "kubescore")
 	return
-
-	/*
-	// read from result file
-	kbscore, err = readFile()
-	if err != nil {
-		fmt.Printf("Error in read kubescore result file: %v\n", err)
-		goto responseError
-	}
-	// create result in DB
-	id, err = create(kbscore, s)
-	if err != nil {
-		fmt.Printf("Error in create kubescore result in DB: %v\n", err)
-		goto responseError
-	}
-	util.ResponseSuccess(c, id, "kubescore")
-	return
-	*/
 }
+
 // ListKubescore list all results
 func (s *Service) ListKubescore(c *gin.Context) {
 
@@ -203,7 +187,7 @@ func (s *Service) ListKubescore(c *gin.Context) {
 	// no record in db
 	if kcs == nil || len(kcs) == 0 {
 		// read from result file
-		kbscore, err = readFile()
+		kbscore, err = readFile(resultFile)
 		if err != nil {
 			fmt.Printf("Error in read kubescore result file: %v\n", err)
 			goto empty
@@ -236,4 +220,42 @@ func (s *Service) DeleteKubescore(c *gin.Context) {
 		return
 	}
 	util.ResponseSuccess(c, int(res.DeletedCount), "kubescore")
+}
+
+func (s *Service) UploadInteractiveFile(c *gin.Context) {
+	var err error
+	file, err := c.FormFile("file")
+	if err != nil {
+		fmt.Println("cannot read formfile")
+		util.ResponseError(c, err)
+		return
+	}
+	err = c.SaveUploadedFile(file, interactiveFileInput)
+	if err != nil {
+		fmt.Println("cannot upload file")
+		util.ResponseError(c, err)
+		return
+	}
+
+	cmd := exec.Command(interactiveScript)
+	err = cmd.Start()
+	if err != nil {
+		fmt.Println("cannot execute kubescore")
+		util.ResponseError(c, err)
+		return
+	}
+
+	util.ResponseSuccess(c, "successful upload", "interactive kubescore")
+}
+
+func (s *Service) GetInteractiveResult(c *gin.Context) {
+	var err error
+	var kbscore *KubeScore
+	kbscore, err = readFile(interactiveFileOutput)
+	if err != nil {
+		util.ResponseError(c, err)
+		return
+	}
+
+	util.ResponseSuccess(c, *kbscore, "interactive kubescore")
 }

@@ -39,5 +39,5 @@ done < <(kubectl get namespaces | tail -n +2 | awk '{print $1}')
 # run kubescore
 
 cd ${objectDir}
-sudo docker run --rm -v $(pwd):/project zegl/kube-score:v1.10.0 score *.yaml -o ${format} >  ../res.json
+sudo docker run -v $(pwd):/project zegl/kube-score:v1.10.0 score *.yaml -o ${format} >  ../res.json
 cd ${pwd}

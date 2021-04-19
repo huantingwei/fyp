@@ -21,4 +21,6 @@ func NewService(r *gin.RouterGroup, db util.Database) {
 	r.GET("/new", s.NewKubescore)
 	r.GET("/list", s.ListKubescore)
 	r.POST("/delete", s.DeleteKubescore)
+	r.GET("/interactive/get", s.GetInteractiveResult)
+	r.POST("/interactive/upload", s.UploadInteractiveFile)
 }

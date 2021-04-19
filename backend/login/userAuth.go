@@ -7,17 +7,18 @@ import (
 
 	//"io/ioutil"
 	"bufio"
+	"crypto/md5"
+	"encoding/hex"
 	"log"
 	"os"
 	"os/exec"
-	"crypto/md5"
-	"encoding/hex"
+
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/huantingwei/fyp/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"github.com/huantingwei/fyp/util"
 )
 
 const loginScript = "./backend/login/loginAPI.sh"
@@ -26,22 +27,21 @@ const tokenFile = "./token.txt"
 const clientFile = "./client.txt"
 
 type Service struct {
-	cmdStdinPipe io.WriteCloser
+	cmdStdinPipe   io.WriteCloser
 	userCollection *mongo.Collection
 }
 
 type Project struct {
-	ClusterName string 	`json:"clusterName"`
-	ProjectName string 	`json:"projectName"`
-	ZoneName    string 	`json:"zoneName"`
-	Token		string	`json:"token"`
-	CredPath	string	`json:"credPath"`
+	ClusterName string `json:"clusterName"`
+	ProjectName string `json:"projectName"`
+	ZoneName    string `json:"zoneName"`
+	Token       string `json:"token"`
+	CredPath    string `json:"credPath"`
 }
 
 type GoogleCode struct {
 	Code string `json:"code"`
 }
-
 
 func NewService(r *gin.RouterGroup, db util.Database) {
 	s := &Service{
@@ -112,7 +112,7 @@ func (s *Service) VerifyCode(c *gin.Context) {
 	f.Close()
 	if err != nil {
 		util.ResponseError(c, err)
-        return
+		return
 	}
 
 	// return project info
@@ -125,7 +125,7 @@ func (s *Service) VerifyCode(c *gin.Context) {
 	util.ResponseSuccess(c, p, "project verified")
 }
 
-func (s *Service) GetProject(c *gin.Context){
+func (s *Service) GetProject(c *gin.Context) {
 	p, err := s.getProject()
 	if err != nil {
 		util.ResponseError(c, err)
@@ -167,13 +167,13 @@ func (s *Service) newProject(p Project) (err error) {
 		return err
 	}
 	f.Close()
-	
+
 	return nil
 }
 
 func (s *Service) getProject() (Project, error) {
 	var p Project
-	err :=  s.userCollection.FindOne(context.Background(), bson.M{}).Decode(&p)
+	err := s.userCollection.FindOne(context.Background(), bson.M{}).Decode(&p)
 	if err != nil {
 		return p, err
 	}
