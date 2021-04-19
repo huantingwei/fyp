@@ -2,8 +2,8 @@ package object
 
 // Role
 type Role struct {
-	ObjectMeta ObjectMeta `json:"objectMeta"`
+	ObjectMeta ObjectMeta `json:"Object Meta"`
 
 	// Role spec
-	Rules      []PolicyRule	`json:"rules"`
+	Rules []PolicyRule `json:"Rules"`
 }

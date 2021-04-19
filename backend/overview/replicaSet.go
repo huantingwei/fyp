@@ -1,50 +1,51 @@
 package overview
 
 import (
-	"fmt"
 	"context"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"fmt"
+
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
-	"github.com/huantingwei/fyp/util"
 	"github.com/huantingwei/fyp/object"
+	"github.com/huantingwei/fyp/util"
+	"go.mongodb.org/mongo-driver/bson"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func (s *Service) refreshReplicaSetInfo() error {
-	replicaSetInfo := s.initReplicaSetArray();
+	replicaSetInfo := s.initReplicaSetArray()
 
 	_, err := s.replicaSetCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-        return err
+		return err
 	}
 
-	_, err2 := s.replicaSetCollection.InsertMany(context.TODO(),replicaSetInfo);
+	_, err2 := s.replicaSetCollection.InsertMany(context.TODO(), replicaSetInfo)
 	if err2 != nil {
-        return err2
+		return err2
 	}
 
 	fmt.Println("refreshed replicaSet info")
 	return nil
 }
 
-func (s *Service) initReplicaSetArray() []interface{}{
-	replicaSetList, err := s.clientset.AppsV1().ReplicaSets("").List(context.TODO(), metav1.ListOptions{});
+func (s *Service) initReplicaSetArray() []interface{} {
+	replicaSetList, err := s.clientset.AppsV1().ReplicaSets("").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var replicaSets []interface{};
+	var replicaSets []interface{}
 	for _, r := range replicaSetList.Items {
-		replicaSet := object.ReplicaSet {
+		replicaSet := object.ReplicaSet{
 			ObjectMeta: object.ObjectMeta{
-				Name: r.Name,
-				Namespace: string(r.Namespace),
-				Uid: string(r.UID),
+				Name:         r.Name,
+				Namespace:    string(r.Namespace),
+				Uid:          string(r.UID),
 				CreationTime: r.CreationTimestamp.String(),
 			},
-			Replicas: int(*r.Spec.Replicas),
+			Replicas:          int(*r.Spec.Replicas),
 			AvailableReplicas: int(r.Status.AvailableReplicas),
-			ReadyReplicas: int(r.Status.ReadyReplicas),
+			ReadyReplicas:     int(r.Status.ReadyReplicas),
 		}
 		matchLabels := make(map[string]string)
 		mlb := r.Spec.Selector.MatchLabels
@@ -54,22 +55,22 @@ func (s *Service) initReplicaSetArray() []interface{}{
 		replicaSet.MatchLabels = matchLabels
 		replicaSets = append(replicaSets, replicaSet)
 	}
-	
 
-	return replicaSets;
+	return replicaSets
 }
 
 func (s *Service) GetReplicaSetInfo(c *gin.Context) {
+	var results []object.ReplicaSet
+	var tmp object.ReplicaSet
 	cursor, err := s.replicaSetCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
 		return
 	}
 
-	var results []bson.M
-	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
-		util.ResponseError(c, err2)
-		return
+	for cursor.Next(context.TODO()) {
+		cursor.Decode(&tmp)
+		results = append(results, tmp)
 	}
 
 	util.ResponseSuccess(c, results, "replicaSet")

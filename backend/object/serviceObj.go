@@ -3,22 +3,22 @@ package object
 // Service is a Pod with networking functionality
 type Service struct {
 	//Object meta
-	ObjectMeta ObjectMeta `json:"objectMeta"`
+	ObjectMeta ObjectMeta `json:"Object Meta"`
 
 	//Service spec
-	ClusterIP      string            `json:"cluterIP"`
-	ServiceType    string            `json:"serviceType"`
-	LabelSelectors map[string]string `json:"labelSelectors"`
-	ServicePorts   []ServicePort     `json:"servicePorts"`
+	ClusterIP      string            `json:"Cluter IP"`
+	ServiceType    string            `json:"Service Type"`
+	LabelSelectors map[string]string `json:"Label Selectors"`
+	ServicePorts   []ServicePort     `json:"Service Ports"`
 
 	//load balancer status
-	IngressIP []string `json:"ingressIP"`
+	IngressIP []string `json:"IngressIP"`
 }
 
 // ServicePort is used by Service
 type ServicePort struct {
-	Port       int    `json:"port"`
-	NodePort   int    `json:"nodePort"`
-	TargetPort int    `json:"targetPort"`
-	Protocol   string `json:"protocol"`
+	Port       int    `json:"Port"`
+	NodePort   int    `json:"Node Port"`
+	TargetPort int    `json:"Target Port"`
+	Protocol   string `json:"Protocol"`
 }

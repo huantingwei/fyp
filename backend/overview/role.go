@@ -1,105 +1,104 @@
 package overview
 
 import (
-	"fmt"
 	"context"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
 	"github.com/huantingwei/fyp/object"
 	"github.com/huantingwei/fyp/util"
-	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+func (s *Service) initRoles() []interface{} {
 
-func (s *Service) initRoles() []interface{}{
-
-	roleList, err := s.clientset.RbacV1().Roles("").List(context.TODO(), metav1.ListOptions{});
+	roleList, err := s.clientset.RbacV1().Roles("").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var roles []interface{};
+	var roles []interface{}
 
-	for _, r := range roleList.Items{
-		role := object.Role {
+	for _, r := range roleList.Items {
+		role := object.Role{
 			ObjectMeta: object.ObjectMeta{
-				Name: r.Name,
-				Namespace: string(r.Namespace),
-				Uid: string(r.UID),
+				Name:         r.Name,
+				Namespace:    string(r.Namespace),
+				Uid:          string(r.UID),
 				CreationTime: r.CreationTimestamp.String(),
 			},
 		}
 
-		var rules []object.PolicyRule;
+		var rules []object.PolicyRule
 		for _, rule := range r.Rules {
-			var apiGroups []string;
-			var nonResourceUrls []string;
-			var resourceNames []string;
-			var resources []string;
-			var verbs []string;
+			var apiGroups []string
+			var nonResourceUrls []string
+			var resourceNames []string
+			var resources []string
+			var verbs []string
 			for _, i := range rule.APIGroups {
-				apiGroups = append(apiGroups, i);
+				apiGroups = append(apiGroups, i)
 			}
 			for _, i := range rule.NonResourceURLs {
-				nonResourceUrls = append(nonResourceUrls, i);
+				nonResourceUrls = append(nonResourceUrls, i)
 			}
 			for _, i := range rule.ResourceNames {
-				resourceNames = append(resourceNames, i);
+				resourceNames = append(resourceNames, i)
 			}
 			for _, i := range rule.Resources {
-				resources = append(resources, i);
+				resources = append(resources, i)
 			}
 			for _, i := range rule.Verbs {
-				verbs = append(verbs, i);
+				verbs = append(verbs, i)
 			}
 
-			pr := object.PolicyRule {
-				APIGroups: apiGroups,
+			pr := object.PolicyRule{
+				APIGroups:       apiGroups,
 				NonResourceURLs: nonResourceUrls,
-				ResourceNames: resourceNames,
-				Resources: resources,
-				Verbs: verbs,
+				ResourceNames:   resourceNames,
+				Resources:       resources,
+				Verbs:           verbs,
 			}
-			rules = append(rules, pr);
+			rules = append(rules, pr)
 		}
-		role.Rules = rules;
-		roles = append(roles, role);
+		role.Rules = rules
+		roles = append(roles, role)
 	}
 
-	return roles;
+	return roles
 }
 
 func (s *Service) GetRoleInfo(c *gin.Context) {
+	var results []object.Role
+	var tmp object.Role
 	cursor, err := s.roleCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
-        return
+		return
 	}
 
-	// get a list of all returned documents and print them out
-	// see the mongo.Cursor documentation for more examples of using cursors
-	var results []bson.M
-	if err = cursor.All(context.TODO(), &results); err != nil {
-		util.ResponseError(c, err)
+	for cursor.Next(context.TODO()) {
+		cursor.Decode(&tmp)
+		results = append(results, tmp)
 	}
 
 	util.ResponseSuccess(c, results, "role")
 }
 
-
 func (s *Service) refreshRoleInfo() error {
-	roleInfo := s.initRoles();
+	roleInfo := s.initRoles()
 
 	_, err := s.roleCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
 		return err
 	}
 
-	_, err = s.roleCollection.InsertMany(context.TODO(),roleInfo);
+	_, err = s.roleCollection.InsertMany(context.TODO(), roleInfo)
 	if err != nil {
 		return err
 	}
-	
+
 	fmt.Println("refreshed role info")
 	return nil
 }

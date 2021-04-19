@@ -1,74 +1,67 @@
 package overview
 
 import (
-	"fmt"
 	"context"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
 	"github.com/huantingwei/fyp/object"
 	"github.com/huantingwei/fyp/util"
-	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (s *Service) refreshClusterInfo() error {
-	clusterInfo := initClusterStruct();
+	clusterInfo := initClusterStruct()
 
 	_, err := s.clusterCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
 		return err
 	}
 
-	_, err2 := s.clusterCollection.InsertOne(context.TODO(),clusterInfo);
+	_, err2 := s.clusterCollection.InsertOne(context.TODO(), clusterInfo)
 	if err2 != nil {
-        return err2
+		return err2
 	}
 	fmt.Println("refreshed cluster info")
 	return nil
 }
 
-func initClusterStruct() object.Cluster{
-	client := util.GetGCPClusterManagementClient();
+func initClusterStruct() object.Cluster {
+	client := util.GetGCPClusterManagementClient()
 
 	newCluster := object.Cluster{
-	// Get cluster general info
-	Name: client.GetName(),
-	CreationTime: client.GetCreateTime(),
-	MasterVersion: client.GetCurrentMasterVersion(),
-	IPendpoint: client.GetEndpoint(),
-	Location: client.GetLocation(),
-	ReleaseChannel: int(client.GetReleaseChannel().GetChannel()),
-	Status: client.GetStatus().String(),
+		// Get cluster general info
+		Name:           client.GetName(),
+		CreationTime:   client.GetCreateTime(),
+		MasterVersion:  client.GetCurrentMasterVersion(),
+		IPendpoint:     client.GetEndpoint(),
+		Location:       client.GetLocation(),
+		ReleaseChannel: int(client.GetReleaseChannel().GetChannel()),
+		Status:         client.GetStatus().String(),
 
-	//Get cluster networking config
-	Network: client.GetNetwork(),
-	NetworkConfig: client.GetNetworkConfig().GetNetwork(),
-	Subnet: client.GetNetworkConfig().GetSubnetwork(),
-	IntranodeVisibility: client.GetNetworkConfig().GetEnableIntraNodeVisibility(),
-	NetworkPolicyEnabled: client.GetNetworkPolicy().GetEnabled(),
-	MasterAuthNetworkEnabled: client.GetMasterAuthorizedNetworksConfig().GetEnabled(),
+		//Get cluster networking config
+		Network:                  client.GetNetwork(),
+		NetworkConfig:            client.GetNetworkConfig().GetNetwork(),
+		Subnet:                   client.GetNetworkConfig().GetSubnetwork(),
+		IntranodeVisibility:      client.GetNetworkConfig().GetEnableIntraNodeVisibility(),
+		NetworkPolicyEnabled:     client.GetNetworkPolicy().GetEnabled(),
+		MasterAuthNetworkEnabled: client.GetMasterAuthorizedNetworksConfig().GetEnabled(),
 
-	//Get cluster security config
-	ShieldedNodeEnabled: client.GetShieldedNodes().GetEnabled(),
-	BinaryAuthorisationEnabled: client.GetBinaryAuthorization().GetEnabled(),
-	ClientCertificateEnabled: client.GetMasterAuth().GetClientCertificateConfig().GetIssueClientCertificate(),
+		//Get cluster security config
+		ShieldedNodeEnabled:        client.GetShieldedNodes().GetEnabled(),
+		BinaryAuthorisationEnabled: client.GetBinaryAuthorization().GetEnabled(),
+		ClientCertificateEnabled:   client.GetMasterAuth().GetClientCertificateConfig().GetIssueClientCertificate(),
 	}
-	
-	return newCluster;
+
+	return newCluster
 }
 
 func (s *Service) GetClusterInfo(c *gin.Context) {
-	cursor, err := s.clusterCollection.Find(context.TODO(), bson.D{})
+	var result object.Cluster
+	err := s.clusterCollection.FindOne(context.TODO(), bson.M{}).Decode(&result)
 	if err != nil {
 		util.ResponseError(c, err)
 		return
 	}
-
-	// get a list of all returned documents and print them out
-	// see the mongo.Cursor documentation for more examples of using cursors
-	var results []bson.M
-	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
-		util.ResponseError(c, err2)
-		return
-	}
-
-	util.ResponseSuccess(c, results, "cluster")
+	util.ResponseSuccess(c, result, "cluster")
 }

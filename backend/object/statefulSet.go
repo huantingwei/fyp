@@ -2,19 +2,18 @@ package object
 
 type StatefulSet struct {
 	// Object metadata
-	ObjectMeta ObjectMeta 					`json:"objectMeta"`
+	ObjectMeta ObjectMeta `json:"Object Meta"`
 
 	// StatefulSet.Spec
-	Replicas			int					`json:"replicas"`
+	Replicas int `json:"Replicas"`
 	// Spec.Selector.MatchLabels
-	MatchLabels 		map[string]string	`json:"matchLabels"`
+	MatchLabels map[string]string `json:"Match Labels"`
 	// Service that governs this StatefulSet
-	ServiceName			string				`json:"serviceName"`
-	PodManagementPolicy	string				`json:"podManagementPolicy"`
+	ServiceName         string `json:"Service Name"`
+	PodManagementPolicy string `json:"Pod Management Policy"`
 
 	// StatefulSet.Status
-	CurrentReplicas		int					`json:"currentReplicas"`
-	UpdatedReplicas     int 				`json:"updatedReplicas"`
-	ReadyReplicas       int 				`json:"readyReplicas"`
+	CurrentReplicas int `json:"Current Replicas"`
+	UpdatedReplicas int `json:"Updated Replicas"`
+	ReadyReplicas   int `json:"Ready Replicas"`
 }
-

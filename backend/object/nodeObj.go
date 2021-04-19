@@ -3,44 +3,44 @@ package object
 // Node is the vm instance
 type Node struct {
 	//Object metadata
-	ObjectMeta ObjectMeta `json:"objectMeta"`
+	ObjectMeta ObjectMeta `json:"Object Meta"`
 
 	//Node spec
-	PodCIDR string `json:"podCIDR"`
-	NodeID  string `json:"nodeID"`
+	PodCIDR string `json:"Pod CIDR"`
+	NodeID  string `json:"Node ID"`
 
 	//Node system info
-	MachineID        string `json:"machineID"`
-	KernelVersion    string `json:"kernelVersion"`
-	OsImage          string `json:"osImage"`
-	Os               string `json:"os"`
-	ContainerRuntime string `json:"containerRuntime"`
-	KubeletVersion   string `json:"kubeletVersion"`
-	KubeProxyVersion string `json:"kubeProxyVersion"`
+	MachineID        string `json:"Machine ID"`
+	KernelVersion    string `json:"Kernel Version"`
+	OsImage          string `json:"OS Image"`
+	Os               string `json:"OS"`
+	ContainerRuntime string `json:"Container Runtime"`
+	KubeletVersion   string `json:"Kubelet Version"`
+	KubeProxyVersion string `json:"KubeProxy Version"`
 
 	//resources capacity
-	CPUCap              int     `json:"cpuCap"`
-	MemoryCap           float64 `json:"memoryCap"`
-	PodsCap             int     `json:"podsCap"`
-	EphemeralStorageCap float64 `json:"ephemeralStorageCap"`
-	StorageCap          int     `json:"storageCap"`
+	CPUCap              int     `json:"CPU Cap"`
+	MemoryCap           float64 `json:"Memory Cap"`
+	PodsCap             int     `json:"Pods Cap"`
+	EphemeralStorageCap float64 `json:"Ephemeral Storage Cap"`
+	StorageCap          int     `json:"StorageCap"`
 
 	//resources allocatable
-	CPUAllocatable              int     `json:"cpuAllocatable"`
-	MemoryAllocatable           float64 `json:"memoryAllocatable"`
-	PodsAllocatable             int     `json:"podsAllocatable"`
-	EphemeralStorageAllocatable float64 `json:"ephemeralStorageAllocatable"`
-	StorageAllocatable          int     `json:"storageAllocatable"`
+	CPUAllocatable              int     `json:"CPU Allocatable"`
+	MemoryAllocatable           float64 `json:"Memory Allocatable"`
+	PodsAllocatable             int     `json:"Pods Allocatable"`
+	EphemeralStorageAllocatable float64 `json:"Ephemeral Storage Allocatable"`
+	StorageAllocatable          int     `json:"Storage Allocatable"`
 
 	//Node conditions
-	Conditions []Condition `json:"conditions"`
+	Conditions []Condition `json:"Conditions"`
 }
 
 // Condition of the node
 type Condition struct {
-	ConditionName      string `json:"conditionName"`
-	Status             string `json:"status"` //true, false, or unknown
-	LastHeartbeatTime  string `json:"lastHeartbeatTime"`
-	LastTransitionTime string `json:"lastTransitionTime"`
-	Message            string `json:"message"`
+	ConditionName      string `json:"Condition Name"`
+	Status             string `json:"Status"` //true, false, or unknown
+	LastHeartbeatTime  string `json:"Last Heartbeat Time"`
+	LastTransitionTime string `json:"Last Transition Time"`
+	Message            string `json:"Message"`
 }

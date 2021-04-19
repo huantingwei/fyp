@@ -1,98 +1,98 @@
 package overview
 
 import (
-	"fmt"
 	"context"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
 	"github.com/huantingwei/fyp/object"
 	"github.com/huantingwei/fyp/util"
-	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func (s *Service) refreshServiceInfo() error {
-	serviceInfo := s.initServiceArray();
+	serviceInfo := s.initServiceArray()
 
 	_, err := s.serviceCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-        return err
+		return err
 	}
 
-	_, err2 := s.serviceCollection.InsertMany(context.TODO(),serviceInfo);
+	_, err2 := s.serviceCollection.InsertMany(context.TODO(), serviceInfo)
 	if err2 != nil {
 		return err2
 	}
-	
+
 	fmt.Println("refreshed service info")
 	return nil
 }
 
-func (s *Service) initServiceArray() []interface{}{
+func (s *Service) initServiceArray() []interface{} {
 	//clientset := util.GetKubeClientSet();
 
-	serviceList, err := s.clientset.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{});
+	serviceList, err := s.clientset.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var serviceSlice []interface{};
+	var serviceSlice []interface{}
 
-	for _, s := range serviceList.Items{
+	for _, s := range serviceList.Items {
 		service := object.Service{
 			ObjectMeta: object.ObjectMeta{
-				Name: s.Name,
-				Namespace: string(s.Namespace),
-				Uid: string(s.UID),
+				Name:         s.Name,
+				Namespace:    string(s.Namespace),
+				Uid:          string(s.UID),
 				CreationTime: s.CreationTimestamp.String(),
 			},
-			ClusterIP: s.Spec.ClusterIP,
+			ClusterIP:   s.Spec.ClusterIP,
 			ServiceType: string(s.Spec.Type),
 		}
 
-		labelMap := make(map[string]string);
-		var servicePortsSlice []object.ServicePort;
-		var ingressIPSlice []string;
+		labelMap := make(map[string]string)
+		var servicePortsSlice []object.ServicePort
+		var ingressIPSlice []string
 
-		for key, val := range s.Spec.Selector{
-			labelMap[key] = val;
+		for key, val := range s.Spec.Selector {
+			labelMap[key] = val
 		}
 
-		for _, p := range s.Spec.Ports{
+		for _, p := range s.Spec.Ports {
 			port := object.ServicePort{
-				Port: int(p.Port),
-				NodePort: int(p.NodePort),
+				Port:       int(p.Port),
+				NodePort:   int(p.NodePort),
 				TargetPort: int(p.TargetPort.IntVal),
-				Protocol: string(p.Protocol),
+				Protocol:   string(p.Protocol),
 			}
-			servicePortsSlice = append(servicePortsSlice, port);
-		}	
+			servicePortsSlice = append(servicePortsSlice, port)
+		}
 
-		for _, ingress := range s.Status.LoadBalancer.Ingress{
+		for _, ingress := range s.Status.LoadBalancer.Ingress {
 			ingressIPSlice = append(ingressIPSlice, ingress.IP)
 		}
 
-		service.LabelSelectors = labelMap;
-		service.ServicePorts = servicePortsSlice;
-		service.IngressIP = ingressIPSlice;
+		service.LabelSelectors = labelMap
+		service.ServicePorts = servicePortsSlice
+		service.IngressIP = ingressIPSlice
 
-		serviceSlice = append(serviceSlice, service);
+		serviceSlice = append(serviceSlice, service)
 	}
-	return serviceSlice;
+	return serviceSlice
 }
 
 func (s *Service) GetServiceInfo(c *gin.Context) {
+	var results []object.Service
+	var tmp object.Service
 	cursor, err := s.serviceCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
 		return
 	}
 
-	// get a list of all returned documents and print them out
-	// see the mongo.Cursor documentation for more examples of using cursors
-	var results []bson.M
-	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
-		util.ResponseError(c, err2)
-		return
+	for cursor.Next(context.TODO()) {
+		cursor.Decode(&tmp)
+		results = append(results, tmp)
 	}
 
 	util.ResponseSuccess(c, results, "service")

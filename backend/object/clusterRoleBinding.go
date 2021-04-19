@@ -2,10 +2,9 @@ package object
 
 // ClusterRoleBinding
 type ClusterRoleBinding struct {
-	ObjectMeta ObjectMeta `json:"objectMeta"`
+	ObjectMeta ObjectMeta `json:"Object Meta"`
 
 	// ClusterRoleBinding spec
-	Subjects	[]Subject	`json:"subjects"`
-	RoleRef		RoleRef		`json:"roleRef"`
+	Subjects []Subject `json:"Subjects"`
+	RoleRef  RoleRef   `json:"Role Ref"`
 }
-

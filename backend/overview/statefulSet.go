@@ -1,25 +1,26 @@
 package overview
 
 import (
-	"fmt"
 	"context"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"fmt"
+
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
-	"github.com/huantingwei/fyp/util"
 	"github.com/huantingwei/fyp/object"
+	"github.com/huantingwei/fyp/util"
+	"go.mongodb.org/mongo-driver/bson"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func (s *Service) refreshStatefulSetInfo() error {
-	statefulSetInfo := s.initStatefulSetArray();
+	statefulSetInfo := s.initStatefulSetArray()
 
 	_, err := s.statefulSetCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
-        return err
+		return err
 	}
 
-	if (len(statefulSetInfo) > 0) {
-		_, err2 := s.statefulSetCollection.InsertMany(context.TODO(),statefulSetInfo);
+	if len(statefulSetInfo) > 0 {
+		_, err2 := s.statefulSetCollection.InsertMany(context.TODO(), statefulSetInfo)
 		if err2 != nil {
 			return err2
 		}
@@ -29,27 +30,27 @@ func (s *Service) refreshStatefulSetInfo() error {
 	return nil
 }
 
-func (s *Service) initStatefulSetArray() []interface{}{
-	statefulSetList, err := s.clientset.AppsV1().StatefulSets("").List(context.TODO(), metav1.ListOptions{});
+func (s *Service) initStatefulSetArray() []interface{} {
+	statefulSetList, err := s.clientset.AppsV1().StatefulSets("").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
 
 	var statefulSets []interface{}
 	for _, s := range statefulSetList.Items {
-		statefulSet := object.StatefulSet {
+		statefulSet := object.StatefulSet{
 			ObjectMeta: object.ObjectMeta{
-				Name: s.Name,
-				Namespace: string(s.Namespace),
-				Uid: string(s.UID),
+				Name:         s.Name,
+				Namespace:    string(s.Namespace),
+				Uid:          string(s.UID),
 				CreationTime: s.CreationTimestamp.String(),
 			},
-			Replicas: int(*s.Spec.Replicas),
-			ServiceName: string(s.Spec.ServiceName),
+			Replicas:            int(*s.Spec.Replicas),
+			ServiceName:         string(s.Spec.ServiceName),
 			PodManagementPolicy: string(s.Spec.PodManagementPolicy),
-			CurrentReplicas: int(s.Status.CurrentReplicas),
-			UpdatedReplicas: int(s.Status.UpdatedReplicas),
-			ReadyReplicas: int(s.Status.ReadyReplicas),
+			CurrentReplicas:     int(s.Status.CurrentReplicas),
+			UpdatedReplicas:     int(s.Status.UpdatedReplicas),
+			ReadyReplicas:       int(s.Status.ReadyReplicas),
 		}
 		matchLabels := make(map[string]string)
 		mlb := s.Spec.Selector.MatchLabels
@@ -59,20 +60,21 @@ func (s *Service) initStatefulSetArray() []interface{}{
 		statefulSet.MatchLabels = matchLabels
 		statefulSets = append(statefulSets, statefulSet)
 	}
-	return statefulSets;
+	return statefulSets
 }
 
 func (s *Service) GetStatefulSetInfo(c *gin.Context) {
+	var results []object.StatefulSet
+	var tmp object.StatefulSet
 	cursor, err := s.statefulSetCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
 		return
 	}
 
-	var results []bson.M
-	if err2 := cursor.All(context.TODO(), &results); err2 != nil {
-		util.ResponseError(c, err2)
-		return
+	for cursor.Next(context.TODO()) {
+		cursor.Decode(&tmp)
+		results = append(results, tmp)
 	}
 
 	util.ResponseSuccess(c, results, "statefulSet")

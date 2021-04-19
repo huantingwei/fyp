@@ -2,9 +2,9 @@ package object
 
 // RoleBinding
 type RoleBinding struct {
-	ObjectMeta ObjectMeta `json:"objectMeta"`
+	ObjectMeta ObjectMeta `json:"Object Meta"`
 
 	// RoleBinding spec
-	Subjects	[]Subject	`json:"subjects"`
-	RoleRef		RoleRef		`json:"roleRef"`
+	Subjects []Subject `json:"Subjects"`
+	RoleRef  RoleRef   `json:"Role Ref"`
 }

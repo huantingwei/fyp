@@ -89,7 +89,6 @@ func (s *Service) init() (err error) {
 	for _, f := range fs {
 		err = f();
 		if err != nil {
-			return err
 		}
 	}
 	return nil
@@ -102,6 +101,6 @@ func (s *Service) Refresh(c *gin.Context) {
 		return
 	}
 
-	var data interface{}
-	util.ResponseSuccess(c, data, "refreshed all kube resources")
+	
+	util.ResponseSuccess(c, "refreshed", "refreshed all kube resources")
 }
