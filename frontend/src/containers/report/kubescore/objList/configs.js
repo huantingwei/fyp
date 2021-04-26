@@ -1,6 +1,6 @@
 const headCells = [
     {
-        id: 'name',
+        id: 'object_name',
         numeric: false,
         disablePadding: false,
         label: 'Object Name',

@@ -31,7 +31,6 @@ import Deployment from 'containers/workload/deployment'
 import Pod from 'containers/workload/pod'
 import Service from 'containers/network/service'
 import NetworkDiagram from 'containers/network/graph'
-import KubeScoreObjList from 'containers/report/kubescore/objList'
 import Home from 'containers/home'
 import Project from 'containers/project'
 import Role from 'containers/accessControl/role'
@@ -42,6 +41,8 @@ import StatefulSet from 'containers/workload/statefulSet'
 import ReplicaSet from 'containers/workload/replicaSet'
 import NetworkPolicy from 'containers/policy/networkPolicy'
 import PodSecurityPolicy from 'containers/policy/podSecurityPolicy'
+import KubeScore from 'containers/report/kubescore/all'
+import KubeScoreInteractive from 'containers/report/kubescore/interactive'
 
 const Root = (props) => {
     const routeItems = [
@@ -215,7 +216,15 @@ const Root = (props) => {
             exact: true,
             text: 'Object Analysis',
             icon: <VerifiedUserOutlinedIcon />,
-            component: KubeScoreObjList,
+            component: KubeScore,
+        },
+        {
+            id: 'kubescore-interactive',
+            path: '/kubescore/interactive',
+            exact: true,
+            text: 'Interactive',
+            icon: <VerifiedUserOutlinedIcon />,
+            component: KubeScoreInteractive,
         },
     ]
 
