@@ -141,10 +141,7 @@ func (s *Service) NewKubescore(c *gin.Context) {
 
 	// delete previous records
 	err = os.Remove(resultFile)
-	if err != nil {
-		util.ResponseError(c, err)
-		return
-	}
+	// ignore error if file does not exist
 
 	_, err = s.kubescoreCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
