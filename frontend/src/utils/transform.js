@@ -1,7 +1,7 @@
 function notNullOrUndefined(value) {
     return !(value === undefined) && !(value === null)
 }
-const transform = (data, primaryKey = 'name', secondaryKey = '') => {
+const transform = (data, primaryKey = 'Name', secondaryKey = '') => {
     let res = []
     if (notNullOrUndefined(data) && Object.keys(data).length > 0) {
         for (let key of Object.keys(data)) {
@@ -49,7 +49,7 @@ const transform = (data, primaryKey = 'name', secondaryKey = '') => {
     return res
 }
 
-const flattenWorkload = (data, needFlatten = ['objectmeta']) => {
+const flattenWorkload = (data, needFlatten = ['Object Meta']) => {
     const flatten = (item) => {
         let resObj = {}
         for (let key of Object.keys(item)) {

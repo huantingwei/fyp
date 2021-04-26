@@ -28,10 +28,10 @@ export default function RoleDetail(props) {
         // transform data before rendering
         let d = {}
         for (let k of Object.keys(items)) {
-            if (k !== 'rules') {
+            if (k !== 'Rules') {
                 d[k] = items[k]
             } else {
-                d['rules'] = roleRule(items['rules'])
+                d['Rules'] = roleRule(items['Rules'])
             }
         }
         setData(d)
@@ -39,7 +39,7 @@ export default function RoleDetail(props) {
 
     return (
         <ContainerLayout>
-            <DataPresentationTable items={transform(data, 'resources')} />
+            <DataPresentationTable items={transform(data, 'Resources')} />
         </ContainerLayout>
     )
 }

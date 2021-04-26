@@ -1,42 +1,36 @@
 const headCells = [
     {
-        id: 'name',
+        id: 'Name',
         numeric: false,
         disablePadding: false,
         label: 'Name',
     },
     {
-        id: 'namespace',
+        id: 'Namespace',
         numeric: false,
         disablePadding: false,
         label: 'Namespace',
     },
     {
-        id: 'servicetype',
+        id: 'Service Type',
         numeric: false,
         disablePadding: false,
         label: 'Type',
     },
     {
-        id: 'clusterip',
+        id: 'Cluter IP',
         numeric: false,
         disablePadding: false,
         label: 'Cluster IP',
     },
-    // {
-    //     id: 'serviceports',
-    //     numeric: false,
-    //     disablePadding: false,
-    //     label: 'Service Port',
-    // },
     {
-        id: 'ingressip',
+        id: 'IngressIP',
         numeric: false,
         disablePadding: false,
         label: 'External IP',
     },
     {
-        id: 'labelselectors',
+        id: 'Label Selectors',
         type: 'chip',
         numeric: false,
         disablePadding: false,

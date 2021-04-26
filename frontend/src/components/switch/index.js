@@ -34,11 +34,7 @@ export default function Switch(props) {
                         }}
                     >
                         <div className={classes.backButton}>
-                            <IconButton
-                                aria-label="back"
-                                onClick={handleBackClick}
-                                size="small"
-                            >
+                            <IconButton aria-label="back" onClick={handleBackClick} size="small">
                                 <ArrowBackIosOutlinedIcon fontSize="small" />
                             </IconButton>
                         </div>
@@ -64,4 +60,5 @@ Switch.propTypes = {
 
 Switch.defaultProps = {
     indent: 0,
+    title: '',
 }

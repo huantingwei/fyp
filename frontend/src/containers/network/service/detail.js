@@ -11,15 +11,15 @@ export default function ServiceDetail(props) {
         try {
             // ingressip => External IP
             // array to string: ["ip1", "ip2"] => "ip1, ip2"
-            data['External IP'] = data['ingressip'].join(',')
-            delete data['ingressip']
+            data['External IP'] = data['IngressIP'].join(',')
+            delete data['IngressIP']
         } catch (err) {}
         return data
     }
 
     return (
         <ContainerLayout>
-            <DataPresentationTable items={transform(convertType(items), 'port', 'targetport')} />
+            <DataPresentationTable items={transform(convertType(items), 'Port', 'TargetPort')} />
         </ContainerLayout>
     )
 }

@@ -5,7 +5,6 @@ import PropTypes from 'prop-types'
 
 export default function Cell(props) {
     const { type, value, primaryKey } = props
-
     switch (type) {
         case 'text':
             return <Typography>{value.toString()}</Typography>

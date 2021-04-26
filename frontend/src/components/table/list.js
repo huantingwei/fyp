@@ -74,6 +74,7 @@ function notNullOrUndefined(value) {
 
 const TableComponent = (props) => {
     const { dataSource, title, column, onRowSelect, pageControl, action } = props
+    console.log(dataSource)
     const classes = useStyles()
     const [order, setOrder] = React.useState('asc')
     const [orderBy, setOrderBy] = React.useState(defaultOrderBy)

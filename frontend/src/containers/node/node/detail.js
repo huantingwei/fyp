@@ -9,7 +9,7 @@ export default function NodeDetail(props) {
 
     return (
         <ContainerLayout>
-            <DataPresentationTable items={transform(items, 'conditionname')} />
+            <DataPresentationTable items={transform(items, 'Condition Name')} />
         </ContainerLayout>
     )
 }

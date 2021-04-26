@@ -1,12 +1,12 @@
 const headCells = [
     {
-        id: 'name',
+        id: 'Name',
         numeric: false,
         disablePadding: false,
         label: 'Name',
     },
     {
-        id: 'uid',
+        id: 'UID',
         numeric: false,
         disablePadding: false,
         label: 'UID',

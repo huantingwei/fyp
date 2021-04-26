@@ -1,24 +1,24 @@
 const headCells = [
     {
-        id: 'name',
+        id: 'Name',
         numeric: false,
         disablePadding: false,
         label: 'Name',
     },
     {
-        id: 'namespace',
+        id: 'Namespace',
         numeric: false,
         disablePadding: false,
         label: 'Namespace',
     },
     {
-        id: 'desiredpods',
+        id: 'Desired Pods',
         numeric: false,
         disablePadding: false,
         label: 'Desired Pods',
     },
     {
-        id: 'matchlabels',
+        id: 'Match Labels',
         type: 'chip',
         numeric: false,
         disablePadding: false,
