@@ -17,7 +17,7 @@ type Cluster struct {
 	Subnet                   string `json:"Subnet"`
 	IntranodeVisibility      bool   `json:"IntraNode Visibility"`
 	NetworkPolicyEnabled     bool   `json:"Network Policy Enabled"`
-	MasterAuthNetworkEnabled bool   `json:"MaSterAuth Network Enabled"`
+	MasterAuthNetworkEnabled bool   `json:"MasterAuth Network Enabled"`
 
 	//Cluster security config
 	ShieldedNodeEnabled        bool `json:"Shield Node Enabled"`

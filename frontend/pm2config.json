@@ -1,9 +1,9 @@
 {
-    "apps":[
+    "apps": [
         {
-            "name":"fyp-frontend",
+            "name": "fyp-frontend",
             "script": "npm",
-            "args": "run dev"
+            "args": "start"
         }
     ]
 }
