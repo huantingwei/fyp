@@ -14,12 +14,7 @@ import VpnKeyOutlinedIcon from '@material-ui/icons/VpnKeyOutlined'
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined'
 import ShareOutlinedIcon from '@material-ui/icons/ShareOutlined'
 import PollOutlinedIcon from '@material-ui/icons/PollOutlined'
-// import ApartmentOutlinedIcon from '@material-ui/icons/ApartmentOutlined'
-// import FitnessCenterOutlinedIcon from '@material-ui/icons/FitnessCenterOutlined'
-// import StorageOutlinedIcon from '@material-ui/icons/StorageOutlined'
-// import MemoryOutlinedIcon from '@material-ui/icons/MemoryOutlined'
-// import MenuBookOutlinedIcon from '@material-ui/icons/MenuBookOutlined'
-// import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined'
+import ViewCompactOutlinedIcon from '@material-ui/icons/ViewCompactOutlined'
 
 import LeftDrawer from 'containers/sidebar'
 
@@ -63,20 +58,20 @@ const Root = (props) => {
             component: Cluster,
         },
         {
-            id: 'node',
-            path: '/node',
-            exact: true,
-            text: 'Node',
-            icon: <DonutSmallOutlinedIcon />,
-            component: Node,
-        },
-        {
             id: 'nodepool',
             path: '/nodepool',
             exact: true,
             text: 'Node Pool',
             icon: <BubbleChartOutlinedIcon />,
             component: NodePool,
+        },
+        {
+            id: 'node',
+            path: '/node',
+            exact: true,
+            text: 'Node',
+            icon: <DonutSmallOutlinedIcon />,
+            component: Node,
         },
         {
             id: 'workload',
@@ -212,19 +207,26 @@ const Root = (props) => {
         },
         {
             id: 'kubescore',
-            path: '/kubescore',
-            exact: true,
-            text: 'Object Analysis',
+            text: 'Static Analysis',
             icon: <VerifiedUserOutlinedIcon />,
-            component: KubeScore,
-        },
-        {
-            id: 'kubescore-interactive',
-            path: '/kubescore/interactive',
-            exact: true,
-            text: 'Interactive',
-            icon: <VerifiedUserOutlinedIcon />,
-            component: KubeScoreInteractive,
+            nested: [
+                {
+                    id: 'kubescore-current',
+                    path: '/current',
+                    exact: true,
+                    text: 'Current Cluster',
+                    icon: <ViewCompactOutlinedIcon />,
+                    component: KubeScore,
+                },
+                {
+                    id: 'kubescore-interactive',
+                    path: '/interactive',
+                    exact: true,
+                    text: 'Interactive Analysis',
+                    icon: <ViewCompactOutlinedIcon />,
+                    component: KubeScoreInteractive,
+                },
+            ],
         },
     ]
 

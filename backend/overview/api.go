@@ -10,40 +10,40 @@ import (
 )
 
 type Service struct {
-	clusterCollection    			*mongo.Collection
-	deploymentCollection 			*mongo.Collection
-	nodeCollection       			*mongo.Collection
-	nodepoolCollection   			*mongo.Collection
-	podCollection        			*mongo.Collection
-	serviceCollection    			*mongo.Collection
-	roleCollection		 			*mongo.Collection
-	roleBindingCollection			*mongo.Collection
-	clusterRoleCollection		 	*mongo.Collection
-	clusterRoleBindingCollection	*mongo.Collection
-	networkPolicyCollection 		*mongo.Collection
-	podSecurityPolicyCollection 	*mongo.Collection
-	statefulSetCollection			*mongo.Collection
-	replicaSetCollection			*mongo.Collection
-	clientset            			*kube.Clientset
+	clusterCollection            *mongo.Collection
+	deploymentCollection         *mongo.Collection
+	nodeCollection               *mongo.Collection
+	nodepoolCollection           *mongo.Collection
+	podCollection                *mongo.Collection
+	serviceCollection            *mongo.Collection
+	roleCollection               *mongo.Collection
+	roleBindingCollection        *mongo.Collection
+	clusterRoleCollection        *mongo.Collection
+	clusterRoleBindingCollection *mongo.Collection
+	networkPolicyCollection      *mongo.Collection
+	podSecurityPolicyCollection  *mongo.Collection
+	statefulSetCollection        *mongo.Collection
+	replicaSetCollection         *mongo.Collection
+	clientset                    *kube.Clientset
 }
 
 func NewService(r *gin.RouterGroup, db util.Database, client *kube.Clientset) {
 	s := &Service{
-		clusterCollection:    			db.Handle.Collection("cluster"),
-		deploymentCollection: 			db.Handle.Collection("deployment"),
-		nodeCollection:       			db.Handle.Collection("node"),
-		nodepoolCollection:   			db.Handle.Collection("nodepool"),
-		podCollection:        			db.Handle.Collection("pod"),
-		serviceCollection:    			db.Handle.Collection("service"),
-		roleCollection:		  			db.Handle.Collection("role"),
-		roleBindingCollection:			db.Handle.Collection("roleBinding"),
-		clusterRoleCollection:		  	db.Handle.Collection("clusterRole"),
-		clusterRoleBindingCollection:	db.Handle.Collection("clusterRoleBinding"),
-		networkPolicyCollection:		db.Handle.Collection("networkPolicy"),
-		podSecurityPolicyCollection:	db.Handle.Collection("podSecurityPolicy"),
-		statefulSetCollection: 			db.Handle.Collection("statefulSet"),
-		replicaSetCollection:			db.Handle.Collection("replicaSet"),
-		clientset:            			client,
+		clusterCollection:            db.Handle.Collection("cluster"),
+		deploymentCollection:         db.Handle.Collection("deployment"),
+		nodeCollection:               db.Handle.Collection("node"),
+		nodepoolCollection:           db.Handle.Collection("nodepool"),
+		podCollection:                db.Handle.Collection("pod"),
+		serviceCollection:            db.Handle.Collection("service"),
+		roleCollection:               db.Handle.Collection("role"),
+		roleBindingCollection:        db.Handle.Collection("roleBinding"),
+		clusterRoleCollection:        db.Handle.Collection("clusterRole"),
+		clusterRoleBindingCollection: db.Handle.Collection("clusterRoleBinding"),
+		networkPolicyCollection:      db.Handle.Collection("networkPolicy"),
+		podSecurityPolicyCollection:  db.Handle.Collection("podSecurityPolicy"),
+		statefulSetCollection:        db.Handle.Collection("statefulSet"),
+		replicaSetCollection:         db.Handle.Collection("replicaSet"),
+		clientset:                    client,
 	}
 
 	// initialize cluser data
@@ -65,14 +65,14 @@ func NewService(r *gin.RouterGroup, db util.Database, client *kube.Clientset) {
 	r.GET("/podSecurityPolicy", s.GetPodSecurityPolicyInfo)
 	r.GET("/statefulSet", s.GetStatefulSetInfo)
 	r.GET("/replicaSet", s.GetReplicaSetInfo)
-	
+
 	r.POST("/new", s.Refresh)
 }
 
 func (s *Service) init() (err error) {
-	fs := []func() error {
-		s.refreshClusterInfo, 
-		s.refreshNodeInfo, 
+	fs := []func() error{
+		s.refreshClusterInfo,
+		s.refreshNodeInfo,
 		s.refreshNodepoolInfo,
 		s.refreshDeploymentInfo,
 		s.refreshStatefulSetInfo,
@@ -81,13 +81,13 @@ func (s *Service) init() (err error) {
 		s.refreshServiceInfo,
 		s.refreshRoleInfo,
 		s.refreshRoleBindingInfo,
-		s.refreshClusterInfo,
+		s.refreshClusterRoleInfo,
 		s.refreshClusterRoleBindingInfo,
 		s.refreshNetworkPolicyInfo,
 		s.refreshPodSecurityPolicyInfo,
 	}
 	for _, f := range fs {
-		err = f();
+		err = f()
 		if err != nil {
 		}
 	}
@@ -95,12 +95,11 @@ func (s *Service) init() (err error) {
 }
 
 func (s *Service) Refresh(c *gin.Context) {
-	err := s.init() 
+	err := s.init()
 	if err != nil {
 		util.ResponseError(c, err)
 		return
 	}
 
-	
 	util.ResponseSuccess(c, "refreshed", "refreshed all kube resources")
 }
