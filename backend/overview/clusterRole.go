@@ -37,21 +37,11 @@ func (s *Service) initClusterRoles() []interface{} {
 			var resourceNames []string
 			var resources []string
 			var verbs []string
-			for _, i := range rule.APIGroups {
-				apiGroups = append(apiGroups, i)
-			}
-			for _, i := range rule.NonResourceURLs {
-				nonResourceUrls = append(nonResourceUrls, i)
-			}
-			for _, i := range rule.ResourceNames {
-				resourceNames = append(resourceNames, i)
-			}
-			for _, i := range rule.Resources {
-				resources = append(resources, i)
-			}
-			for _, i := range rule.Verbs {
-				verbs = append(verbs, i)
-			}
+			apiGroups = append(apiGroups, rule.APIGroups...)
+			nonResourceUrls = append(nonResourceUrls, rule.NonResourceURLs...)
+			resourceNames = append(resourceNames, rule.ResourceNames...)
+			resources = append(apiGroups, rule.Resources...)
+			verbs = append(apiGroups, rule.Verbs...)
 
 			pr := object.PolicyRule{
 				APIGroups:       apiGroups,
@@ -65,9 +55,11 @@ func (s *Service) initClusterRoles() []interface{} {
 		clusterRole.Rules = rules
 
 		selectors := make(map[string]string)
-		for _, s := range r.AggregationRule.ClusterRoleSelectors {
-			for k, v := range s.MatchLabels {
-				selectors[k] = v
+		if r.AggregationRule != nil {
+			for _, s := range r.AggregationRule.ClusterRoleSelectors {
+				for k, v := range s.MatchLabels {
+					selectors[k] = v
+				}
 			}
 		}
 		clusterRole.ClusterRoleSelectors = selectors
@@ -103,11 +95,13 @@ func (s *Service) refreshClusterRoleInfo() error {
 		return err
 	}
 
-	_, err = s.clusterRoleCollection.InsertMany(context.TODO(), clusterRoleInfo)
-	if err != nil {
-		return err
-	}
+	if len(clusterRoleInfo) > 0 {
+		_, err = s.clusterRoleCollection.InsertMany(context.TODO(), clusterRoleInfo)
+		if err != nil {
+			return err
+		}
 
-	fmt.Println("refreshed clusterRole info")
+		fmt.Println("refreshed clusterRole info")
+	}
 	return nil
 }
