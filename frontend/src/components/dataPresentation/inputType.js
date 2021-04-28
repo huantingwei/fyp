@@ -53,20 +53,17 @@ export default function InputType(props) {
         case 'arrayObj': {
             return content.map((val) => {
                 return (
-                    <Accordion
-                        className={accordionClasses.root}
-                        key={uuid()}
-                        square={true}
-                    >
+                    <Accordion className={accordionClasses.root} key={uuid()} square={true}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                             <Typography>
                                 {notNullOrUndefined(val) &&
+                                notNullOrUndefined(val[primaryKey]) &&
                                 Object.keys(val).length !== 0
                                     ? val[primaryKey] +
                                       (notNullOrUndefined(val[secondaryKey])
                                           ? ' : ' + val[secondaryKey]
                                           : '')
-                                    : 'null'}
+                                    : ''}
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
@@ -79,27 +76,18 @@ export default function InputType(props) {
                                             val[v] instanceof Object ? (
                                                 <Grid container key={uuid()}>
                                                     <Grid item xs={6}>
-                                                        <Typography>
-                                                            {v}
-                                                        </Typography>
+                                                        <Typography>{v}</Typography>
                                                     </Grid>
                                                     <Grid item xs={6}>
-                                                        {Object.keys(val[v])
-                                                            .length > 0
-                                                            ? Object.keys(
-                                                                  val[v]
-                                                              ).map((obj) => {
+                                                        {Object.keys(val[v]).length > 0
+                                                            ? Object.keys(val[v]).map((obj) => {
                                                                   return (
                                                                       <Chip
                                                                           key={uuid()}
                                                                           label={
                                                                               obj +
                                                                               ' - ' +
-                                                                              val[
-                                                                                  v
-                                                                              ][
-                                                                                  obj
-                                                                              ]
+                                                                              val[v][obj]
                                                                           }
                                                                       />
                                                                   )
@@ -110,14 +98,10 @@ export default function InputType(props) {
                                             ) : (
                                                 <Grid container key={uuid()}>
                                                     <Grid item xs={6}>
-                                                        <Typography>
-                                                            {v}
-                                                        </Typography>
+                                                        <Typography>{v}</Typography>
                                                     </Grid>
                                                     <Grid item xs={6}>
-                                                        <Typography>
-                                                            {val[v]}
-                                                        </Typography>
+                                                        <Typography>{val[v]}</Typography>
                                                     </Grid>
                                                 </Grid>
                                             )}
@@ -133,11 +117,7 @@ export default function InputType(props) {
 
         case 'link':
             return (
-                <Link
-                    href={'#'}
-                    name={'linkname'}
-                    onClick={(e) => console.log(e)}
-                >
+                <Link href={'#'} name={'linkname'} onClick={(e) => console.log(e)}>
                     {content}
                 </Link>
             )

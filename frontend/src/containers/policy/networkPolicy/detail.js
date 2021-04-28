@@ -8,7 +8,7 @@ export default function NetworkPolicyDetail(props) {
     const { items } = props
     return (
         <ContainerLayout>
-            <DataPresentationTable items={transform(items, 'port', 'targetport')} />
+            <DataPresentationTable items={transform(items)} />
         </ContainerLayout>
     )
 }
