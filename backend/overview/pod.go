@@ -117,7 +117,6 @@ func (s *Service) initPodArray() []interface{} {
 
 func (s *Service) GetPodInfo(c *gin.Context) {
 	var results []object.Pod
-	var tmp object.Pod
 	cursor, err := s.podCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -125,6 +124,7 @@ func (s *Service) GetPodInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.Pod
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}

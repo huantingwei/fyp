@@ -146,7 +146,6 @@ func (s *Service) initNetworkPolicies() []interface{} {
 
 func (s *Service) GetNetworkPolicyInfo(c *gin.Context) {
 	var results []object.NetworkPolicy
-	var tmp object.NetworkPolicy
 	cursor, err := s.networkPolicyCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -154,6 +153,7 @@ func (s *Service) GetNetworkPolicyInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.NetworkPolicy
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}

@@ -86,7 +86,6 @@ func (s *Service) initPodSecurityPolicies() []interface{} {
 
 func (s *Service) GetPodSecurityPolicyInfo(c *gin.Context) {
 	var results []object.PodSecurityPolicy
-	var tmp object.PodSecurityPolicy
 	cursor, err := s.podSecurityPolicyCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -94,6 +93,7 @@ func (s *Service) GetPodSecurityPolicyInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.PodSecurityPolicy
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}

@@ -89,7 +89,6 @@ func (s *Service) initDeploymentArray() []interface{} {
 
 func (s *Service) GetDeploymentInfo(c *gin.Context) {
 	var results []object.Deployment
-	var tmp object.Deployment
 	cursor, err := s.deploymentCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -97,6 +96,7 @@ func (s *Service) GetDeploymentInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.Deployment
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}

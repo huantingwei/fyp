@@ -83,7 +83,6 @@ func (s *Service) initServiceArray() []interface{} {
 
 func (s *Service) GetServiceInfo(c *gin.Context) {
 	var results []object.Service
-	var tmp object.Service
 	cursor, err := s.serviceCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -91,6 +90,7 @@ func (s *Service) GetServiceInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.Service
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}
