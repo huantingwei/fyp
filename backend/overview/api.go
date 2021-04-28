@@ -61,7 +61,7 @@ func NewService(r *gin.RouterGroup, db util.Database, client *kube.Clientset) {
 	r.GET("/roleBinding", s.GetRoleBindingInfo)
 	r.GET("/clusterRole", s.GetClusterRoleInfo)
 	r.GET("/clusterRoleBinding", s.GetClusterRoleBindingInfo)
-	r.GET("/networkPolicy", s.GetNetworkPolicyInfo)
+	r.GET("/networkPolicy", s.GetNetworkPolicyInfoV2)
 	r.GET("/podSecurityPolicy", s.GetPodSecurityPolicyInfo)
 	r.GET("/statefulSet", s.GetStatefulSetInfo)
 	r.GET("/replicaSet", s.GetReplicaSetInfo)
@@ -81,10 +81,10 @@ func (s *Service) init() (err error) {
 		s.refreshServiceInfo,
 		s.refreshRoleInfo,
 		s.refreshRoleBindingInfo,
+		s.refreshNetworkPolicyInfoV2,
+		s.refreshPodSecurityPolicyInfo,
 		s.refreshClusterRoleInfo,
 		s.refreshClusterRoleBindingInfo,
-		s.refreshNetworkPolicyInfo,
-		s.refreshPodSecurityPolicyInfo,
 	}
 	for _, f := range fs {
 		err = f()
