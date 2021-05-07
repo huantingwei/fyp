@@ -71,7 +71,6 @@ func (s *Service) initRoles() []interface{} {
 
 func (s *Service) GetRoleInfo(c *gin.Context) {
 	var results []object.Role
-	var tmp object.Role
 	cursor, err := s.roleCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -79,6 +78,7 @@ func (s *Service) GetRoleInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.Role
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}

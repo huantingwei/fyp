@@ -61,7 +61,6 @@ func (s *Service) initReplicaSetArray() []interface{} {
 
 func (s *Service) GetReplicaSetInfo(c *gin.Context) {
 	var results []object.ReplicaSet
-	var tmp object.ReplicaSet
 	cursor, err := s.replicaSetCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -69,6 +68,7 @@ func (s *Service) GetReplicaSetInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.ReplicaSet
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}

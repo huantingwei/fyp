@@ -88,7 +88,6 @@ func (s *Service) initNodeArray() []interface{} {
 
 func (s *Service) GetNodeInfo(c *gin.Context) {
 	var results []object.Node
-	var tmp object.Node
 	cursor, err := s.nodeCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -96,6 +95,7 @@ func (s *Service) GetNodeInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.Node
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}

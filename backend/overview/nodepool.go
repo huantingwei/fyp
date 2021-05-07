@@ -65,7 +65,6 @@ func initNodepoolsArray() []interface{} {
 
 func (s *Service) GetNodepoolInfo(c *gin.Context) {
 	var results []object.Nodepool
-	var tmp object.Nodepool
 	cursor, err := s.nodepoolCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -73,6 +72,7 @@ func (s *Service) GetNodepoolInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.Nodepool
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}

@@ -65,7 +65,6 @@ func (s *Service) initStatefulSetArray() []interface{} {
 
 func (s *Service) GetStatefulSetInfo(c *gin.Context) {
 	var results []object.StatefulSet
-	var tmp object.StatefulSet
 	cursor, err := s.statefulSetCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -73,6 +72,7 @@ func (s *Service) GetStatefulSetInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.StatefulSet
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}

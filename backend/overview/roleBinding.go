@@ -54,7 +54,6 @@ func (s *Service) initRoleBindings() []interface{} {
 
 func (s *Service) GetRoleBindingInfo(c *gin.Context) {
 	var results []object.RoleBinding
-	var tmp object.RoleBinding
 	cursor, err := s.roleBindingCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -62,6 +61,7 @@ func (s *Service) GetRoleBindingInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.RoleBinding
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}

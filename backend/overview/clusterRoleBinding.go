@@ -54,7 +54,6 @@ func (s *Service) initClusterRoleBindings() []interface{} {
 
 func (s *Service) GetClusterRoleBindingInfo(c *gin.Context) {
 	var results []object.ClusterRoleBinding
-	var tmp object.ClusterRoleBinding
 	cursor, err := s.clusterRoleBindingCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -62,6 +61,7 @@ func (s *Service) GetClusterRoleBindingInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.ClusterRoleBinding
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}

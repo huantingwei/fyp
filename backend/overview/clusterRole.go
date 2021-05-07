@@ -72,7 +72,6 @@ func (s *Service) initClusterRoles() []interface{} {
 
 func (s *Service) GetClusterRoleInfo(c *gin.Context) {
 	var results []object.ClusterRole
-	var tmp object.ClusterRole
 	cursor, err := s.clusterRoleCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		util.ResponseError(c, err)
@@ -80,6 +79,7 @@ func (s *Service) GetClusterRoleInfo(c *gin.Context) {
 	}
 
 	for cursor.Next(context.TODO()) {
+		var tmp object.ClusterRole
 		cursor.Decode(&tmp)
 		results = append(results, tmp)
 	}
