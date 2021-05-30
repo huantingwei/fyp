@@ -1,10 +1,6 @@
 # How to run this project
 
-1. Open the terminal in the kubernetes folder, follow the README in that folder. This will authenticate your GCP account, setup your kubeconfig for your kubectl, as well as get the kubebench result.
-
-2. Open the project in VSCode, run `go build` to build the project.
-
-3. run `./fyp` to run the server in localhost:8080.
+Please follow the README in `backend` and `frontend`
 
 # Important remark
 
