@@ -1,9 +1,0 @@
-{
-    "apps": [
-        {
-            "name": "fyp-frontend",
-            "script": "npm",
-            "args": "start"
-        }
-    ]
-}
