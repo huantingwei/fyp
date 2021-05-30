@@ -13,7 +13,7 @@ require (
 	github.com/ugorji/go v1.2.0 // indirect
 	github.com/zegl/kube-score v1.10.0
 	go.mongodb.org/mongo-driver v1.4.4
-	golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392 // indirect
+	golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392
 	golang.org/x/sys v0.0.0-20201201145000-ef89a241ccb3 // indirect
 	google.golang.org/api v0.15.0
 	google.golang.org/genproto v0.0.0-20201119123407-9b1e624d6bc4
